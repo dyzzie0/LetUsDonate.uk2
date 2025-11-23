@@ -44,7 +44,7 @@ This project was developed for university and demonstrates modern full-stack dev
 
 -- Open Visual Studio Code
 
--- git clone https://github.com/dyzzie0/LetUsDonate.uk
+-- git clone https://github.com/dyzzie0/LetUsDonate.uk2
 
 Frontend (React)
 
