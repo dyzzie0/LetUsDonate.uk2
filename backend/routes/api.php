@@ -16,15 +16,13 @@ use App\Http\Controllers\CharityController;
 | These routes are for your React front-end SPA and existing tests.
 |
 */
-// CHARITY — Get all donations assigned to this charity
+//charity — Get all donations assigned to this charity
 Route::get('/charity/{charityId}/donations', [DonationController::class, 'getCharityDonations']);
 Route::get('/donations-all', [DonationController::class, 'getAllDonations']);
 
 
 
-// --------------------------------------
-// TEST & DEBUG ENDPOINTS
-// --------------------------------------
+// test & debug ENDPOINTS
 Route::get('/status', function () {
     return response()->json(['message' => 'Laravel API working']);
 });
@@ -39,24 +37,19 @@ Route::get('/users', function () {
     return DB::table('users')->get();
 });
 
-// --------------------------------------
-// AUTH ROUTES
-// --------------------------------------
+
+// AUTH routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
 
 
-// --------------------------------------
-// INVENTORY
-// --------------------------------------
+// inventory
 Route::get('/inventory', [InventoryController::class, 'index']);
 Route::get('/inventory/{id}', [InventoryController::class, 'show']);
 
 
-// --------------------------------------
-// DONATIONS
-// --------------------------------------
+// donations
 Route::get('/donations', [DonationController::class, 'index']);
 Route::get('/donations/{id}', [DonationController::class, 'show']);
 Route::post('/donations', [DonationController::class, 'store']);
@@ -67,16 +60,12 @@ Route::post('/donations/{donationId}/status', [DonationController::class, 'updat
 
 
 
-// --------------------------------------
-// DONATION ITEMS
-// --------------------------------------
+//donation items
 Route::get('/donation-items', [DonationItemController::class, 'index']);
 Route::get('/donation-items/{id}', [DonationItemController::class, 'show']);
 
 
-// --------------------------------------
-// CHARITIES
-// --------------------------------------
+//charities
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{id}', [CharityController::class, 'show']);
 Route::get('/charity/{id}/donations', [DonationController::class, 'getCharityDonations']);

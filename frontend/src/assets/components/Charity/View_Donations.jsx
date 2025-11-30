@@ -11,7 +11,7 @@ export default function View_Donations() {
 
   const role = localStorage.getItem("role");
 
-  // Get logged-in charity
+  //get logged-in charity
   const stored = JSON.parse(localStorage.getItem("user") || "{}");
   const charityId =
     stored?.charity_ID ??
@@ -30,7 +30,7 @@ export default function View_Donations() {
     }
   };
 
-  // Build correct image URL
+  //build correct image URL
   const buildImageUrl = (path) => {
     if (!path) return null;
     path = path.replace(/^public\//, "");
@@ -39,7 +39,7 @@ export default function View_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
-  // Fetch THIS charity's donations only
+  //fetch THIS charity's donations only
   useEffect(() => {
     if (!charityId) {
       setLoading(false);
@@ -63,7 +63,7 @@ export default function View_Donations() {
       });
   }, [charityId]);
 
-  // Apply filters
+  //apply filters
   const handleFilter = () => {
     const filtered = donations.filter((d) => {
       const item = d.items?.[0];
@@ -132,6 +132,7 @@ export default function View_Donations() {
             <tr>
               <th>Donation ID</th>
               <th>Donor</th>
+              <th>Category</th>
               <th>Item</th>
               <th>Image</th>
               <th>Quantity</th>
@@ -154,8 +155,8 @@ export default function View_Donations() {
                   <tr key={d.donation_ID}>
                     <td>{d.donation_ID}</td>
                     <td>{d.donor?.user?.name ?? "Unknown"}</td>
+                    <td>{item?.item_category ?? "N/A"}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
-
                     <td>
                     {item?.item_image ? (
                       (() => {

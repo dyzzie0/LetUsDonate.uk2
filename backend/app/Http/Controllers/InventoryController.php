@@ -11,7 +11,7 @@ class InventoryController extends Controller
     {
         $query = Inventory::with('charity');
 
-        // If charity wants only their inventory
+        // charity wants only their inventory
         if ($request->filled('charity_ID')) {
             $query->where('charity_ID', $request->charity_ID);
         }

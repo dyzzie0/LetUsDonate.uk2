@@ -42,7 +42,7 @@ export default function Login() {
           setError("Login failed: Unknown role assigned to account");
         }
       } else {
-        // Show the actual error message from the server
+        //show the actual error message from the server
         setError(data.message || "Invalid email or password");
       }
     } catch (err) {

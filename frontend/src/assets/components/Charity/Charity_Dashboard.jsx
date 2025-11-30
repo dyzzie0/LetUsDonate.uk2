@@ -11,9 +11,7 @@ export default function Charity_Dashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const role = localStorage.getItem("role");
 
-  // -----------------------------------------
-  // 🚨 AUTH CHECK — only charity role (11)
-  // -----------------------------------------
+  //AUTH CHECK- only charity role (11)
   useEffect(() => {
     if (!user.user_ID || role !== "11") {
       window.location.href = "/login";
@@ -21,13 +19,11 @@ export default function Charity_Dashboard() {
     }
   }, [user.user_ID, role]);
 
-  // -----------------------------------------
-  // 📌 FETCH DONATIONS + INVENTORY
-  // -----------------------------------------
+  //fetch donations and inventory 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Get donations for this charity
+        //get donations for this charity
         const donationRes = await fetch(
           `http://localhost:8000/api/charity/${user.charity_ID}/donations`
         );
@@ -36,7 +32,7 @@ export default function Charity_Dashboard() {
         const donationList =
           donationJson.status === "success" ? donationJson.donations : [];
 
-        // Get inventory for this charity
+        //get inventory for this charity
         const inventoryRes = await fetch(
           `http://localhost:8000/api/inventory?charity_ID=${user.charity_ID}`
         );
@@ -49,9 +45,7 @@ export default function Charity_Dashboard() {
         setDonations(donationList);
         setInventory(inventoryList);
 
-        // ----------------------------
-        // 🧮 CALCULATE STATISTICS
-        // ----------------------------
+        //calculate statistics 
         const totalItems = donationList.reduce((sum, d) => {
           const item = d.items?.[0];
           const qty = item?.quantity ? Number(item.quantity) : 1;
@@ -74,9 +68,7 @@ export default function Charity_Dashboard() {
     fetchData();
   }, [user.charity_ID]);
 
-  // -----------------------------------------
-  // 📊 LOAD INVENTORY PIE CHART
-  // -----------------------------------------
+  //load inventory pie chart
   useEffect(() => {
     if (inventory.length && window.Chart) {
       const labels = inventory.map((item) => item.item);
@@ -110,9 +102,7 @@ export default function Charity_Dashboard() {
     }
   }, [inventory]);
 
-  // -----------------------------------------
-  // 🖼 Clean Image URL builder
-  // -----------------------------------------
+  // clean Image URL builder
   const buildImageUrl = (path) => {
     if (!path) return null;
     path = path.replace(/^public\//, "").replace(/^\/+/, "");

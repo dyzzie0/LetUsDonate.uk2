@@ -18,7 +18,6 @@ class Donation extends Model
         'pickup_address',
     ];
 
-    // FIXED: Link to users table, not donor table
     public function donor()
     {
         return $this->belongsTo(\App\Models\Donor::class, 'donor_ID', 'donor_ID');

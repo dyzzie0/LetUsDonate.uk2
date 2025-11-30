@@ -15,7 +15,7 @@ export function View_Inventory() {
     type: '',
   });
 
-  // Return link
+  //return link
   const getReturnLink = () => {
     switch (role) {
       case '11': return '/charity_dashboard';   // Charity
@@ -24,11 +24,11 @@ export function View_Inventory() {
     }
   };
 
-  // Load inventory from Laravel
+  //load inventory from Laravel
   useEffect(() => {
     let url = 'http://localhost:8000/api/inventory';
 
-    // Charity sees only their inventory
+    //charity sees only their inventory
     if (role === '11' && user.charity_ID) {
       url += `?charity_ID=${user.charity_ID}`;
     }
@@ -44,7 +44,7 @@ export function View_Inventory() {
       .catch(() => setLoading(false));
   }, [role, user.charity_ID]);
 
-  // Filtering logic
+  //filtering logic
   const handleFilterChange = (e) => {
     const updated = { ...filters, [e.target.name]: e.target.value };
     setFilters(updated);
@@ -104,7 +104,7 @@ export function View_Inventory() {
                 <th>ID</th>
                 <th>Item</th>
                 <th>Category</th>
-                <th>Size / Type</th>
+                <th>Size</th>
                 <th>Quantity</th>
               </tr>
             </thead>

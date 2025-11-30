@@ -9,7 +9,7 @@ export default function Approve_Donations() {
   const [statusFilter, setStatusFilter] = useState("");
   const [actionMessage, setActionMessage] = useState(null);
 
-  // Get logged-in charity from localStorage
+  //get logged-in charity from localStorage
   const stored = JSON.parse(localStorage.getItem("user") || "{}");
   const charityId =
     stored?.charity_ID ??
@@ -17,9 +17,7 @@ export default function Approve_Donations() {
     stored?.id ??
     null;
 
-  // -----------------------------
-  // Load donations for this charity
-  // -----------------------------
+  //load donations for this charity
   useEffect(() => {
     if (!charityId) {
       setLoading(false);
@@ -30,7 +28,8 @@ export default function Approve_Donations() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
-          setDonations(data.donations);
+          const pendingOnly = data.donations.filter(d => d.donation_status === "Pending");
+setDonations(pendingOnly);
         } else {
           console.error("Error loading donations:", data.message);
         }
@@ -42,9 +41,7 @@ export default function Approve_Donations() {
       });
   }, [charityId]);
 
-  // -----------------------------
-  // IMAGE FIX
-  // -----------------------------
+  //image FIX
   const buildImageUrl = (item) => {
     if (!item?.item_image) return null;
 
@@ -58,9 +55,7 @@ export default function Approve_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
-  // -----------------------------
-  // APPROVE / DECLINE donation
-  // -----------------------------
+  //APPROVE / DECLINE donation
   const handleUpdateStatus = async (donationId, newStatus) => {
     try {
       const res = await fetch(
@@ -78,22 +73,14 @@ export default function Approve_Donations() {
       const data = await res.json();
 
       if (data.status === "success") {
-        // If approved → remove it from list AND added to inventory
-        if (newStatus === "Approved") {
-          setDonations((prev) =>
-            prev.filter((d) => d.donation_ID !== donationId)
-          );
-        } else {
-          // Only update status for declined
-          setDonations((prev) =>
-            prev.map((d) =>
-              d.donation_ID === donationId
-                ? { ...d, donation_status: newStatus }
-                : d
-            )
+        // If approved then remove it from list AND added to inventory
+        if (newStatus === "Approved" || newStatus === "Declined") {
+          //remove approved OR declined from Approve_Donations page
+          setDonations(prev =>
+            prev.filter(d => d.donation_ID !== donationId)
           );
         }
-
+        
         setActionMessage(`Donation #${donationId} set to ${newStatus}.`);
       } else {
         setActionMessage(data.message || "Unable to update status.");
@@ -106,9 +93,7 @@ export default function Approve_Donations() {
     setTimeout(() => setActionMessage(null), 4000);
   };
 
-  // -----------------------------
   // FILTERING LOGIC
-  // -----------------------------
   const filteredDonations = donations.filter((d) => {
     const item = d.items?.[0];
 
@@ -180,6 +165,7 @@ export default function Approve_Donations() {
             <thead>
               <tr>
                 <th>Donation ID</th>
+                <th>Item Name</th>
                 <th>Category</th>
                 <th>Description</th>
                 <th>Condition</th>
@@ -209,6 +195,7 @@ export default function Approve_Donations() {
                   return (
                     <tr key={d.donation_ID}>
                       <td>{d.donation_ID}</td>
+                      <td>{item?.item_name ?? "N/A"}</td>
                       <td>{item?.item_category ?? "N/A"}</td>
                       <td>{item?.item_description ?? "N/A"}</td>
                       <td>{item?.item_condition ?? "N/A"}</td>

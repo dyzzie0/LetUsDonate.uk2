@@ -1,25 +1,25 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import React, { useEffect } from 'react';
 
-// Headers & Footer
+//Headers & Footer
 import Header from './assets/components/Header.jsx';
 import Header_alt from './assets/components/Header_alt.jsx';
 import Footer from './assets/components/Footer.jsx';
 
-// Initial pages
+//Initial pages
 import Home from './assets/components/Home.jsx';
 import Sign_up from './assets/components/Sign_up.jsx';
 import Login from './assets/components/Login.jsx';
 import FAQ from './assets/components/FAQ.jsx';
 import Our_Partners from './assets/components/Our_Partners.jsx';
 
-// Admin
+//Admin
 import Admin_Dashboard from './assets/components/Admin/Admin_Dashboard.jsx';
 import Add_Charity from './assets/components/Admin/Add_Charity.jsx';
 import Data_Reports from './assets/components/Admin/Data_Reports.jsx';
 import View_Users from './assets/components/Admin/View_Users.jsx';
 
-// Charity
+//Charity
 import Charity_Dashboard from './assets/components/Charity/Charity_Dashboard.jsx';
 import Approve_Donations from './assets/components/Charity/Approve_Donations.jsx';
 import Distribution_Records from './assets/components/Charity/Distribution_Records.jsx';
@@ -32,23 +32,23 @@ import My_Donations from './assets/components/User/My_Donations.jsx';
 import My_Impact from './assets/components/User/My_Impact.jsx';
 import My_Profile from './assets/components/User/My_Profile.jsx';
 
-// Footer content pages
+//Footer content pages
 import Terms_Conditions from './assets/components/Footer_Content/Terms_Conditions.jsx';
 import Privacy_Policy from './assets/components/Footer_Content/Privacy_Policy.jsx';
 import Cookie_Policy from './assets/components/Footer_Content/Cookie_Policy.jsx';
 import Accessibility from './assets/components/Footer_Content/Accessibility.jsx';
 
-// Not found page
+//Not found page
 import NotFound from './404.jsx';
 
 export default function Layout() {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
 
-  // Paths without a header/footer
+  //Paths without a header/footer
   const noHeaderFooterPaths = ['/login', '/sign_up'];
 
-  // Paths that use the alternative header
+  //Paths that use the alternative header
   const altHeaderPaths = [
     '/user_dashboard',
     '/my_donations',

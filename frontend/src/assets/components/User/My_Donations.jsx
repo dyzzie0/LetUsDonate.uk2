@@ -25,7 +25,7 @@ export default function My_Donations() {
       });
   }, [user]);
 
-  // Filtering donations
+  //filtering donations
   const filtered = donations.filter((d) => {
     const item = d.items?.[0];
 

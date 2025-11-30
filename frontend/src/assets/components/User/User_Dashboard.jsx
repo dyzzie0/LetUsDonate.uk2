@@ -13,7 +13,7 @@ export default function User_Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [status, setStatus] = useState(null);
 
-  // Load logged in user
+  //load logged in user
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -23,7 +23,7 @@ export default function User_Dashboard() {
     setUser(JSON.parse(storedUser));
   }, [navigate]);
 
-  // Load donations
+  //load donations
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
 
@@ -35,7 +35,7 @@ export default function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-  // Load charities
+  //load charities
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -51,7 +51,7 @@ export default function User_Dashboard() {
     return c ? c.charity_name : "Unknown";
   };
 
-  // File preview
+  //file preview
   const handleChange = (e) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -65,7 +65,7 @@ export default function User_Dashboard() {
     setPreview(null);
   };
 
-  // Submit donation
+  //submit donation
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
@@ -73,7 +73,7 @@ export default function User_Dashboard() {
     const formData = new FormData();
     const fields = new FormData(e.target);
 
-    // Map to backend names
+    //map to backend names
     formData.append("item_name", fields.get("item_name"));
     formData.append("category", fields.get("category"));        // backend item_category
     formData.append("size", fields.get("size"));    
@@ -100,7 +100,7 @@ export default function User_Dashboard() {
         e.target.reset();
         setFile(null);
 
-        // Reload donations
+        //reload donations
         fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
           .then((res) => res.json())
           .then((data) => {

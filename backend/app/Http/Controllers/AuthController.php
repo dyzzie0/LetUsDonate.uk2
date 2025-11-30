@@ -23,20 +23,20 @@ class AuthController extends Controller
         'password' => 'required|string',
     ]);
 
-    // Find user by email
+    //find user by email
     $user = DomainUser::where('user_email', $request->email)->first();
 
     if ($user && Hash::check($request->password, $user->user_password)) {
 
         $userData = $user->toArray();
 
-        // Attach donor data if user is a donor
+        //attach donor data if user is a donor
         $donor = Donor::where('user_ID', $user->user_ID)->first();
         if ($donor) {
             $userData['donor'] = $donor;  // <-- IMPORTANT
         }
 
-        // Attach charity staff charity_ID if charity staff
+        //attach charity staff, charity_ID if charity staff
         if ($user->role_id == 11) {
             $charityStaff = CharityStaff::where('user_ID', $user->user_ID)->first();
             if ($charityStaff) {
@@ -67,7 +67,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
     
-        //Automatically assigns the Donor role just becuase we only allow donors to signup due to security measures 
+        //Automatically assigns Donor role just becuase we only allow donors to signup due to security measures 
         $donorRole = \App\Models\Role::firstOrCreate(
             ['role_name' => 'donor'],
             ['role_description' => 'A person who donates clothing or items.']

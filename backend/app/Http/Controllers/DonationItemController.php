@@ -21,9 +21,8 @@ class DonationItemController extends Controller
         return response()->json($item);
     }
 
-    /**
-     * Store a new donation item AND update the charity's inventory
-     */
+    
+    //store a new donation item AND update charity's inventory
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -36,13 +35,13 @@ class DonationItemController extends Controller
             'item_image'     => ['nullable', 'string'],
         ]);
 
-        // Create the donation item
+        //create the donation item
         $item = DonationItem::create($validated);
 
-        // Get donation so we know which charity owns it
+        //get donation so we know which charity owns it
         $donation = Donation::find($validated['donation_ID']);
 
-        // Update/Insert into inventory
+        // update/insert into inventory
         Inventory::updateOrCreate(
             [
                 'charity_ID' => $donation->charity_ID,

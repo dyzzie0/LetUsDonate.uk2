@@ -9,9 +9,7 @@ use Illuminate\Http\Request;
 
 class DonationController extends Controller
 {
-    /**
-     * Get donations for a specific donor
-     */
+    //get donations for a specific donor
     public function getUserDonations($donorId)
     {
         $donations = Donation::with(['items', 'charity'])
@@ -25,9 +23,7 @@ class DonationController extends Controller
         ]);
     }
 
-    /**
-     * Create donation + item + update inventory
-     */
+    //create donation and item (NO inventory update here)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -42,17 +38,13 @@ class DonationController extends Controller
             'pickup_address'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        // -----------------------------------
-        //  UPLOAD IMAGE
-        // -----------------------------------
+        //image upload
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('donation_images', 'public');
         }
 
-        // -----------------------------------
-        //  CREATE DONATION
-        // -----------------------------------
+        //create donation
         $donation = Donation::create([
             'donor_ID'        => $validated['donor_ID'],
             'charity_ID'      => $validated['charity_ID'],
@@ -61,9 +53,7 @@ class DonationController extends Controller
             'pickup_address'  => $validated['pickup_address'] ?? null,
         ]);
 
-        // -----------------------------------
-        //  CREATE DONATION ITEM
-        // -----------------------------------
+        //create donation item
         $item = DonationItem::create([
             'donation_ID'      => $donation->donation_ID,
             'item_name'        => $validated['item_name'],
@@ -74,35 +64,16 @@ class DonationController extends Controller
             'item_image'       => $imagePath,
         ]);
 
-        // -----------------------------------
-        //  UPDATE INVENTORY (correct mapping!)
-        // -----------------------------------
-        $inventory = Inventory::firstOrCreate(
-            [
-                'charity_ID' => $validated['charity_ID'],
-                'item'       => $item->item_name,
-                'category'   => $item->item_category,  // ← Correct
-                'size'       => $item->item_size,
-            ],
-            [
-                'quantity' => 0
-            ]
-        );
 
-        $inventory->increment('quantity');
-
-        // -----------------------------------
-        //  RESPONSE
-        // -----------------------------------
         return response()->json([
             'status'   => 'success',
-            'message'  => 'Donation submitted and inventory updated!',
+            'message'  => 'Donation submitted successfully!',
             'donation' => $donation,
             'item'     => $item,
         ], 201);
     }
 
-    // Get all donations for a charity
+     //Get all donations for a charity
     public function getCharityDonations($charityId)
     {
         $donations = Donation::with(['items', 'donor.user'])
@@ -116,8 +87,9 @@ class DonationController extends Controller
         ]);
     }
 
-
-    // Update donation status (Approved / Declined / Pending)
+    
+     //Update donation status (Approved / Declined / Pending)
+     //inventory ONLY updates when approved
     public function updateStatus(Request $request, $donationId)
     {
         $validated = $request->validate([
@@ -129,14 +101,11 @@ class DonationController extends Controller
         $donation->donation_status = $validated['status'];
         $donation->save();
 
-        // --------------------------
-        // ONLY add to inventory if approved
-        // --------------------------
+        //add to inventory ONLY when approved
         if ($validated['status'] === 'Approved') {
 
             foreach ($donation->items as $item) {
-
-                \App\Models\Inventory::firstOrCreate(
+                Inventory::firstOrCreate(
                     [
                         'charity_ID' => $donation->charity_ID,
                         'item'       => $item->item_name,
@@ -154,7 +123,8 @@ class DonationController extends Controller
         ]);
     }
 
-
+    
+     //Admin- get all donations
     public function getAllDonations()
     {
         $donations = Donation::with(['items', 'charity', 'donor'])
@@ -166,6 +136,4 @@ class DonationController extends Controller
             'donations' => $donations,
         ]);
     }
-
-
 }

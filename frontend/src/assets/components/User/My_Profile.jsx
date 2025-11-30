@@ -12,7 +12,7 @@ export default function My_Profile() {
     password: "",
   });
 
-  // Load user from localStorage and backend
+  //load user from localStorage and backend
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (!stored) return;
@@ -20,7 +20,7 @@ export default function My_Profile() {
     const parsed = JSON.parse(stored);
     setUser(parsed);
 
-    // Load latest user data from backend
+    //load latest user data from backend
     fetch(`http://localhost:8000/api/user/${parsed.id}`)
       .then((res) => res.json())
       .then((data) => {
@@ -66,7 +66,7 @@ export default function My_Profile() {
       const data = await res.json();
 
       if (data.status === "success") {
-        // Save new user locally
+        //save new user locally
         const updated = { ...user, ...data.user };
         localStorage.setItem("user", JSON.stringify(updated));
         setUser(updated);
