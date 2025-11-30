@@ -70,25 +70,33 @@ export default function User_Dashboard() {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
 
-    const formData = new FormData(e.target);
+    const formData = new FormData();
+    const fields = new FormData(e.target);
+
+    // Map to backend names
+    formData.append("item_name", fields.get("item_name"));
+    formData.append("category", fields.get("category"));        // backend item_category
+    formData.append("size", fields.get("size"));    
+    formData.append("condition", fields.get("condition"));
+    formData.append("description", fields.get("description"));
+    formData.append("pickup_address", fields.get("pickup_address"));
+    formData.append("charity_ID", fields.get("charity_ID"));
+
     formData.append("donor_ID", user.donor.donor_ID);
+
     if (file) formData.append("image", file);
 
     try {
       const res = await fetch("http://localhost:8000/api/donations", {
         method: "POST",
-        headers: {
-          "Accept": "application/json",  // ← FIXED
-        },
+        headers: { Accept: "application/json" },
         body: formData,
       });
 
-      const data = await res.json(); // will no longer blow up
+      const data = await res.json();
 
       if (data.status === "success") {
         setStatus({ type: "success", message: data.message });
-
-        // Reset
         e.target.reset();
         setFile(null);
 
@@ -149,9 +157,7 @@ export default function User_Dashboard() {
               <div className="stats-container">
                 <div className="stat-card">
                   <i className="fa-solid fa-earth-africa"></i>
-                  <p className="stat-number">
-                    {(donations.length * 1.5).toFixed(1)}kg
-                  </p>
+                  <p className="stat-number">{(donations.length * 1.5).toFixed(1)}kg</p>
                   <p className="stat-text">CO₂ Saved</p>
                 </div>
 
@@ -176,11 +182,7 @@ export default function User_Dashboard() {
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
 
-            {status && (
-              <div className={`form-message ${status.type}`}>
-                {status.message}
-              </div>
-            )}
+            {status && <div className={`form-message ${status.type}`}>{status.message}</div>}
 
             <input type="text" name="item_name" placeholder="Item Name" required />
 
@@ -192,16 +194,15 @@ export default function User_Dashboard() {
               <option value="boys">Boy's</option>
             </select>
 
-            <select name="type" required>
-              <option value="">Type</option>
-              <option value="shirt">Shirt</option>
-              <option value="trouser">Trouser</option>
-              <option value="jacket">Jacket</option>
-              <option value="shoe">Shoes</option>
-              <option value="other">Other</option>
+            <select name="size" required>
+              <option value="">Size</option>
+              <option value="XS">XS</option>
+              <option value="S">S</option>
+              <option value="M">M</option>
+              <option value="L">L</option>
+              <option value="XL">XL</option>
+              <option value="XXL">XXL</option>
             </select>
-
-            <input type="number" name="quantity" min="1" placeholder="Quantity" required />
 
             <select name="condition" required>
               <option value="">Condition</option>
@@ -211,15 +212,10 @@ export default function User_Dashboard() {
               <option value="used-fair">Used - Fair</option>
             </select>
 
-            <textarea
-              name="description"
-              className="description"
-              placeholder="Description"
-              required
-            />
+            <textarea name="description" className="description" placeholder="Description"></textarea>
 
             <div className="file-upload">
-            <input type="file" name="image" accept="image/*" onChange={handleChange} />
+              <input type="file" name="image" accept="image/*" onChange={handleChange} />
 
               {file && preview && (
                 <div className="file-preview">
@@ -274,85 +270,85 @@ export default function User_Dashboard() {
       </div>
 
       {/* DONATION HISTORY */}
-      <div className="donation-history full-width">
-        <h3>Recent Donations</h3>
+<div className="donation-history full-width">
+  <h3>Recent Donations</h3>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Image</th>
-              <th>Date Submitted</th>
-              <th>Charity</th>
-              <th>Status</th>
-              <th>Pickup Address</th>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Size</th>
+        <th>Image</th>
+        <th>Date Submitted</th>
+        <th>Charity</th>
+        <th>Status</th>
+        <th>Pickup Address</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {donations.length > 0 ? (
+        donations.slice(0, 4).map((d) => {
+          const item = d.items?.[0];
+
+          return (
+            <tr key={d.donation_ID}>
+              {/* Item Name */}
+              <td>{item?.item_name ?? "N/A"}</td>
+
+              {/* NEW: Size column */}
+              <td>{item?.item_size ?? "N/A"}</td>
+
+              {/* Image */}
+              <td>
+                {item?.item_image ? (
+                  (() => {
+                    let path = item.item_image.replace(/^public\//, "").replace(/^\/+/, "");
+                    const url = path.startsWith("http")
+                      ? path
+                      : `http://localhost:8000/storage/${path}`;
+                    return (
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={url}
+                          alt={item.item_name}
+                          style={{
+                            width: "50px",
+                            height: "auto",
+                            borderRadius: "4px",
+                          }}
+                        />
+                      </a>
+                    );
+                  })()
+                ) : (
+                  "N/A"
+                )}
+              </td>
+
+              {/* Date */}
+              <td>{new Date(d.donation_date).toLocaleDateString()}</td>
+
+              {/* Charity */}
+              <td>{getCharityName(d.charity_ID)}</td>
+
+              {/* Status */}
+              <td>{d.donation_status}</td>
+
+              {/* Pickup Address */}
+              <td>{d.pickup_address || "n/a"}</td>
             </tr>
-          </thead>
-
-          <tbody>
-  {donations.length > 0 ? (
-    donations.slice(0, 4).map((d) => {
-      const item = d.items?.[0]; // first donated item
-
-      return (
-        <tr key={d.donation_ID}>
-          
-          {/* ITEM NAME */}
-          <td>{item?.item_name ?? "N/A"}</td>
-          {/* IMAGE */}
-          <td>
-            {item?.item_image ? (
-              (() => {
-                let path = item.item_image;
-
-                path = path.replace(/^public\//, "");
-
-                path = path.replace(/^\/+/, "");
-
-                const imageUrl = path.startsWith("http")
-                  ? path
-                  : `http://localhost:8000/storage/${path}`;
-
-                return (
-                  <a href={imageUrl} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={imageUrl}
-                      alt={item.item_name}
-                      style={{ width: "50px", height: "auto", borderRadius: "4px" }}
-                    />
-                  </a>
-                );
-              })()
-            ) : (
-              "N/A"
-            )}
-          </td>
-
-
-
-          {/* DATE */}
-          <td>{new Date(d.donation_date).toLocaleDateString()}</td>
-
-          {/* CHARITY */}
-          <td>{getCharityName(d.charity_ID)}</td>
-
-          {/* STATUS */}
-          <td>{d.donation_status}</td>
-
-          {/* PICKUP ADDRESS */}
-          <td>{d.pickup_address || "n/a"}</td>
+          );
+        })
+      ) : (
+        <tr>
+          <td colSpan="7">No donations yet.</td>
         </tr>
-      );
-    })
-  ) : (
-    <tr>
-      <td colSpan="6">No donations yet.</td>
-    </tr>
-  )}
-</tbody>
+      )}
+    </tbody>
+  </table>
+</div>
 
-        </table>
-      </div>
     </>
   );
 }

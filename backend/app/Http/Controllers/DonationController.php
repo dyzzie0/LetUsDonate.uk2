@@ -35,7 +35,7 @@ class DonationController extends Controller
             'charity_ID'      => ['required', 'integer', 'exists:Charity,charity_ID'],
             'item_name'       => ['required', 'string', 'max:255'],
             'category'        => ['required', 'string', 'max:255'],
-            'type'            => ['nullable', 'string', 'max:255'],
+            'size'            => ['required', 'string', 'max:10'],
             'condition'       => ['required', 'string'],
             'description'     => ['nullable', 'string'],
             'image'           => ['nullable', 'image', 'max:4096'],
@@ -68,7 +68,7 @@ class DonationController extends Controller
             'donation_ID'      => $donation->donation_ID,
             'item_name'        => $validated['item_name'],
             'item_category'    => $validated['category'],
-            'item_size'        => $validated['type'] ?? null,
+            'item_size'        => $validated['size'],
             'item_condition'   => $validated['condition'],
             'item_description' => $validated['description'] ?? null,
             'item_image'       => $imagePath,
@@ -82,7 +82,7 @@ class DonationController extends Controller
                 'charity_ID' => $validated['charity_ID'],
                 'item'       => $item->item_name,
                 'category'   => $item->item_category,  // ← Correct
-                'size'       => $item->item_size,      // ← Correct
+                'size'       => $item->item_size,
             ],
             [
                 'quantity' => 0
