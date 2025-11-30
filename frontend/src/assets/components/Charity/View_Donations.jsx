@@ -153,20 +153,36 @@ export default function View_Donations() {
                 return (
                   <tr key={d.donation_ID}>
                     <td>{d.donation_ID}</td>
-                    <td>{d.donor?.name ?? "Unknown"}</td>
+                    <td>{d.donor?.user?.name ?? "Unknown"}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
 
                     <td>
-                      {imgUrl ? (
-                        <img
-                          src={imgUrl}
-                          alt={item?.item_name}
-                          style={{ width: "50px", borderRadius: "4px" }}
-                        />
-                      ) : (
-                        "N/A"
-                      )}
-                    </td>
+                    {item?.item_image ? (
+                      (() => {
+                        let path = item.item_image;
+
+                        path = path.replace(/^public\//, "");
+
+                        path = path.replace(/^\/+/, "");
+
+                        const imageUrl = path.startsWith("http")
+                          ? path
+                          : `http://localhost:8000/storage/${path}`;
+
+                        return (
+                          <a href={imageUrl} target="_blank" rel="noopener noreferrer">
+                            <img
+                              src={imageUrl}
+                              alt={item.item_name}
+                              style={{ width: "50px", height: "auto", borderRadius: "4px" }}
+                            />
+                          </a>
+                        );
+                      })()
+                    ) : (
+                      "N/A"
+                    )}
+                  </td>
 
                     <td>{item?.quantity ?? 1}</td>
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>

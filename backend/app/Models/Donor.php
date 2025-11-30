@@ -17,7 +17,7 @@ class Donor extends Model
 
     public function user()
     {
-        return $this->belongsTo(DomainUser::class, 'user_ID', 'user_ID');
+        return $this->belongsTo(User::class, 'user_ID', 'id');
     }
 
     public function donations()

@@ -17,7 +17,9 @@ export default function Approve_Donations() {
     stored?.id ??
     null;
 
+  // -----------------------------
   // Load donations for this charity
+  // -----------------------------
   useEffect(() => {
     if (!charityId) {
       setLoading(false);
@@ -40,15 +42,15 @@ export default function Approve_Donations() {
       });
   }, [charityId]);
 
-  // Helper: normalise image URL (same logic as user dashboard)
+  // -----------------------------
+  // IMAGE FIX
+  // -----------------------------
   const buildImageUrl = (item) => {
     if (!item?.item_image) return null;
 
     let path = item.item_image;
 
-    // strip "public/" just in case
     path = path.replace(/^public\//, "");
-    // strip leading slashes
     path = path.replace(/^\/+/, "");
 
     if (path.startsWith("http")) return path;
@@ -56,6 +58,9 @@ export default function Approve_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
+  // -----------------------------
+  // APPROVE / DECLINE donation
+  // -----------------------------
   const handleUpdateStatus = async (donationId, newStatus) => {
     try {
       const res = await fetch(
@@ -73,14 +78,22 @@ export default function Approve_Donations() {
       const data = await res.json();
 
       if (data.status === "success") {
-        // update local list
-        setDonations((prev) =>
-          prev.map((d) =>
-            d.donation_ID === donationId
-              ? { ...d, donation_status: newStatus }
-              : d
-          )
-        );
+        // If approved → remove it from list AND added to inventory
+        if (newStatus === "Approved") {
+          setDonations((prev) =>
+            prev.filter((d) => d.donation_ID !== donationId)
+          );
+        } else {
+          // Only update status for declined
+          setDonations((prev) =>
+            prev.map((d) =>
+              d.donation_ID === donationId
+                ? { ...d, donation_status: newStatus }
+                : d
+            )
+          );
+        }
+
         setActionMessage(`Donation #${donationId} set to ${newStatus}.`);
       } else {
         setActionMessage(data.message || "Unable to update status.");
@@ -93,7 +106,9 @@ export default function Approve_Donations() {
     setTimeout(() => setActionMessage(null), 4000);
   };
 
-  // Filtering
+  // -----------------------------
+  // FILTERING LOGIC
+  // -----------------------------
   const filteredDonations = donations.filter((d) => {
     const item = d.items?.[0];
 
@@ -132,6 +147,7 @@ export default function Approve_Donations() {
           </div>
         </div>
 
+        {/* Filters */}
         <div className="filter-bar">
           <input
             type="text"
@@ -158,6 +174,7 @@ export default function Approve_Donations() {
           </div>
         )}
 
+        {/* TABLE */}
         <div className="table-container">
           <table className="table">
             <thead>
@@ -174,6 +191,7 @@ export default function Approve_Donations() {
                 <th>Approve / Decline</th>
               </tr>
             </thead>
+
             <tbody>
               {loading ? (
                 <tr>
@@ -198,14 +216,10 @@ export default function Approve_Donations() {
 
                       <td>
                         {imgUrl ? (
-                          <a
-                            href={imgUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
+                          <a href={imgUrl} target="_blank" rel="noopener noreferrer">
                             <img
                               src={imgUrl}
-                              alt={item?.item_name || "Donation item"}
+                              alt="Donation item"
                               style={{
                                 width: "50px",
                                 height: "auto",
@@ -223,6 +237,7 @@ export default function Approve_Donations() {
                           ? new Date(d.donation_date).toLocaleDateString()
                           : "N/A"}
                       </td>
+
                       <td>{d.donation_status}</td>
                       <td>{d.pickup_address || "N/A"}</td>
 

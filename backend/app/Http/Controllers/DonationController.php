@@ -105,7 +105,7 @@ class DonationController extends Controller
     // Get all donations for a charity
     public function getCharityDonations($charityId)
     {
-        $donations = Donation::with(['items', 'donor'])
+        $donations = Donation::with(['items', 'donor.user'])
             ->where('charity_ID', $charityId)
             ->orderByDesc('donation_date')
             ->get();
@@ -116,6 +116,7 @@ class DonationController extends Controller
         ]);
     }
 
+
     // Update donation status (Approved / Declined / Pending)
     public function updateStatus(Request $request, $donationId)
     {
@@ -123,15 +124,36 @@ class DonationController extends Controller
             'status' => ['required', 'string', 'in:Pending,Approved,Declined'],
         ]);
 
-        $donation = Donation::findOrFail($donationId);
+        $donation = Donation::with('items')->findOrFail($donationId);
+
         $donation->donation_status = $validated['status'];
         $donation->save();
 
+        // --------------------------
+        // ONLY add to inventory if approved
+        // --------------------------
+        if ($validated['status'] === 'Approved') {
+
+            foreach ($donation->items as $item) {
+
+                \App\Models\Inventory::firstOrCreate(
+                    [
+                        'charity_ID' => $donation->charity_ID,
+                        'item'       => $item->item_name,
+                        'category'   => $item->item_category,
+                        'size'       => $item->item_size,
+                    ],
+                    [ 'quantity' => 0 ]
+                )->increment('quantity');
+            }
+        }
+
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => "Donation status updated to {$validated['status']}.",
         ]);
     }
+
 
     public function getAllDonations()
     {
