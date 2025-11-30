@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
-
 
 class InventoryController extends Controller
 {
@@ -13,17 +11,24 @@ class InventoryController extends Controller
     {
         $query = Inventory::with('charity');
 
-        // If charity_ID exists, filter by it
-        if ($request->has('charity_ID')) {
+        // If charity wants only their inventory
+        if ($request->filled('charity_ID')) {
             $query->where('charity_ID', $request->charity_ID);
         }
 
-        return response()->json($query->get());
+        return response()->json([
+            'status'    => 'success',
+            'inventory' => $query->get()
+        ]);
     }
 
     public function show($id)
     {
         $item = Inventory::with('charity')->findOrFail($id);
-        return response()->json($item);
+
+        return response()->json([
+            'status' => 'success',
+            'item'   => $item
+        ]);
     }
 }

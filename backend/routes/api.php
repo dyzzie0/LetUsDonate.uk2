@@ -16,6 +16,11 @@ use App\Http\Controllers\CharityController;
 | These routes are for your React front-end SPA and existing tests.
 |
 */
+// CHARITY — Get all donations assigned to this charity
+Route::get('/charity/{charityId}/donations', [DonationController::class, 'getCharityDonations']);
+Route::get('/donations-all', [DonationController::class, 'getAllDonations']);
+
+
 
 // --------------------------------------
 // TEST & DEBUG ENDPOINTS
@@ -56,6 +61,8 @@ Route::get('/donations', [DonationController::class, 'index']);
 Route::get('/donations/{id}', [DonationController::class, 'show']);
 Route::post('/donations', [DonationController::class, 'store']);
 Route::get('/donations/user/{donorId}', [DonationController::class, 'getUserDonations']);
+Route::post('/donations/{donationId}/status', [DonationController::class, 'updateStatus']);
+
 
 
 
@@ -72,3 +79,4 @@ Route::get('/donation-items/{id}', [DonationItemController::class, 'show']);
 // --------------------------------------
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{id}', [CharityController::class, 'show']);
+Route::get('/charity/{id}/donations', [DonationController::class, 'getCharityDonations']);

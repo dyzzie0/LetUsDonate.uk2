@@ -91,11 +91,11 @@ export function Charity_Dashboard() {
             </li>
             <li>
               <i className="fa-solid fa-warehouse"></i>
-              <Link to="/charity_donations"> Donations</Link>
+              <Link to="/view_donations"> Donations</Link>
             </li>
             <li>
               <i className="fa-solid fa-hand-holding-heart"></i>
-              <Link to="/charity_approve_donations"> Approve Donations</Link>
+              <Link to="/approve_donations">Approve Donations</Link>
             </li>
             <li>
               <i className="fa-solid fa-truck"></i>

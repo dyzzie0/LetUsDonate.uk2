@@ -101,4 +101,49 @@ class DonationController extends Controller
             'item'     => $item,
         ], 201);
     }
+
+    // Get all donations for a charity
+    public function getCharityDonations($charityId)
+    {
+        $donations = Donation::with(['items', 'donor'])
+            ->where('charity_ID', $charityId)
+            ->orderByDesc('donation_date')
+            ->get();
+
+        return response()->json([
+            'status'    => 'success',
+            'donations' => $donations,
+        ]);
+    }
+
+    // Update donation status (Approved / Declined / Pending)
+    public function updateStatus(Request $request, $donationId)
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:Pending,Approved,Declined'],
+        ]);
+
+        $donation = Donation::findOrFail($donationId);
+        $donation->donation_status = $validated['status'];
+        $donation->save();
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => "Donation status updated to {$validated['status']}.",
+        ]);
+    }
+
+    public function getAllDonations()
+    {
+        $donations = Donation::with(['items', 'charity', 'donor'])
+            ->orderByDesc('donation_date')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'donations' => $donations,
+        ]);
+    }
+
+
 }

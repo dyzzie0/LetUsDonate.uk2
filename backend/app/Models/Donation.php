@@ -15,12 +15,13 @@ class Donation extends Model
         'charity_ID',
         'donation_status',
         'donation_date',
-        'pickup_address', 
+        'pickup_address',
     ];
 
+    // FIXED: Link to users table, not donor table
     public function donor()
     {
-        return $this->belongsTo(Donor::class, 'donor_ID', 'donor_ID');
+        return $this->belongsTo(User::class, 'donor_ID', 'id');
     }
 
     public function charity()
