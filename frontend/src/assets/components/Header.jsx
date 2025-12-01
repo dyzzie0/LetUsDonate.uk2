@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { HashLink } from 'react-router-hash-link';
-import { Link } from 'react-router-dom';
-import '../../css/header.css';
+import React, { useState, useEffect } from "react";
+import { HashLink } from "react-router-hash-link";
+import { Link } from "react-router-dom";
+import "../../css/header.css";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -26,16 +26,17 @@ function Header() {
 
           <div className="nav_right">
             <div className="how">
-           {/*<HashLink smooth to="/#howitworks">How does this work?</HashLink>*/} {/* Temporarily removed  needs fixing */} 
+              {/*<HashLink smooth to="/#howitworks">How does this work?</HashLink>*/}{" "}
+              {/* Temporarily removed  needs fixing */}
             </div>
             <div className="menu_text" onClick={() => setMenuOpen(!menuOpen)}>
-              {menuOpen ? 'Close ✕' : 'Menu'}
+              {menuOpen ? "Close ✕" : "Menu"}
             </div>
           </div>
         </div>
       </header>
 
-      <div className={`DropdownMenu ${menuOpen ? 'open' : ''}`}>
+      <div className={`DropdownMenu ${menuOpen ? "open" : ""}`}>
         <button className="close_btn" onClick={() => setMenuOpen(false)}>
           ✕
         </button>

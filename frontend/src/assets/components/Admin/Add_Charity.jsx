@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/records.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/records.css";
 
 export function Add_Charity() {
   const [formData, setFormData] = useState({
-    charity_name: '',
-    charity_address: '',
-    charity_email: '',
-    contact_person: '',
-    password: '',
+    charity_name: "",
+    charity_address: "",
+    charity_email: "",
+    contact_person: "",
+    password: "",
   });
 
   const [status, setStatus] = useState(null);
@@ -23,28 +23,28 @@ export function Add_Charity() {
     setStatus(null);
 
     try {
-      const res = await fetch('http://localhost:8000/add_charity.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("http://localhost:8000/add_charity.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
-      if (data.status === 'success') {
-        setStatus({ type: 'success', message: data.message });
+      if (data.status === "success") {
+        setStatus({ type: "success", message: data.message });
         setFormData({
-          charity_name: '',
-          charity_address: '',
-          charity_email: '',
-          contact_person: '',
-          password: '',
+          charity_name: "",
+          charity_address: "",
+          charity_email: "",
+          contact_person: "",
+          password: "",
         });
       } else {
-        setStatus({ type: 'error', message: data.message });
+        setStatus({ type: "error", message: data.message });
       }
     } catch (err) {
-      setStatus({ type: 'error', message: 'Network error. Please try again.' });
+      setStatus({ type: "error", message: "Network error. Please try again." });
     }
 
     setTimeout(() => setStatus(null), 4000);
@@ -60,7 +60,7 @@ export function Add_Charity() {
         <div className="return-right">
           <ul>
             <li>
-            <Link to="/admin_dashboard">Return</Link>
+              <Link to="/admin_dashboard">Return</Link>
             </li>
           </ul>
         </div>

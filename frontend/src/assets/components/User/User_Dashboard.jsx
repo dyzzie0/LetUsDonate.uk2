@@ -75,8 +75,8 @@ export default function User_Dashboard() {
 
     //map to backend names
     formData.append("item_name", fields.get("item_name"));
-    formData.append("category", fields.get("category"));        // backend item_category
-    formData.append("size", fields.get("size"));    
+    formData.append("category", fields.get("category")); // backend item_category
+    formData.append("size", fields.get("size"));
     formData.append("condition", fields.get("condition"));
     formData.append("description", fields.get("description"));
     formData.append("pickup_address", fields.get("pickup_address"));
@@ -157,7 +157,9 @@ export default function User_Dashboard() {
               <div className="stats-container">
                 <div className="stat-card">
                   <i className="fa-solid fa-earth-africa"></i>
-                  <p className="stat-number">{(donations.length * 1.5).toFixed(1)}kg</p>
+                  <p className="stat-number">
+                    {(donations.length * 1.5).toFixed(1)}kg
+                  </p>
                   <p className="stat-text">CO₂ Saved</p>
                 </div>
 
@@ -182,9 +184,18 @@ export default function User_Dashboard() {
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
 
-            {status && <div className={`form-message ${status.type}`}>{status.message}</div>}
+            {status && (
+              <div className={`form-message ${status.type}`}>
+                {status.message}
+              </div>
+            )}
 
-            <input type="text" name="item_name" placeholder="Item Name" required />
+            <input
+              type="text"
+              name="item_name"
+              placeholder="Item Name"
+              required
+            />
 
             <select name="category" required>
               <option value="">Category</option>
@@ -212,10 +223,19 @@ export default function User_Dashboard() {
               <option value="used-fair">Used - Fair</option>
             </select>
 
-            <textarea name="description" className="description" placeholder="Description"></textarea>
+            <textarea
+              name="description"
+              className="description"
+              placeholder="Description"
+            ></textarea>
 
             <div className="file-upload">
-              <input type="file" name="image" accept="image/*" onChange={handleChange} />
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+              />
 
               {file && preview && (
                 <div className="file-preview">
@@ -226,15 +246,29 @@ export default function User_Dashboard() {
                       className="thumbnail"
                       onClick={() => setModalOpen(true)}
                     />
-                    <button type="button" onClick={handleDeleteFile} className="remove-btn">
+                    <button
+                      type="button"
+                      onClick={handleDeleteFile}
+                      className="remove-btn"
+                    >
                       Remove
                     </button>
                   </div>
 
                   {modalOpen && (
-                    <div className="image-mode" onClick={() => setModalOpen(false)}>
-                      <div className="mode-content" onClick={(e) => e.stopPropagation()}>
-                        <img src={preview} alt="Full Preview" className="full-image" />
+                    <div
+                      className="image-mode"
+                      onClick={() => setModalOpen(false)}
+                    >
+                      <div
+                        className="mode-content"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <img
+                          src={preview}
+                          alt="Full Preview"
+                          className="full-image"
+                        />
                         <button
                           type="button"
                           className="close-modal-btn"
@@ -249,7 +283,12 @@ export default function User_Dashboard() {
               )}
             </div>
 
-            <input type="text" name="pickup_address" placeholder="Pickup Address" required />
+            <input
+              type="text"
+              name="pickup_address"
+              placeholder="Pickup Address"
+              required
+            />
 
             {loadingCharities ? (
               <p>Loading charities...</p>
@@ -270,85 +309,88 @@ export default function User_Dashboard() {
       </div>
 
       {/* DONATION HISTORY */}
-<div className="donation-history full-width">
-  <h3>Recent Donations</h3>
+      <div className="donation-history full-width">
+        <h3>Recent Donations</h3>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Size</th>
-        <th>Image</th>
-        <th>Date Submitted</th>
-        <th>Charity</th>
-        <th>Status</th>
-        <th>Pickup Address</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {donations.length > 0 ? (
-        donations.slice(0, 4).map((d) => {
-          const item = d.items?.[0];
-
-          return (
-            <tr key={d.donation_ID}>
-              {/* Item Name */}
-              <td>{item?.item_name ?? "N/A"}</td>
-
-              {/* NEW: Size column */}
-              <td>{item?.item_size ?? "N/A"}</td>
-
-              {/* Image */}
-              <td>
-                {item?.item_image ? (
-                  (() => {
-                    let path = item.item_image.replace(/^public\//, "").replace(/^\/+/, "");
-                    const url = path.startsWith("http")
-                      ? path
-                      : `http://localhost:8000/storage/${path}`;
-                    return (
-                      <a href={url} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={url}
-                          alt={item.item_name}
-                          style={{
-                            width: "50px",
-                            height: "auto",
-                            borderRadius: "4px",
-                          }}
-                        />
-                      </a>
-                    );
-                  })()
-                ) : (
-                  "N/A"
-                )}
-              </td>
-
-              {/* Date */}
-              <td>{new Date(d.donation_date).toLocaleDateString()}</td>
-
-              {/* Charity */}
-              <td>{getCharityName(d.charity_ID)}</td>
-
-              {/* Status */}
-              <td>{d.donation_status}</td>
-
-              {/* Pickup Address */}
-              <td>{d.pickup_address || "n/a"}</td>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Size</th>
+              <th>Image</th>
+              <th>Date Submitted</th>
+              <th>Charity</th>
+              <th>Status</th>
+              <th>Pickup Address</th>
             </tr>
-          );
-        })
-      ) : (
-        <tr>
-          <td colSpan="7">No donations yet.</td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</div>
+          </thead>
 
+          <tbody>
+            {donations.length > 0 ? (
+              donations.slice(0, 4).map((d) => {
+                const item = d.items?.[0];
+
+                return (
+                  <tr key={d.donation_ID}>
+                    {/* Item Name */}
+                    <td>{item?.item_name ?? "N/A"}</td>
+
+                    {/* NEW: Size column */}
+                    <td>{item?.item_size ?? "N/A"}</td>
+
+                    {/* Image */}
+                    <td>
+                      {item?.item_image
+                        ? (() => {
+                            let path = item.item_image
+                              .replace(/^public\//, "")
+                              .replace(/^\/+/, "");
+                            const url = path.startsWith("http")
+                              ? path
+                              : `http://localhost:8000/storage/${path}`;
+                            return (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={url}
+                                  alt={item.item_name}
+                                  style={{
+                                    width: "50px",
+                                    height: "auto",
+                                    borderRadius: "4px",
+                                  }}
+                                />
+                              </a>
+                            );
+                          })()
+                        : "N/A"}
+                    </td>
+
+                    {/* Date */}
+                    <td>{new Date(d.donation_date).toLocaleDateString()}</td>
+
+                    {/* Charity */}
+                    <td>{getCharityName(d.charity_ID)}</td>
+
+                    {/* Status */}
+                    <td>{d.donation_status}</td>
+
+                    {/* Pickup Address */}
+                    <td>{d.pickup_address || "n/a"}</td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="7">No donations yet.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

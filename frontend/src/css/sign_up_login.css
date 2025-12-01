@@ -65,7 +65,7 @@
 
 /* Icons */
 
-.input-box i{
+.input-box i {
   position: left;
   right: 0;
   top: 50%;
@@ -152,5 +152,4 @@
   .btn {
     width: 60%;
   }
-  
 }

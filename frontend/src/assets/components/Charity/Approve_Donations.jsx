@@ -12,10 +12,7 @@ export default function Approve_Donations() {
   //get logged-in charity from localStorage
   const stored = JSON.parse(localStorage.getItem("user") || "{}");
   const charityId =
-    stored?.charity_ID ??
-    stored?.charity?.charity_ID ??
-    stored?.id ??
-    null;
+    stored?.charity_ID ?? stored?.charity?.charity_ID ?? stored?.id ?? null;
 
   //load donations for this charity
   useEffect(() => {
@@ -28,8 +25,10 @@ export default function Approve_Donations() {
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
-          const pendingOnly = data.donations.filter(d => d.donation_status === "Pending");
-setDonations(pendingOnly);
+          const pendingOnly = data.donations.filter(
+            (d) => d.donation_status === "Pending",
+          );
+          setDonations(pendingOnly);
         } else {
           console.error("Error loading donations:", data.message);
         }
@@ -67,7 +66,7 @@ setDonations(pendingOnly);
             Accept: "application/json",
           },
           body: JSON.stringify({ status: newStatus }),
-        }
+        },
       );
 
       const data = await res.json();
@@ -76,11 +75,11 @@ setDonations(pendingOnly);
         // If approved then remove it from list AND added to inventory
         if (newStatus === "Approved" || newStatus === "Declined") {
           //remove approved OR declined from Approve_Donations page
-          setDonations(prev =>
-            prev.filter(d => d.donation_ID !== donationId)
+          setDonations((prev) =>
+            prev.filter((d) => d.donation_ID !== donationId),
           );
         }
-        
+
         setActionMessage(`Donation #${donationId} set to ${newStatus}.`);
       } else {
         setActionMessage(data.message || "Unable to update status.");
@@ -203,7 +202,11 @@ setDonations(pendingOnly);
 
                       <td>
                         {imgUrl ? (
-                          <a href={imgUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={imgUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <img
                               src={imgUrl}
                               alt="Donation item"

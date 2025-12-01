@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import '../../css/faq.css';
+import React, { useState, useEffect } from "react";
+import "../../css/faq.css";
 
 function FAQ() {
   return (
@@ -19,11 +19,11 @@ function FAQ() {
               •Donate your way: we allow users to choose how to donate their
               clothing. On your chosen day, we’ll either collect your donation
               or you can drop it off at one of our partner charity locations.
-              You’ll even get a reminder with your collection details.{' '}
+              You’ll even get a reminder with your collection details.{" "}
             </li>
             <li>
               •See your impact: you can track your sustainability impact — from
-              CO₂ saved to people helped{' '}
+              CO₂ saved to people helped{" "}
             </li>
           </ul>
         </div>
@@ -47,9 +47,9 @@ function FAQ() {
           <ul>
             <li> 1: Login or create an account </li>
             <li>
-              {' '}
+              {" "}
               2: Go to the donations page on the website and fill out the
-              donation form.{' '}
+              donation form.{" "}
             </li>
             <li> 3: Then select a date, time and location.</li>
             <li> </li>
@@ -59,7 +59,7 @@ function FAQ() {
           <br></br>
 
           <p>
-            {' '}
+            {" "}
             Then you are all sorted, and a Volunteer or partner courier will
             collect you donation.
           </p>

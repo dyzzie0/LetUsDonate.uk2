@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import '../../css/sign_up_login.css';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../../css/sign_up_login.css";
 
 function DonorSignUp() {
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,38 +18,36 @@ function DonorSignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage('');
+    setMessage("");
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage('Passwords do not match');
+      setMessage("Passwords do not match");
       return;
     }
 
     try {
-    
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           fullName: formData.fullName,
           email: formData.email,
           password: formData.password,
         }),
-        
       });
 
       const data = await response.json();
 
-      if (data.status === 'success') {
-        setMessage('Signup successful! Redirecting to login...');
-        setTimeout(()=> {
-        navigate('/login'); 
-      }, 1000); //redirects after 1 second
-    }else {
-        setMessage(data.message || 'Something went wrong');
+      if (data.status === "success") {
+        setMessage("Signup successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000); //redirects after 1 second
+      } else {
+        setMessage(data.message || "Something went wrong");
       }
     } catch (err) {
-      setMessage('Could not connect to the server');
+      setMessage("Could not connect to the server");
       console.error(err);
     }
   };
@@ -112,7 +110,7 @@ function DonorSignUp() {
           <i className="fa-solid fa-lock"></i>
         </div>
 
-        {message && <p style={{ color: 'red' }}>{message}</p>}
+        {message && <p style={{ color: "red" }}>{message}</p>}
 
         <div className="signup_link">
           <Link className="print" to="/login">

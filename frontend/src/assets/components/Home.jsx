@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import DonateImg from '../../images/Donate.png';
-import DonateImg2 from '../../images/Donate2.png';
-import DonateImg3 from '../../images/Donate3.png';
-import DonateImg4 from '../../images/Donate4.png';
-import '../../css/home.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import DonateImg from "../../images/Donate.png";
+import DonateImg2 from "../../images/Donate2.png";
+import DonateImg3 from "../../images/Donate3.png";
+import DonateImg4 from "../../images/Donate4.png";
+import "../../css/home.css";
 
 function Home() {
   const comment = [
-    'I had so many clothes I never wore — this made it easy to donate them!',
-    'Super convenient and I love that it helps real charities!',
-    'No more plastic bags through the door. So much better!',
+    "I had so many clothes I never wore — this made it easy to donate them!",
+    "Super convenient and I love that it helps real charities!",
+    "No more plastic bags through the door. So much better!",
   ];
 
   const [currentComment, setCurrentComment] = useState(0);

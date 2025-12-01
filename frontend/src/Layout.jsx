@@ -1,80 +1,86 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import { Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
 
 //Headers & Footer
-import Header from './assets/components/Header.jsx';
-import Header_alt from './assets/components/Header_alt.jsx';
-import Footer from './assets/components/Footer.jsx';
+import Header from "./assets/components/Header.jsx";
+import Header_alt from "./assets/components/Header_alt.jsx";
+import Footer from "./assets/components/Footer.jsx";
 
 //Initial pages
-import Home from './assets/components/Home.jsx';
-import Sign_up from './assets/components/Sign_up.jsx';
-import Login from './assets/components/Login.jsx';
-import FAQ from './assets/components/FAQ.jsx';
-import Our_Partners from './assets/components/Our_Partners.jsx';
+import Home from "./assets/components/Home.jsx";
+import Sign_up from "./assets/components/Sign_up.jsx";
+import Login from "./assets/components/Login.jsx";
+import FAQ from "./assets/components/FAQ.jsx";
+import Our_Partners from "./assets/components/Our_Partners.jsx";
 
 //Admin
-import Admin_Dashboard from './assets/components/Admin/Admin_Dashboard.jsx';
-import Add_Charity from './assets/components/Admin/Add_Charity.jsx';
-import Data_Reports from './assets/components/Admin/Data_Reports.jsx';
-import View_Users from './assets/components/Admin/View_Users.jsx';
+import { Admin_Dashboard } from "./assets/components/Admin/Admin_Dashboard.jsx";
+import { Add_Charity } from "./assets/components/Admin/Add_Charity.jsx";
+import { Data_Reports } from "./assets/components/Admin/Data_Reports.jsx";
+import { View_Users } from "./assets/components/Admin/View_Users.jsx";
+import { Admin_Inventory } from "./assets/components/Admin/Admin_Inventory.jsx";
+import { Admin_Donations } from "./assets/components/Admin/Admin_Donations.jsx";
 
 //Charity
-import Charity_Dashboard from './assets/components/Charity/Charity_Dashboard.jsx';
-import Approve_Donations from './assets/components/Charity/Approve_Donations.jsx';
-import Distribution_Records from './assets/components/Charity/Distribution_Records.jsx';
-import View_Donations from './assets/components/Charity/View_Donations.jsx';
-import View_Inventory from './assets/components/Charity/View_Inventory.jsx';
+import Charity_Dashboard from "./assets/components/Charity/Charity_Dashboard.jsx";
+import Approve_Donations from "./assets/components/Charity/Approve_Donations.jsx";
+import Distribution_Records from "./assets/components/Charity/Distribution_Records.jsx";
+import View_Donations from "./assets/components/Charity/View_Donations.jsx";
+import View_Inventory from "./assets/components/Charity/View_Inventory.jsx";
 
 // User
-import User_Dashboard from './assets/components/User/User_Dashboard.jsx';
-import My_Donations from './assets/components/User/My_Donations.jsx';
-import My_Impact from './assets/components/User/My_Impact.jsx';
-import My_Profile from './assets/components/User/My_Profile.jsx';
+import User_Dashboard from "./assets/components/User/User_Dashboard.jsx";
+import My_Donations from "./assets/components/User/My_Donations.jsx";
+import My_Impact from "./assets/components/User/My_Impact.jsx";
+import My_Profile from "./assets/components/User/My_Profile.jsx";
 
 //Footer content pages
-import Terms_Conditions from './assets/components/Footer_Content/Terms_Conditions.jsx';
-import Privacy_Policy from './assets/components/Footer_Content/Privacy_Policy.jsx';
-import Cookie_Policy from './assets/components/Footer_Content/Cookie_Policy.jsx';
-import Accessibility from './assets/components/Footer_Content/Accessibility.jsx';
+import Terms_Conditions from "./assets/components/Footer_Content/Terms_Conditions.jsx";
+import Privacy_Policy from "./assets/components/Footer_Content/Privacy_Policy.jsx";
+import Cookie_Policy from "./assets/components/Footer_Content/Cookie_Policy.jsx";
+import Accessibility from "./assets/components/Footer_Content/Accessibility.jsx";
 
 //Not found page
-import NotFound from './404.jsx';
+import NotFound from "./404.jsx";
 
 export default function Layout() {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
 
   //Paths without a header/footer
-  const noHeaderFooterPaths = ['/login', '/sign_up'];
+  const noHeaderFooterPaths = ["/login", "/sign_up"];
 
   //Paths that use the alternative header
   const altHeaderPaths = [
-    '/user_dashboard',
-    '/my_donations',
-    '/my_impact',
-    '/charity_dashboard',
-    '/view_inventory',
-    '/view_donations',
-    '/distribution_records',
-    '/approve_donations',
-    '/admin_dashboard',
-    '/view_users',
-    '/data_reports',
-    '/my_profile'
+    "/user_dashboard",
+    "/my_donations",
+    "/my_impact",
+    "/charity_dashboard",
+    "/view_inventory",
+    "/view_donations",
+    "/distribution_records",
+    "/approve_donations",
+    "/admin_dashboard",
+    "/view_users",
+    "/data_reports",
+    "/my_profile",
+    "/add_charity",
+    "/admin_inventory",
+    "/admin_donations",
   ];
 
   const hideHeaderFooter = noHeaderFooterPaths.includes(path);
   const useAltHeader = altHeaderPaths.includes(path);
 
   useEffect(() => {
-    console.log('Current path:', path);
+    console.log("Current path:", path);
   }, [path]);
 
   return (
     <>
-      {/* Header */}   
-      {!hideHeaderFooter && (useAltHeader ? <Header_alt /> : <Header />)}
+      {/* Header */}
+      {!hideHeaderFooter &&
+        (useAltHeader ? <Header_alt size="small" /> : <Header />)}
 
       <Routes>
         {/* Initial pages */}
@@ -89,12 +95,17 @@ export default function Layout() {
         <Route path="/add_charity" element={<Add_Charity />} />
         <Route path="/data_reports" element={<Data_Reports />} />
         <Route path="/view_users" element={<View_Users />} />
+        <Route path="/admin_inventory" element={<Admin_Inventory />} />
+        <Route path="/admin_donations" element={<Admin_Donations />} />
 
         {/* Charity */}
         <Route path="/charity_dashboard" element={<Charity_Dashboard />} />
         <Route path="/view_inventory" element={<View_Inventory />} />
         <Route path="/view_donations" element={<View_Donations />} />
-        <Route path="/distribution_records" element={<Distribution_Records />} />
+        <Route
+          path="/distribution_records"
+          element={<Distribution_Records />}
+        />
         <Route path="/approve_donations" element={<Approve_Donations />} />
 
         {/* User */}

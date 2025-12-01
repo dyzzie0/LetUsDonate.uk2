@@ -6,7 +6,7 @@ This project was developed for university and demonstrates modern full-stack dev
 
 ===============================================================================
 
-## Features ##
+## Features
 
 -- Donors can log and view their donations .
 
@@ -18,13 +18,13 @@ This project was developed for university and demonstrates modern full-stack dev
 
 -- Analytics: CO₂ saving, charities supported
 
--- AI sorting 
+-- AI sorting
 
 -- Responsive design (desktop + mobile).
 
 ===============================================================================
 
-## Tech Stack ##
+## Tech Stack
 
 -- Frontend: React.js + Vite
 
@@ -40,7 +40,7 @@ This project was developed for university and demonstrates modern full-stack dev
 
 ===============================================================================
 
-## Set Up ##
+## Set Up
 
 -- Open Visual Studio Code
 
@@ -73,21 +73,21 @@ Build the Frontend for Production inside the React folder:
 
 ===============================================================================
 
-## Project Structure ##
+## Project Structure
 
 LetUsDonate.uk/
 │
-├── let-us-donate-uk/      # React frontend
-│   └── dist/              # Build output copied to Laravel
+├── let-us-donate-uk/ # React frontend
+│ └── dist/ # Build output copied to Laravel
 │
-└── backend/               # Laravel backend (API)
-    ├── public/            # Hosts React build files
-    ├── routes/            # API + web routes
-    └── app/               # Controllers, Models, etc.
+└── backend/ # Laravel backend (API)
+├── public/ # Hosts React build files
+├── routes/ # API + web routes
+└── app/ # Controllers, Models, etc.
 
 ===============================================================================
 
-## Developers ##
+## Developers
 
 -- @dyzzie0
 -- @Theo-Asamp

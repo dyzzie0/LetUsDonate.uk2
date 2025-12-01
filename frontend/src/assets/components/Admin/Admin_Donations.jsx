@@ -2,55 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
 
-export default function View_Donations() {
+export function Admin_Donations() {
   const [donations, setDonations] = useState([]);
   const [filteredDonations, setFilteredDonations] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const role = localStorage.getItem("role");
-
-  //get logged-in charity
-  const stored = JSON.parse(localStorage.getItem("user") || "{}");
-  const charityId =
-    stored?.charity_ID ?? stored?.charity?.charity_ID ?? stored?.id ?? null;
-
-  const getReturnLink = () => {
-    switch (role) {
-      case "charity":
-        return "/charity_dashboard";
-      case "admin":
-        return "/admin_dashboard";
-      default:
-        return "/";
-    }
-  };
-
-  //build correct image URL
   const buildImageUrl = (path) => {
     if (!path) return null;
-    path = path.replace(/^public\//, "");
-    path = path.replace(/^\/+/, "");
+    path = path.replace(/^public\//, "").replace(/^\/+/, "");
     if (path.startsWith("http")) return path;
     return `http://localhost:8000/storage/${path}`;
-  };
+  }; // thiis isnt working atm
 
-  //fetch THIS charity's donations only
+  // Fetch donations
   useEffect(() => {
-    if (!charityId) {
-      setLoading(false);
-      return;
-    }
-
-    fetch(`http://localhost:8000/api/charity/${charityId}/donations`)
+    fetch("http://localhost:8000/api/donations")
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
           setDonations(data.donations);
           setFilteredDonations(data.donations);
-        } else {
-          console.error("Error:", data.message);
         }
         setLoading(false);
       })
@@ -58,50 +31,56 @@ export default function View_Donations() {
         console.error("Network error:", err);
         setLoading(false);
       });
-  }, [charityId]);
+  }, []);
 
-  //apply filters
-  const handleFilter = () => {
+  // Filtering (search by item name / category / donor ID)
+  useEffect(() => {
     const filtered = donations.filter((d) => {
-      const item = d.items?.[0];
+      const item = d.items?.[0] ?? {};
 
-      const matchesSearch =
+      const donorId = String(d?.donor?.user?.user_ID || "");
+      const itemName = item?.item_name?.toLowerCase() || "";
+      const itemCategory = item?.item_category?.toLowerCase() || "";
+
+      const searchMatch =
         !search ||
-        item?.item_name?.toLowerCase().includes(search.toLowerCase()) ||
-        item?.item_category?.toLowerCase().includes(search.toLowerCase()) ||
-        d?.donor?.name?.toLowerCase().includes(search.toLowerCase());
+        donorId.includes(search) ||
+        itemName.includes(search.toLowerCase()) ||
+        itemCategory.includes(search.toLowerCase());
 
-      const matchesStatus = statusFilter
-        ? d.donation_status?.toLowerCase() === statusFilter.toLowerCase()
+      const statusMatch = statusFilter
+        ? (d.donation_status || "").toLowerCase() === statusFilter.toLowerCase()
         : true;
 
-      return matchesSearch && matchesStatus;
+      return searchMatch && statusMatch;
     });
 
     setFilteredDonations(filtered);
+  }, [search, statusFilter, donations]);
+
+  const handleFilter = () => {
+    let results = donations;
+    setFilteredDonations(results);
   };
 
   return (
     <main>
       <div className="records-container">
         <div className="header-left">
-          <h2>Donations to Your Charity</h2>
+          <h2>Total Donations</h2>
         </div>
 
         <div className="return-right">
-          <ul>
-            <li>
-              <Link to="/charity_dashboard">Return</Link>
-            </li>
-          </ul>
+          <li>
+            <Link to="/admin_dashboard">Return</Link>
+          </li>
         </div>
       </div>
 
-      {/* FILTERS */}
       <div className="filter-bar">
         <input
           type="text"
-          placeholder="Search by item, donor, or category..."
+          placeholder="Search by item, category, or donor ID..."
           className="search-input"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -119,7 +98,7 @@ export default function View_Donations() {
         </select>
 
         <button className="filter-button" onClick={handleFilter}>
-          Filter
+          Reset
         </button>
       </div>
 
@@ -128,7 +107,7 @@ export default function View_Donations() {
           <thead>
             <tr>
               <th>Donation ID</th>
-              <th>Donor</th>
+              <th>Donor ID</th>
               <th>Category</th>
               <th>Item</th>
               <th>Image</th>
@@ -145,49 +124,37 @@ export default function View_Donations() {
               </tr>
             ) : filteredDonations.length > 0 ? (
               filteredDonations.map((d) => {
-                const item = d.items?.[0];
+                const item = d.items?.[0] ?? {};
+                const donorId = d?.donor?.user_ID || "Unknown";
                 const imgUrl = buildImageUrl(item?.item_image);
 
                 return (
                   <tr key={d.donation_ID}>
                     <td>{d.donation_ID}</td>
-                    <td>{d.donor?.user?.name ?? "Unknown"}</td>
+                    <td>{donorId}</td>
                     <td>{item?.item_category ?? "N/A"}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
                     <td>
-                      {item?.item_image
-                        ? (() => {
-                            let path = item.item_image;
-
-                            path = path.replace(/^public\//, "");
-
-                            path = path.replace(/^\/+/, "");
-
-                            const imageUrl = path.startsWith("http")
-                              ? path
-                              : `http://localhost:8000/storage/${path}`;
-
-                            return (
-                              <a
-                                href={imageUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <img
-                                  src={imageUrl}
-                                  alt={item.item_name}
-                                  style={{
-                                    width: "50px",
-                                    height: "auto",
-                                    borderRadius: "4px",
-                                  }}
-                                />
-                              </a>
-                            );
-                          })()
-                        : "N/A"}
+                      {imgUrl ? (
+                        <a
+                          href={imgUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={item.item_name}
+                            style={{
+                              width: "50px",
+                              height: "auto",
+                              borderRadius: "4px",
+                            }}
+                          />
+                        </a>
+                      ) : (
+                        "N/A"
+                      )}
                     </td>
-
                     <td>{item?.quantity ?? 1}</td>
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>
                     <td>{d.donation_status}</td>
@@ -196,7 +163,7 @@ export default function View_Donations() {
               })
             ) : (
               <tr>
-                <td colSpan="8">No donations found for your charity.</td>
+                <td colSpan="8">No donations found.</td>
               </tr>
             )}
           </tbody>
@@ -205,3 +172,5 @@ export default function View_Donations() {
     </main>
   );
 }
+
+export default Admin_Donations;

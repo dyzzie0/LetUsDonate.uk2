@@ -109,32 +109,38 @@ export default function My_Donations() {
                     <td>{item?.item_condition ?? "N/A"}</td>
 
                     <td>
-                    {item?.item_image ? (
-                      (() => {
-                        let path = item.item_image;
+                      {item?.item_image
+                        ? (() => {
+                            let path = item.item_image;
 
-                        path = path.replace(/^public\//, "");
+                            path = path.replace(/^public\//, "");
 
-                        path = path.replace(/^\/+/, "");
+                            path = path.replace(/^\/+/, "");
 
-                        const imageUrl = path.startsWith("http")
-                          ? path
-                          : `http://localhost:8000/storage/${path}`;
+                            const imageUrl = path.startsWith("http")
+                              ? path
+                              : `http://localhost:8000/storage/${path}`;
 
-                        return (
-                          <a href={imageUrl} target="_blank" rel="noopener noreferrer">
-                            <img
-                              src={imageUrl}
-                              alt={item.item_name}
-                              style={{ width: "50px", height: "auto", borderRadius: "4px" }}
-                            />
-                          </a>
-                        );
-                      })()
-                    ) : (
-                      "N/A"
-                    )}
-                  </td>
+                            return (
+                              <a
+                                href={imageUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={imageUrl}
+                                  alt={item.item_name}
+                                  style={{
+                                    width: "50px",
+                                    height: "auto",
+                                    borderRadius: "4px",
+                                  }}
+                                />
+                              </a>
+                            );
+                          })()
+                        : "N/A"}
+                    </td>
 
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>
                     <td>{d.donation_status}</td>

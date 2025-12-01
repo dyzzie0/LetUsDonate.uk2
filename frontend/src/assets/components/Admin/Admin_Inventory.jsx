@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
 
-export function View_Inventory() {
+export function Admin_Inventory() {
   const role = localStorage.getItem("role");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -15,26 +15,14 @@ export function View_Inventory() {
     type: "",
   });
 
-  //return link
-  const getReturnLink = () => {
-    switch (role) {
-      case "11":
-        return "/charity_dashboard"; // Charity
-      case "12":
-        return "/admin_dashboard"; // Admin
-      default:
-        return "/";
-    }
+  const handleFilter = () => {
+    let results = inventory;
+    setFilteredInventory(results);
   };
 
   //load inventory from Laravel
   useEffect(() => {
     let url = "http://localhost:8000/api/inventory";
-
-    //charity sees only their inventory
-    if (role === "11" && user.charity_ID) {
-      url += `?charity_ID=${user.charity_ID}`;
-    }
 
     fetch(url)
       .then((res) => res.json())
@@ -71,13 +59,12 @@ export function View_Inventory() {
         <div className="return-right">
           <ul>
             <li>
-              <Link to={getReturnLink()}>Return</Link>
+              <Link to="/admin_dashboard">Return</Link>
             </li>
           </ul>
         </div>
       </div>
 
-      {/* Filter Bar */}
       <div className="filter-bar">
         <select
           name="category"
@@ -99,6 +86,10 @@ export function View_Inventory() {
           <option value="shoe">Shoes</option>
           <option value="other">Other</option>
         </select>
+
+        <button className="filter-button" onClick={handleFilter}>
+          Reset
+        </button>
       </div>
 
       {/* Inventory Table */}
@@ -141,4 +132,4 @@ export function View_Inventory() {
   );
 }
 
-export default View_Inventory;
+export default Admin_Inventory;

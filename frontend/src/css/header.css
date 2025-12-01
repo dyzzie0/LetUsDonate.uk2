@@ -4,7 +4,6 @@
   position: relative;
   text-align: left;
   overflow: hidden;
-
 }
 
 a:link,
@@ -273,4 +272,31 @@ p {
     height: 80px;
     font-size: 14px;
   }
+}
+
+/* samller header */
+.header-small {
+  padding: 20px 100px; /* smaller padding */
+  height: auto; /* let content dictate height */
+}
+
+.header-small .header_content h2 {
+  font-size: 1rem;
+}
+
+.header-small .header_content h3 {
+  font-size: 0.8rem;
+}
+
+.header-large {
+  padding: 150px 100px; /* large padding for homepage */
+  height: auto;
+}
+
+.header-large .header_content h2 {
+  font-size: 1.5rem;
+}
+
+.header-large .header_content h3 {
+  font-size: 1rem;
 }

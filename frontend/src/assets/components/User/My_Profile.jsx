@@ -71,7 +71,10 @@ export default function My_Profile() {
         localStorage.setItem("user", JSON.stringify(updated));
         setUser(updated);
 
-        setStatus({ type: "success", message: "Profile updated successfully!" });
+        setStatus({
+          type: "success",
+          message: "Profile updated successfully!",
+        });
         setFormData((prev) => ({ ...prev, password: "" }));
       } else {
         setStatus({ type: "error", message: data.message });
@@ -104,9 +107,7 @@ export default function My_Profile() {
       </div>
 
       {status && (
-        <div className={`form-message ${status.type}`}>
-          {status.message}
-        </div>
+        <div className={`form-message ${status.type}`}>{status.message}</div>
       )}
 
       <div className="table-container profile-form-container">
