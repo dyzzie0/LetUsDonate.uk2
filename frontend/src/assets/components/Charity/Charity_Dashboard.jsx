@@ -38,74 +38,88 @@ export default function Charity_Dashboard() {
         );
         const inventoryJson = await inventoryRes.json();
 
-        const inventoryList = Array.isArray(inventoryJson)
-          ? inventoryJson
-          : inventoryJson.data || [];
+        const inventoryList = inventoryJson.inventory || []
+          
 
         setDonations(donationList);
         setInventory(inventoryList);
 
-        // ========== CALCULATE STATS (ONLY THIS CHARITY) ==========
-        const totalItems = donationList.reduce((sum, d) => {
-          if (!d.items) return sum;
+///       // ========== CALCULATE STATS (ONLY THIS CHARITY) ==========
+const totalItems = donationList.reduce((sum, d) => {
+  if (!d.items) return sum;
 
-          const count = d.items.reduce((acc, item) => {
-            const qty = Number(item.quantity) || 1;
-            return acc + qty;
-          }, 0);
+  const count = d.items.reduce((acc, item) => {
+    const qty = Number(item.quantity) || 1;
+    return acc + qty;
+  }, 0);
 
-          return sum + count;
-        }, 0);
+  return sum + count;
+}, 0);
 
-        setStats({
-          items: totalItems,
-          co2: (totalItems * 1.5).toFixed(1),
-          people: totalItems * 2,
-        });
+setStats({
+  items: totalItems,
+  co2: (totalItems * 1.5).toFixed(1),
+  people: totalItems * 2,
+});
 
-        setLoading(false);
-      } catch (err) {
-        console.error("Failed to fetch:", err);
-        setLoading(false);
-      }
-    };
+setLoading(false);
+} catch (err) {
+console.error("Failed to fetch:", err);
+setLoading(false);
+}
+};
 
-    fetchData();
-  }, [user.charity_ID]);
+fetchData();
+}, [user.charity_ID]);
 
-  // PIE CHART (Only this charity)
-  useEffect(() => {
-    if (!inventory.length) return;
+// PIE CHART (Only this charity)
+useEffect(() => {
+if (!inventory.length) return;
 
-    const labels = inventory.map((item) => item.item);
-    const quantities = inventory.map((item) => Number(item.quantity) || 1);
+//group inventory by category
+const categoryMap={};
 
-    if (chartRef.current) chartRef.current.destroy();
+inventory.forEach((item) =>{
+const category = item.category || "Unknown";
+const qty = Number(item.quantity) || 0;
 
-    const ctx = document.getElementById("myChart");
-    chartRef.current = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels,
-        datasets: [
-          {
-            data: quantities,
-            backgroundColor: [
-              "#5b7d62",
-              "#76a79b",
-              "#9fc3ab",
-              "#2d484c",
-              "#7e8568",
-            ],
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: "right" } },
-      },
-    });
-  }, [inventory]);
+if (!categoryMap[category]){
+categoryMap[category] = 0;
+}
+categoryMap[category] += qty;
+});
+
+const labels = Object.keys(categoryMap); //mens/womens/girls/boys
+const quantities = Object.values(categoryMap); 
+
+if (chartRef.current) chartRef.current.destroy();
+
+const ctx = document.getElementById("myChart");
+chartRef.current = new Chart(ctx, {
+type: "pie",
+data: {
+labels,
+datasets: [
+  {
+    data: quantities,
+    backgroundColor: [
+      "#5b7d62",
+      "#76a79b",
+      "#9fc3ab",
+      "#2d484c",
+      "#7e8568",
+    ],
+  },
+],
+},
+options: {
+responsive: true,
+plugins: { legend: { position: "right" } },
+},
+});
+}, [inventory]);
+
+
 
   // Image URL formatter
   const buildImageUrl = (path) => {

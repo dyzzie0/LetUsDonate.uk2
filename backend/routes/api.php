@@ -56,6 +56,8 @@ Route::get('/donation-items/{id}', [DonationItemController::class, 'show']);
 // Charities
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{id}', [CharityController::class, 'show']);
+Route::post('/charities', [CharityController::class, 'store']);
+
 // Charity — Get all donations assigned to this charity
 Route::get('/charity/{charityId}/donations', [DonationController::class, 'getCharityDonations']);
 
@@ -66,6 +68,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/charities',  [AdminController::class, 'getAllCharities']);
     Route::get('/users',      [AdminController::class, 'getAllUsers']);
     Route::get('/stats',      [AdminController::class, 'getDashboardStats']);
+    
 });
 
 Route::get('/view-users',      [ViewUserController::class, 'getViewUsers']);

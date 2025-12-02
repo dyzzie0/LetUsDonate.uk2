@@ -265,6 +265,10 @@ export function Admin_Dashboard() {
           <Link to="/data_reports">Data Reports</Link>
         </li>
         <li>
+          <i className="fa-solid fa-users"></i>
+          <Link to="/add_charity">Add Charity</Link>
+        </li>
+        <li>
           <i className="fa-solid fa-arrow-right-from-bracket"></i>
           <button
             className="admin-button"

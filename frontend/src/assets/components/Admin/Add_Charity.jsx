@@ -8,7 +8,9 @@ export function Add_Charity() {
     charity_address: "",
     charity_email: "",
     contact_person: "",
-    password: "",
+    staff_username: "",
+    staff_email: "",
+    staff_password: "",
   });
 
   const [status, setStatus] = useState(null);
@@ -22,8 +24,17 @@ export function Add_Charity() {
     e.preventDefault();
     setStatus(null);
 
+    //validate length of password
+    if (formData.staff_password.length< 6){
+      setStatus({
+        type:"error",
+        message: "Password must be at least 6 characters long.",
+      });
+      return;
+    }
+
     try {
-      const res = await fetch("http://localhost:8000/add_charity.php", {
+      const res = await fetch("http://localhost:8000/api/charities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -38,7 +49,9 @@ export function Add_Charity() {
           charity_address: "",
           charity_email: "",
           contact_person: "",
-          password: "",
+          staff_username: "",
+          staff_email: "",
+          staff_password: "",
         });
       } else {
         setStatus({ type: "error", message: data.message });
@@ -95,7 +108,7 @@ export function Add_Charity() {
           </label>
 
           <label>
-            Charity Email:
+            Charity  Email:
             <input
               type="email"
               name="charity_email"
@@ -117,13 +130,36 @@ export function Add_Charity() {
           </label>
 
           <label>
-            Password:
+            Staff Username:
+            <input
+              type="text"
+              name="staff_username"
+              value={formData.staff_username}
+              onChange={handleChange}
+              required       
+            />
+          </label>
+
+          <label>
+            Staff Email:
+            <input
+              type="email"
+              name="staff_email"
+              value={formData.staff_email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Staff Password:
             <input
               type="password"
-              name="password"
-              value={formData.password}
+              name="staff_password"
+              value={formData.staff_password}
               onChange={handleChange}
-              placeholder="Optional (default: charity123)"
+              placeholder="Password (6+ characters)"
+              required
             />
           </label>
 
@@ -133,6 +169,8 @@ export function Add_Charity() {
         </form>
       </div>
     </main>
+
+    
   );
 }
 
