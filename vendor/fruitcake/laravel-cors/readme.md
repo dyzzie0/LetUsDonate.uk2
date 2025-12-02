@@ -12,25 +12,28 @@ Implements https://github.com/fruitcake/php-cors for Laravel
 The `laravel-cors` package allows you to send [Cross-Origin Resource Sharing](http://enable-cors.org/)
 headers with Laravel middleware configuration.
 
-If you want to have a global overview of CORS workflow, you can  browse
+If you want to have a global overview of CORS workflow, you can browse
 this [image](http://www.html5rocks.com/static/images/cors_server_flowchart.png).
 
 ## Upgrading from 0.x (barryvdh/laravel-cors)
+
 When upgrading from 0.x versions, there are some breaking changes:
- - **A new 'paths' property is used to enable/disable CORS on certain routes. This is empty by default, so fill it correctly!**
- - **Group middleware is no longer supported, use the global middleware**
- - The vendor name has changed (see installation/usage)
- - The casing on the props in `cors.php` has changed from camelCase to snake_case, so if you already have a `cors.php` file you will need to update the props in there to match the new casing.
+
+- **A new 'paths' property is used to enable/disable CORS on certain routes. This is empty by default, so fill it correctly!**
+- **Group middleware is no longer supported, use the global middleware**
+- The vendor name has changed (see installation/usage)
+- The casing on the props in `cors.php` has changed from camelCase to snake_case, so if you already have a `cors.php` file you will need to update the props in there to match the new casing.
 
 ## Features
 
-* Handles CORS pre-flight OPTIONS requests
-* Adds CORS headers to your responses
-* Match routes to only add CORS to certain Requests
+- Handles CORS pre-flight OPTIONS requests
+- Adds CORS headers to your responses
+- Match routes to only add CORS to certain Requests
 
 ## Installation
 
 Require the `fruitcake/laravel-cors` package in your `composer.json` and update your dependencies:
+
 ```sh
 composer require fruitcake/laravel-cors
 ```
@@ -44,7 +47,7 @@ composer require fruitcake/laravel-cors
 
 ## Global usage
 
-To allow CORS for all your routes, add the `HandleCors` middleware at the top of the `$middleware` property of  `app/Http/Kernel.php` class:
+To allow CORS for all your routes, add the `HandleCors` middleware at the top of the `$middleware` property of `app/Http/Kernel.php` class:
 
 ```php
 protected $middleware = [
@@ -62,27 +65,27 @@ Now update the config to define the paths you want to run the CORS service on, (
 ## Configuration
 
 The defaults are set in `config/cors.php`. Publish the config to copy the file to your own config:
+
 ```sh
 php artisan vendor:publish --tag="cors"
 ```
+
 > **Note:** When using custom headers, like `X-Auth-Token` or `X-Requested-With`, you must set the `allowed_headers` to include those headers. You can also set it to `['*']` to allow all custom headers.
 
 > **Note:** If you are explicitly whitelisting headers, you must include `Origin` or requests will fail to be recognized as CORS.
 
-
 ### Options
 
-| Option                   | Description                                                              | Default value |
-|--------------------------|--------------------------------------------------------------------------|---------------|
-| paths                    | You can enable CORS for 1 or multiple paths, eg. `['api/*'] `            | `[]`          |
-| allowed_origins          | Matches the request origin. Wildcards can be used, eg. `*.mydomain.com` or `mydomain.com:*`  | `['*']`       |
-| allowed_origins_patterns | Matches the request origin with `preg_match`.                            | `[]`          |
-| allowed_methods          | Matches the request method.                                              | `['*']`       |
-| allowed_headers          | Sets the Access-Control-Allow-Headers response header.                   | `['*']`       |
-| exposed_headers          | Sets the Access-Control-Expose-Headers response header.                  | `false`       |
-| max_age                  | Sets the Access-Control-Max-Age response header.                         | `0`           |
-| supports_credentials     | Sets the Access-Control-Allow-Credentials header.                        | `[]`       |
-
+| Option                   | Description                                                                                 | Default value |
+| ------------------------ | ------------------------------------------------------------------------------------------- | ------------- |
+| paths                    | You can enable CORS for 1 or multiple paths, eg. `['api/*'] `                               | `[]`          |
+| allowed_origins          | Matches the request origin. Wildcards can be used, eg. `*.mydomain.com` or `mydomain.com:*` | `['*']`       |
+| allowed_origins_patterns | Matches the request origin with `preg_match`.                                               | `[]`          |
+| allowed_methods          | Matches the request method.                                                                 | `['*']`       |
+| allowed_headers          | Sets the Access-Control-Allow-Headers response header.                                      | `['*']`       |
+| exposed_headers          | Sets the Access-Control-Expose-Headers response header.                                     | `false`       |
+| max_age                  | Sets the Access-Control-Max-Age response header.                                            | `0`           |
+| supports_credentials     | Sets the Access-Control-Allow-Credentials header.                                           | `[]`          |
 
 `allowed_origins`, `allowed_headers` and `allowed_methods` can be set to `['*']` to accept any value.
 
@@ -152,6 +155,7 @@ protected $except = [
 ```
 
 ### Duplicate headers
+
 The CORS Middleware should be the only place you add these headers. If you also add headers in .htaccess, nginx or your index.php file, you will get duplicate headers and unexpected results.
 
 ## License
@@ -164,7 +168,6 @@ Released under the MIT License, see [LICENSE](LICENSE).
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/fruitcake/laravel-cors.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/fruitcake/laravel-cors.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/fruitcake/laravel-cors.svg?style=flat-square
-
 [link-packagist]: https://packagist.org/packages/fruitcake/laravel-cors
 [link-actions]: https://github.com/fruitcake/laravel-cors/actions
 [link-scrutinizer]: https://scrutinizer-ci.com/g/fruitcake/laravel-cors/code-structure

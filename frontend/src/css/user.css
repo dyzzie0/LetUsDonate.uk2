@@ -54,7 +54,7 @@
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
-  font-family: 'Iansui', cursive;
+  font-family: "Iansui", cursive;
   font-size: 1.1rem;
 }
 
@@ -217,7 +217,7 @@
   margin-bottom: 1rem;
   border-radius: 6px;
   font-size: 0.9rem;
-  font-family: 'Iansui', cursive;
+  font-family: "Iansui", cursive;
 }
 
 .new-donation input,
@@ -433,7 +433,7 @@
 
   .donation-history table {
     font-size: 0.8rem;
-    min-width: 600px; 
+    min-width: 600px;
   }
 
   /* Dashboard layout columns stack */

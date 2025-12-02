@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import '../../css/our_partners.css';
+import React, { useState, useEffect } from "react";
+import "../../css/our_partners.css";
 
 function Our_Partners() {
   return (

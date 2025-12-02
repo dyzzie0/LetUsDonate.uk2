@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/my_impact.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/my_impact.css";
 
-
-export function My_Impact() {
+export default function My_Impact() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-    if (!user.id) {
+    if (!user?.donor?.donor_ID) {
       setLoading(false);
       return;
     }
 
-    fetch(`http://localhost:8000/get_donations.php?user_id=${user.id}`)
+    fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === 'success') setDonations(data.donations);
+        if (data.status === "success") setDonations(data.donations);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Error fetching donations:', err);
+        console.error("Impact fetch error:", err);
         setLoading(false);
       });
-  }, [user.id]);
+  }, [user]);
 
   const totalItems = donations.length;
   const totalCO2 = (totalItems * 1.5).toFixed(1);
@@ -39,18 +38,16 @@ export function My_Impact() {
         </div>
 
         <div className="return-right">
-          <Link to="/User_dashboard" className="return-link">
+          <Link to="/User_Dashboard" className="return-link">
             Return
           </Link>
         </div>
       </div>
-      <h3>
-        {' '}
-        <p>
-          Track your contributions and see how your donations help the community
-          and environment.
-        </p>
-      </h3>
+
+      <p className="impact-description">
+        Track your contributions and see how your donations help the community
+        and environment.
+      </p>
 
       {loading ? (
         <p>Loading your impact...</p>
@@ -67,21 +64,17 @@ export function My_Impact() {
           <div className="impact-card">
             <i className="fa-solid fa-earth-africa fa-2x"></i>
             <h3>{totalCO2} kg</h3>
-            <p>
-              Estimated CO₂ saved by donating items instead of discarding them.
-            </p>
+            <p>Estimated CO₂ saved by donating instead of discarding.</p>
           </div>
 
           {/* People Helped */}
           <div className="impact-card">
             <i className="fa-solid fa-heart fa-2x"></i>
             <h3>{peopleHelped}</h3>
-            <p>Number of people who have benefited from your donations.</p>
+            <p>People who benefited from your donations.</p>
           </div>
         </div>
       )}
     </main>
   );
 }
-
-export default My_Impact;

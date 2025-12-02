@@ -23,15 +23,27 @@ export default function Login() {
       });
 
       const data = await response.json();
+      console.log("Login response:", response.status, data);
 
       if (response.ok && data.status === "success") {
         localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("role", data.user.role);
+        localStorage.setItem("role", String(data.user.role_id));
 
-        // this is just for testing, we need to chnage it so it goes to respective dashboards
-        navigate("/user_dashboard");
+        const role = String(data.user.role_id);
+
+        if (role === "12") {
+          navigate("/admin_dashboard");
+        } else if (role === "11") {
+          navigate("/charity_dashboard");
+        } else if (role === "10") {
+          navigate("/user_dashboard");
+        } else {
+          console.log("Unknown role_id:", role);
+          setError("Login failed: Unknown role assigned to account");
+        }
       } else {
-        setError(data.message || "Invalid credentials");
+        //show the actual error message from the server
+        setError(data.message || "Invalid email or password");
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -44,7 +56,6 @@ export default function Login() {
       <div className="return_home">
         <Link to="/">Return</Link>
       </div>
-
       <h2>Welcome Back</h2>
       <p>Sign in to your account</p>
 

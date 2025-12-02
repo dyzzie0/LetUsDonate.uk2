@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/records.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/records.css";
 
 export function Add_Charity() {
   const [formData, setFormData] = useState({
-    charity_name: '',
-    charity_address: '',
-    charity_email: '',
-    contact_person: '',
-    password: '',
+    charity_name: "",
+    charity_address: "",
+    charity_email: "",
+    contact_person: "",
+    staff_username: "",
+    staff_email: "",
+    staff_password: "",
   });
 
   const [status, setStatus] = useState(null);
@@ -22,29 +24,40 @@ export function Add_Charity() {
     e.preventDefault();
     setStatus(null);
 
+    //validate length of password
+    if (formData.staff_password.length< 6){
+      setStatus({
+        type:"error",
+        message: "Password must be at least 6 characters long.",
+      });
+      return;
+    }
+
     try {
-      const res = await fetch('http://localhost:8000/add_charity.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("http://localhost:8000/api/charities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
 
-      if (data.status === 'success') {
-        setStatus({ type: 'success', message: data.message });
+      if (data.status === "success") {
+        setStatus({ type: "success", message: data.message });
         setFormData({
-          charity_name: '',
-          charity_address: '',
-          charity_email: '',
-          contact_person: '',
-          password: '',
+          charity_name: "",
+          charity_address: "",
+          charity_email: "",
+          contact_person: "",
+          staff_username: "",
+          staff_email: "",
+          staff_password: "",
         });
       } else {
-        setStatus({ type: 'error', message: data.message });
+        setStatus({ type: "error", message: data.message });
       }
     } catch (err) {
-      setStatus({ type: 'error', message: 'Network error. Please try again.' });
+      setStatus({ type: "error", message: "Network error. Please try again." });
     }
 
     setTimeout(() => setStatus(null), 4000);
@@ -60,7 +73,7 @@ export function Add_Charity() {
         <div className="return-right">
           <ul>
             <li>
-            <Link to="/admin_dashboard">Return</Link>
+              <Link to="/view_users">Return</Link>
             </li>
           </ul>
         </div>
@@ -95,7 +108,7 @@ export function Add_Charity() {
           </label>
 
           <label>
-            Charity Email:
+            Charity  Email:
             <input
               type="email"
               name="charity_email"
@@ -117,13 +130,36 @@ export function Add_Charity() {
           </label>
 
           <label>
-            Password:
+            Staff Username:
+            <input
+              type="text"
+              name="staff_username"
+              value={formData.staff_username}
+              onChange={handleChange}
+              required       
+            />
+          </label>
+
+          <label>
+            Staff Email:
+            <input
+              type="email"
+              name="staff_email"
+              value={formData.staff_email}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Staff Password:
             <input
               type="password"
-              name="password"
-              value={formData.password}
+              name="staff_password"
+              value={formData.staff_password}
               onChange={handleChange}
-              placeholder="Optional (default: charity123)"
+              placeholder="Password (6+ characters)"
+              required
             />
           </label>
 
@@ -133,6 +169,8 @@ export function Add_Charity() {
         </form>
       </div>
     </main>
+
+    
   );
 }
 

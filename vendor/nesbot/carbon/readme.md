@@ -65,9 +65,9 @@ $ composer require nesbot/carbon
 
 ```json
 {
-    "require": {
-        "nesbot/carbon": "^2.16"
-    }
+  "require": {
+    "nesbot/carbon": "^2.16"
+  }
 }
 ```
 
@@ -107,7 +107,7 @@ Tidelift will coordinate the fix and disclosure.
 
 ### Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the people who contribute.
 
 <a href="https://github.com/briannesbitt/Carbon/graphs/contributors" target="_blank"><img src="https://opencollective.com/Carbon/contributors.svg?width=890&button=false" /></a>
 
@@ -150,6 +150,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 <a title="Triplebyte is the first software engineering job platform that is on the developer&#039;s side. Take our coding quiz!" href="https://triplebyte.com/os/opencollective?utm_source=opencollective&amp;utm_medium=github&amp;utm_campaign=Carbon" target="_blank"><img alt="Triplebyte" src="https://opencollective-production.s3.us-west-1.amazonaws.com/43e4f9d0-30cd-11ea-9c6b-e1142996e8b2.png" width="42" height="42"></a>
 <a title="Connect your Collective to GitHub Sponsors: https://docs.opencollective.com/help/collectives/github-sponsors" href="https://github.com/sponsors/?utm_source=opencollective&amp;utm_medium=github&amp;utm_campaign=Carbon" target="_blank"><img alt="GitHub Sponsors" src="https://opencollective-production.s3.us-west-1.amazonaws.com/87b1d240-f617-11ea-9960-fd7e8ab20fe4.png" width="48" height="42"></a>
 <a title="Salesforce" href="https://engineering.salesforce.com?utm_source=opencollective&amp;utm_medium=github&amp;utm_campaign=Carbon" target="_blank"><img alt="Salesforce" src="https://opencollective-production.s3.us-west-1.amazonaws.com/24d34880-df8d-11e9-949c-6bc2037b6bd5.png" width="42" height="42"></a>
+
 <!-- </open-collective-sponsors> -->
 
 [[Become a sponsor via OpenCollective](https://opencollective.com/Carbon#sponsor)]
@@ -173,4 +174,4 @@ Thank you to all our backers! 🙏
 
 Available as part of the Tidelift Subscription.
 
-The maintainers of ``Carbon`` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/packagist-nesbot-carbon?utm_source=packagist-nesbot-carbon&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+The maintainers of `Carbon` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/packagist-nesbot-carbon?utm_source=packagist-nesbot-carbon&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)

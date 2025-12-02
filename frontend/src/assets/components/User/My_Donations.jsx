@@ -1,40 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/records.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/records.css";
 
-export function My_Donations() {
+export default function My_Donations() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-    if (!user.id) return;
+    if (!user?.donor?.donor_ID) return;
 
-    fetch(`http://localhost:8000/get_donations.php?user_id=${user.id}`)
+    fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
       .then((res) => res.json())
       .then((data) => {
-        if (data.status === 'success') setDonations(data.donations);
-        else console.error('Error fetching donations:', data.message);
+        if (data.status === "success") setDonations(data.donations);
         setLoading(false);
       })
       .catch((err) => {
-        console.error('Network error:', err);
+        console.error("Donation fetch error:", err);
         setLoading(false);
       });
-  }, [user.id]);
+  }, [user]);
 
-  // Filter donations //
+  //filtering donations
+  const filtered = donations.filter((d) => {
+    const item = d.items?.[0];
 
-  const filteredDonations = donations.filter((d) => {
     const matchesSearch =
-      d.item_name?.toLowerCase().includes(search.toLowerCase()) ||
-      d.item_category?.toLowerCase().includes(search.toLowerCase());
+      item?.item_name?.toLowerCase().includes(search.toLowerCase()) ||
+      item?.item_category?.toLowerCase().includes(search.toLowerCase());
+
     const matchesStatus = statusFilter
       ? d.donation_status?.toLowerCase() === statusFilter.toLowerCase()
       : true;
+
     return matchesSearch && matchesStatus;
   });
 
@@ -48,9 +50,9 @@ export function My_Donations() {
         <div className="return-right">
           <ul>
             <li>
-             <Link to ="/User_Dashboard" className ="return-link">
-             Return
-             </Link>
+              <Link to="/User_Dashboard" className="return-link">
+                Return
+              </Link>
             </li>
           </ul>
         </div>
@@ -64,6 +66,7 @@ export function My_Donations() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+
         <select
           className="status-filter"
           value={statusFilter}
@@ -74,73 +77,84 @@ export function My_Donations() {
           <option value="pending">Pending</option>
           <option value="rejected">Rejected</option>
         </select>
-        <button className="filter-button" onClick={() => {}}>
-          Filter
-        </button>
       </div>
 
       <div className="table-container">
-        <div className="table">
-          <table className="table">
-            <thead>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Item Name</th>
+              <th>Description</th>
+              <th>Condition</th>
+              <th>Image</th>
+              <th>Date Donated</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {loading ? (
               <tr>
-                <th>Category</th>
-                <th>Item Name</th>
-                <th>Description</th>
-                <th>Condition</th>
-                <th>Image</th>
-                <th>Date Donated</th>
-                <th>Status</th>
+                <td colSpan="7">Loading donations...</td>
               </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan="7">Loading donations...</td>
-                </tr>
-              ) : filteredDonations.length > 0 ? (
-                filteredDonations.map((d) => (
+            ) : filtered.length > 0 ? (
+              filtered.map((d) => {
+                const item = d.items?.[0];
+                return (
                   <tr key={d.donation_ID}>
-                    <td>{d.item_category}</td>
-                    <td>{d.item_name}</td>
-                    <td>{d.item_description || 'N/A'}</td>
-                    <td>{d.item_condition}</td>
+                    <td>{item?.item_category ?? "N/A"}</td>
+                    <td>{item?.item_name ?? "N/A"}</td>
+                    <td>{item?.item_description ?? "N/A"}</td>
+                    <td>{item?.item_condition ?? "N/A"}</td>
+
                     <td>
-                      {d.item_image ? (
-                        <a
-                          href={`http://localhost:8000/${d.item_image}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <img
-                            src={`http://localhost:8000/${d.item_image}`}
-                            alt={d.item_name}
-                            style={{
-                              width: '50px',
-                              height: 'auto',
-                              borderRadius: '4px',
-                            }}
-                          />
-                        </a>
-                      ) : (
-                        'N/A'
-                      )}
+                      {item?.item_image
+                        ? (() => {
+                            let path = item.item_image;
+
+                            path = path.replace(/^public\//, "");
+
+                            path = path.replace(/^\/+/, "");
+
+                            const imageUrl = path.startsWith("http")
+                              ? path
+                              : `http://localhost:8000/storage/${path}`;
+
+                            return (
+                              <a
+                                href={imageUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <img
+                                  src={imageUrl}
+                                  alt={item.item_name}
+                                  style={{
+                                    width: "50px",
+                                    height: "auto",
+                                    borderRadius: "4px",
+                                  }}
+                                />
+                              </a>
+                            );
+                          })()
+                        : "N/A"}
                     </td>
-                    <td>{d.donation_date}</td>
+
+                    <td>{new Date(d.donation_date).toLocaleDateString()}</td>
                     <td>{d.donation_status}</td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7">No donations found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="7">No donations found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </main>
   );
 }
-
-export default My_Donations;

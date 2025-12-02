@@ -1,25 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/records.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/records.css";
 
-
-export function My_Profile() {
+export default function My_Profile() {
   const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
   const [status, setStatus] = useState(null);
 
-  // Load user info from localStorage
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  //load user from localStorage and backend
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      setUser(parsed);
-      setFormData({ name: parsed.name, email: parsed.email, password: '' });
-    }
+    const stored = localStorage.getItem("user");
+    if (!stored) return;
+
+    const parsed = JSON.parse(stored);
+    setUser(parsed);
+
+    //load latest user data from backend
+    fetch(`http://localhost:8000/api/user/${parsed.id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.status === "success") {
+          setFormData({
+            name: data.user.name,
+            email: data.user.email,
+            password: "",
+          });
+        }
+      })
+      .catch((err) => console.error("Profile fetch error:", err));
   }, []);
 
   const handleChange = (e) => {
@@ -27,18 +40,49 @@ export function My_Profile() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const updatedUser = {
-      ...user,
+    if (!user) return;
+
+    const bodyData = {
       name: formData.name,
       email: formData.email,
-      ...(formData.password ? { password: formData.password } : {}),
     };
-    localStorage.setItem('user', JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    setFormData((prev) => ({ ...prev, password: '' }));
-    setStatus({ type: 'success', message: 'Profile updated successfully!' });
+
+    if (formData.password.trim() !== "") {
+      bodyData.password = formData.password;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:8000/api/user/${user.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(bodyData),
+      });
+
+      const data = await res.json();
+
+      if (data.status === "success") {
+        //save new user locally
+        const updated = { ...user, ...data.user };
+        localStorage.setItem("user", JSON.stringify(updated));
+        setUser(updated);
+
+        setStatus({
+          type: "success",
+          message: "Profile updated successfully!",
+        });
+        setFormData((prev) => ({ ...prev, password: "" }));
+      } else {
+        setStatus({ type: "error", message: data.message });
+      }
+    } catch (err) {
+      setStatus({ type: "error", message: "Network error. Try again." });
+    }
+
     setTimeout(() => setStatus(null), 4000);
   };
 
@@ -50,12 +94,13 @@ export function My_Profile() {
         <div className="header-left">
           <h2>My Profile</h2>
         </div>
+
         <div className="return-right">
           <ul>
             <li>
-             <Link to="/User_dashboard" className="return-link">
-               Return
-             </Link>
+              <Link to="/User_Dashboard" className="return-link">
+                Return
+              </Link>
             </li>
           </ul>
         </div>
@@ -72,9 +117,9 @@ export function My_Profile() {
             <input
               type="text"
               name="name"
+              required
               value={formData.name}
               onChange={handleChange}
-              required
             />
           </label>
 
@@ -83,9 +128,9 @@ export function My_Profile() {
             <input
               type="email"
               name="email"
+              required
               value={formData.email}
               onChange={handleChange}
-              required
             />
           </label>
 
@@ -94,9 +139,9 @@ export function My_Profile() {
             <input
               type="password"
               name="password"
+              placeholder="Leave blank to keep current password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Leave blank to keep current password"
             />
           </label>
 
@@ -108,5 +153,3 @@ export function My_Profile() {
     </main>
   );
 }
-
-export default My_Profile;

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import '../../../css/records.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "../../../css/records.css";
 
 export function Distribution_Records() {
   return (
@@ -14,7 +14,7 @@ export function Distribution_Records() {
           <div className="return-right">
             <ul>
               <li>
-              <Link to="/charity_dashboard">Return</Link>
+                <Link to="/charity_dashboard">Return</Link>
               </li>
             </ul>
           </div>

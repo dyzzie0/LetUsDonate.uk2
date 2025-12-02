@@ -166,7 +166,7 @@ main {
 
 /* Profile Form  */
 
-.dashboard-main{
+.dashboard-main {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -241,5 +241,3 @@ main {
   background-color: light-dark(#fdecea, #4a1a1a);
   color: light-dark(#a72828, #ff9999);
 }
-
-
