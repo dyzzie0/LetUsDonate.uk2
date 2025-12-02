@@ -193,7 +193,8 @@ export function Admin_Dashboard() {
         responsive: true,
         plugins: {
           legend: { display: true, position: "top" },
-          title: { display: true, text: "Sustainability Impact" },
+          title: { display: false },
+
         },
         scales: { y: { beginAtZero: true } },
       },

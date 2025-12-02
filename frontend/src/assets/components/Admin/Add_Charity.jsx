@@ -60,7 +60,7 @@ export function Add_Charity() {
         <div className="return-right">
           <ul>
             <li>
-              <Link to="/admin_dashboard">Return</Link>
+              <Link to="/view_users">Return</Link>
             </li>
           </ul>
         </div>
