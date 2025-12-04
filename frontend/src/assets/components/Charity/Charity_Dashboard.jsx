@@ -150,7 +150,7 @@ export default function Charity_Dashboard() {
             </li>
             <li>
               <i className="fa-solid fa-truck"></i>
-              <Link to="/charity_distribution_records">
+              <Link to="/distribution_records">
                 Distribution Records
               </Link>
             </li>
