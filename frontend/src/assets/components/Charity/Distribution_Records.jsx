@@ -9,7 +9,15 @@ export default function Charity_Distribution_Records() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load items for this charity
+  const [toast, setToast] = useState(null); // toast message
+
+  // Show toast for 3 seconds
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // Load items
   useEffect(() => {
     if (!charityId) return;
 
@@ -22,30 +30,52 @@ export default function Charity_Distribution_Records() {
       .catch(() => setLoading(false));
   }, [charityId]);
 
-  // SEND / DISTRIBUTE ITEM
+  // Distribute item
   const handleDistribute = async (inventoryId) => {
     try {
       const res = await fetch(
         `http://localhost:8000/api/inventory/${inventoryId}/distribute`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json" }
         }
       );
 
       const data = await res.json();
 
-      if (data.status === "success") {
-        // Remove from table after sending
-        setItems((prev) => prev.filter((i) => i.inventory_ID !== inventoryId));
+      if (res.ok && data.status === "success") {
+        showToast("Item has been successfully distributed!");
+
+        // Change button to "Distributed" and fade out row
+        setItems((prev) =>
+          prev.map((i) =>
+            i.inventory_ID === inventoryId
+              ? { ...i, distributed: true }
+              : i
+          )
+        );
+
+        // Remove row after fade animation
+        setTimeout(() => {
+          setItems((prev) =>
+            prev.filter((i) => i.inventory_ID !== inventoryId)
+          );
+        }, 600); // match CSS fade-out duration
       }
     } catch (err) {
-      console.error("Error distributing item:", err);
+      showToast("Network error occurred", "error");
     }
   };
 
   return (
     <main>
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`toast ${toast.type}`}>
+          {toast.msg}
+        </div>
+      )}
+
       <div className="records-container">
         <div className="header-left">
           <h2>Distribution Records</h2>
@@ -83,18 +113,27 @@ export default function Charity_Distribution_Records() {
               </tr>
             ) : (
               items.map((i) => (
-                <tr key={i.inventory_ID}>
+                <tr
+                  key={i.inventory_ID}
+                  className={i.distributed ? "fade-out" : ""}
+                >
                   <td>{i.item}</td>
                   <td>{i.category}</td>
                   <td>{i.size || "N/A"}</td>
                   <td>{i.quantity}</td>
                   <td>
-                    <button
-                      className="donation-button"
-                      onClick={() => handleDistribute(i.inventory_ID)}
-                    >
-                      Send
-                    </button>
+                    {i.distributed ? (
+                      <button className="distributed-button" disabled>
+                        Distributed ✓
+                      </button>
+                    ) : (
+                      <button
+                        className="donation-button"
+                        onClick={() => handleDistribute(i.inventory_ID)}
+                      >
+                        Send
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

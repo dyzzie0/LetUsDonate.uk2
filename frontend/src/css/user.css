@@ -17,6 +17,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 20px 0;
 }
 .dashboard-left {
   margin-bottom: 0 !important;
@@ -34,16 +35,19 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 1.1rem;
-  padding: 1rem 1.5rem;   /* normal height */
-  flex-direction: column;
-  gap: 0.5rem;
+  padding: 2.5rem 2rem;
   display: flex;
   align-items: center;
+  gap: 1rem;
   cursor: pointer;
   transition: 0.3s;
   text-align: center;
   flex-direction: column;
 }
+
+
+
+
 
 .links li:hover {
   background-color: #619a6f;
