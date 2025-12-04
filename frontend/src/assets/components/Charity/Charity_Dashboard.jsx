@@ -64,7 +64,7 @@ export default function Charity_Dashboard() {
         setStats({
           items: totalItems,
           co2: (totalItems * 1.5).toFixed(1),
-          people: totalItems * 2,
+          people: totalItems * 1,
         });
 
         setLoading(false);

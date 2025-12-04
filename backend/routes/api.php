@@ -55,6 +55,8 @@ Route::post('/logout', [AuthController::class, 'logout']);
 // Inventory routes
 Route::get('/inventory', [InventoryController::class, 'index']);
 Route::get('/inventory/{id}', [InventoryController::class, 'show']);
+Route::post('/inventory/{id}/distribute', [InventoryController::class, 'distribute']);
+
 
 // Donations
 Route::get('/donations', [DonationController::class, 'getAllDonations']); 
@@ -73,6 +75,7 @@ Route::get('/charities/{id}', [CharityController::class, 'show']);
 Route::post('/charities', [CharityController::class, 'store']);
 Route::put('/charities/{id}', [CharityController::class, 'update']);  
 Route::delete('/charities/{id}', [CharityController::class, 'destroy']);
+
 
 
 // Charity — Get all donations assigned to this charity
