@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
 
+// This component allows admin to view and filter inventory items
 export function Admin_Inventory() {
   const role = localStorage.getItem("role");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -100,8 +101,8 @@ export function Admin_Inventory() {
           <table className="table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Item</th>
+                <th>Item ID</th>
+                <th>Item Type</th>
                 <th>Category</th>
                 <th>Size</th>
                 <th>Quantity</th>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/my_impact.css";
 
+// This allows users to view and track their donation impact
 export default function My_Impact() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ export default function My_Impact() {
       setLoading(false);
       return;
     }
-
+    // fetch donations for this donor
     fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
       .then((res) => res.json())
       .then((data) => {
@@ -25,10 +26,10 @@ export default function My_Impact() {
         setLoading(false);
       });
   }, [user]);
-
+  // calculate impact metrics
   const totalItems = donations.length;
   const totalCO2 = (totalItems * 1.5).toFixed(1);
-  const peopleHelped = totalItems * 2;
+  const peopleHelped = totalItems * 1;
 
   return (
     <main className="dashboard-main">

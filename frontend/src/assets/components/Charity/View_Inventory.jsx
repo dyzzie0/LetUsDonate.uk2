@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
+import "../../../css/modal.css";
 
+// This allows charity and admin users to view and filter inventory items
 export function View_Inventory() {
   const role = localStorage.getItem("role");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -19,19 +21,19 @@ export function View_Inventory() {
   const getReturnLink = () => {
     switch (role) {
       case "11":
-        return "/charity_dashboard"; // Charity
+        return "/charity_dashboard";
       case "12":
-        return "/admin_dashboard"; // Admin
+        return "/admin_dashboard";
       default:
         return "/";
     }
   };
 
-  //load inventory from Laravel
+  // load inventory from Laravel
   useEffect(() => {
     let url = "http://localhost:8000/api/inventory";
 
-    //charity sees only their inventory
+    // charity sees only their inventory
     if (role === "11" && user.charity_ID) {
       url += `?charity_ID=${user.charity_ID}`;
     }
@@ -47,7 +49,7 @@ export function View_Inventory() {
       .catch(() => setLoading(false));
   }, [role, user.charity_ID]);
 
-  //filtering logic
+  // filtering logic
   const handleFilterChange = (e) => {
     const updated = { ...filters, [e.target.name]: e.target.value };
     setFilters(updated);
@@ -77,7 +79,6 @@ export function View_Inventory() {
         </div>
       </div>
 
-      {/* Filter Bar */}
       <div className="filter-bar">
         <select
           name="category"
@@ -101,7 +102,6 @@ export function View_Inventory() {
         </select>
       </div>
 
-      {/* Inventory Table */}
       <div className="table-container">
         {loading ? (
           <p>Loading inventory...</p>
@@ -113,7 +113,6 @@ export function View_Inventory() {
                 <th>Item</th>
                 <th>Category</th>
                 <th>Size</th>
-                <th>Quantity</th>
               </tr>
             </thead>
 
@@ -125,7 +124,6 @@ export function View_Inventory() {
                     <td>{item.item}</td>
                     <td>{item.category}</td>
                     <td>{item.size || "N/A"}</td>
-                    <td>{item.quantity}</td>
                   </tr>
                 ))
               ) : (

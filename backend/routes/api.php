@@ -9,6 +9,7 @@ use App\Http\Controllers\DonationItemController;
 use App\Http\Controllers\CharityController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ViewUserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,14 +31,27 @@ Route::get('/test-db', function () {
 Route::get('/users', function () {
     return DB::table('users')->get();
 });
+
+Route::get('/api/test-users', function() {
+    try {
+        $users = DB::table('users')->get();
+        return response()->json(['status' => 'success', 'users' => $users]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+});
+
 //end of testing routes
 
 
-// AUTH routes
+// Authenrtication routes
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
-
+ 
 // Inventory routes
 Route::get('/inventory', [InventoryController::class, 'index']);
 Route::get('/inventory/{id}', [InventoryController::class, 'show']);
@@ -57,6 +71,9 @@ Route::get('/donation-items/{id}', [DonationItemController::class, 'show']);
 Route::get('/charities', [CharityController::class, 'index']);
 Route::get('/charities/{id}', [CharityController::class, 'show']);
 Route::post('/charities', [CharityController::class, 'store']);
+Route::put('/charities/{id}', [CharityController::class, 'update']);  
+Route::delete('/charities/{id}', [CharityController::class, 'destroy']);
+
 
 // Charity — Get all donations assigned to this charity
 Route::get('/charity/{charityId}/donations', [DonationController::class, 'getCharityDonations']);
@@ -68,7 +85,13 @@ Route::prefix('admin')->group(function () {
     Route::get('/charities',  [AdminController::class, 'getAllCharities']);
     Route::get('/users',      [AdminController::class, 'getAllUsers']);
     Route::get('/stats',      [AdminController::class, 'getDashboardStats']);
-    
 });
 
-Route::get('/view-users',      [ViewUserController::class, 'getViewUsers']);
+// User Management Routes
+Route::prefix('user-management')->group(function () {
+    Route::get('/view-users', [ViewUserController::class, 'getViewUsers']);
+    Route::get('/charities-list', [CharityController::class, 'getCharitiesList']);
+    Route::get('/roles', [ViewUserController::class, 'getRoles']);
+    Route::put('/users/{id}', [ViewUserController::class, 'updateUser']);
+    Route::delete('/users/{id}', [ViewUserController::class, 'deleteUser']);
+});

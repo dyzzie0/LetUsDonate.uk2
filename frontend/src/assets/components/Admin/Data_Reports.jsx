@@ -4,6 +4,7 @@ import { saveAs } from "file-saver";
 import "../../../css/data_reports.css";
 import Papa from "papaparse";
 
+// This allows admin to generate and download data reports
 export function Data_Reports() {
   const [donations, setDonations] = useState([]);
   const [users, setUsers] = useState([]);
@@ -39,7 +40,6 @@ export function Data_Reports() {
   }, []);
 
   // Controlling report generation
-
   const generateReportDonations = () => {
     const donationData = donations.map((d) => ({
       Date: d.donation_date,
@@ -54,7 +54,7 @@ export function Data_Reports() {
       "donation_report.csv",
     );
   };
-
+  //report for users
   const generateReportUsers = () => {
     const userData = users.map((u) => ({
       UserID: u.user_ID,
@@ -69,7 +69,7 @@ export function Data_Reports() {
       "users_report.csv",
     );
   };
-
+  //report for sustainability
   const generateReportSustainability = () => {
     const totalCO2 = donations.reduce(
       (sum, d) => sum + (d.items?.length || 0) * 1.5,
@@ -83,7 +83,7 @@ export function Data_Reports() {
       "sustainability_report.csv",
     );
   };
-
+  //report for charities
   const generateReportCharities = () => {
     const charityData = charities.map((c) => {
       const donationsReceived = donations.filter(
@@ -102,7 +102,7 @@ export function Data_Reports() {
     saveAs(
       new Blob([csv], { type: "text/csv;charset=utf-8;" }),
       "charity_report.csv",
-    );
+    ); // we uses papaparse to convert json to csv and file-saver to download the file
   };
 
   // Generate all reports at once

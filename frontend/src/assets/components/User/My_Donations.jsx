@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
 
+// This allows users to view and filter their donation history
 export default function My_Donations() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ export default function My_Donations() {
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
 
-    fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
+    fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`) // fetch donations for this donor
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") setDonations(data.donations);

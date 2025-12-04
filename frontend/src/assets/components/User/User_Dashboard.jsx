@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../../css/user.css";
+import "../../../css/modal.css";
 
 export default function User_Dashboard() {
   const navigate = useNavigate();
@@ -12,8 +13,9 @@ export default function User_Dashboard() {
   const [preview, setPreview] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [status, setStatus] = useState(null);
+  const [modalImage, setModalImage] = useState(null);
 
-  //load logged in user
+  // Load logged in user
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -23,10 +25,9 @@ export default function User_Dashboard() {
     setUser(JSON.parse(storedUser));
   }, [navigate]);
 
-  //load donations
+  // Load user donations
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
-
     fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
       .then((res) => res.json())
       .then((data) => {
@@ -35,7 +36,7 @@ export default function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-  //load charities
+  // Load charities
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -51,7 +52,6 @@ export default function User_Dashboard() {
     return c ? c.charity_name : "Unknown";
   };
 
-  //file preview
   const handleChange = (e) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -65,7 +65,6 @@ export default function User_Dashboard() {
     setPreview(null);
   };
 
-  //submit donation
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
@@ -73,15 +72,14 @@ export default function User_Dashboard() {
     const formData = new FormData();
     const fields = new FormData(e.target);
 
-    //map to backend names
     formData.append("item_name", fields.get("item_name"));
-    formData.append("category", fields.get("category")); // backend item_category
+    formData.append("category", fields.get("category"));
+    formData.append("quantity", fields.get("quantity"));
     formData.append("size", fields.get("size"));
     formData.append("condition", fields.get("condition"));
     formData.append("description", fields.get("description"));
     formData.append("pickup_address", fields.get("pickup_address"));
     formData.append("charity_ID", fields.get("charity_ID"));
-
     formData.append("donor_ID", user.donor.donor_ID);
 
     if (file) formData.append("image", file);
@@ -100,7 +98,7 @@ export default function User_Dashboard() {
         e.target.reset();
         setFile(null);
 
-        //reload donations
+        // Reload donations
         fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
           .then((res) => res.json())
           .then((data) => {
@@ -124,7 +122,6 @@ export default function User_Dashboard() {
 
   return (
     <>
-      {/* DASHBOARD LAYOUT */}
       <div className="user-dashboard-container">
         <div className="dashboard-left">
           <div className="dashboard">
@@ -171,7 +168,7 @@ export default function User_Dashboard() {
 
                 <div className="stat-card">
                   <i className="fa-solid fa-heart"></i>
-                  <p className="stat-number">{donations.length * 2}</p>
+                  <p className="stat-number">{donations.length * 1}</p>
                   <p className="stat-text">People Helped</p>
                 </div>
               </div>
@@ -179,7 +176,6 @@ export default function User_Dashboard() {
           </div>
         </div>
 
-        {/* DONATION FORM */}
         <div className="dashboard-right">
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
@@ -230,55 +226,33 @@ export default function User_Dashboard() {
             ></textarea>
 
             <div className="file-upload">
+              <label htmlFor="image">Upload Image:</label>
               <input
                 type="file"
                 name="image"
+                id="image"
                 accept="image/*"
                 onChange={handleChange}
               />
 
               {file && preview && (
-                <div className="file-preview">
-                  <div className="image-preview">
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      className="thumbnail"
-                      onClick={() => setModalOpen(true)}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleDeleteFile}
-                      className="remove-btn"
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  {modalOpen && (
-                    <div
-                      className="image-mode"
-                      onClick={() => setModalOpen(false)}
-                    >
-                      <div
-                        className="mode-content"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <img
-                          src={preview}
-                          alt="Full Preview"
-                          className="full-image"
-                        />
-                        <button
-                          type="button"
-                          className="close-modal-btn"
-                          onClick={() => setModalOpen(false)}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                <div className="image-preview">
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="thumbnail"
+                    onClick={() => {
+                      setModalImage(preview);
+                      setModalOpen(true);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="remove-btn"
+                    onClick={handleDeleteFile}
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </div>
@@ -308,7 +282,6 @@ export default function User_Dashboard() {
         </div>
       </div>
 
-      {/* DONATION HISTORY */}
       <div className="donation-history full-width">
         <h3>Recent Donations</h3>
 
@@ -329,57 +302,45 @@ export default function User_Dashboard() {
             {donations.length > 0 ? (
               donations.slice(0, 4).map((d) => {
                 const item = d.items?.[0];
+                const imgUrl = item?.item_image
+                  ? (() => {
+                      let path = item.item_image
+                        .replace(/^public\//, "")
+                        .replace(/^\/+/, "");
+                      return path.startsWith("http")
+                        ? path
+                        : `http://localhost:8000/storage/${path}`;
+                    })()
+                  : null;
 
                 return (
                   <tr key={d.donation_ID}>
-                    {/* Item Name */}
                     <td>{item?.item_name ?? "N/A"}</td>
-
-                    {/* NEW: Size column */}
                     <td>{item?.item_size ?? "N/A"}</td>
-
-                    {/* Image */}
                     <td>
-                      {item?.item_image
-                        ? (() => {
-                            let path = item.item_image
-                              .replace(/^public\//, "")
-                              .replace(/^\/+/, "");
-                            const url = path.startsWith("http")
-                              ? path
-                              : `http://localhost:8000/storage/${path}`;
-                            return (
-                              <a
-                                href={url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                <img
-                                  src={url}
-                                  alt={item.item_name}
-                                  style={{
-                                    width: "50px",
-                                    height: "auto",
-                                    borderRadius: "4px",
-                                  }}
-                                />
-                              </a>
-                            );
-                          })()
-                        : "N/A"}
+                      {imgUrl ? (
+                        <img
+                          src={imgUrl}
+                          alt={item.item_name}
+                          style={{
+                            width: "50px",
+                            height: "auto",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            setModalImage(imgUrl);
+                            setModalOpen(true);
+                          }}
+                        />
+                      ) : (
+                        "N/A"
+                      )}
                     </td>
-
-                    {/* Date */}
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>
-
-                    {/* Charity */}
                     <td>{getCharityName(d.charity_ID)}</td>
-
-                    {/* Status */}
                     <td>{d.donation_status}</td>
-
-                    {/* Pickup Address */}
-                    <td>{d.pickup_address || "n/a"}</td>
+                    <td>{d.pickup_address || "N/A"}</td>
                   </tr>
                 );
               })
@@ -390,6 +351,21 @@ export default function User_Dashboard() {
             )}
           </tbody>
         </table>
+
+        {/* Image Modal (same as Admin logic) */}
+        {modalOpen && modalImage && (
+          <div className="image-modal" onClick={() => setModalOpen(false)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <img src={modalImage} alt="Full Preview" className="full-image" />
+              <button
+                className="close-modal-btn"
+                onClick={() => setModalOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

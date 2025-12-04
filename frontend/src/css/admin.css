@@ -56,7 +56,6 @@
   transition: 0.3s;
   padding: 4px;
 }
-
 .admin-button:hover {
   border-bottom: 2px solid #111;
 }
@@ -64,7 +63,7 @@
 /* Dashboard */
 
 .admin-overview {
-  background: light-dark(#fffefc, #2c2c2c);
+  background: light-dark(#ffffff, #2c2c2c);
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   padding: 20px 30px;
@@ -169,6 +168,10 @@
     grid-template-rows: repeat(4, 400px);
   }
 
+  .admin-links a {
+    font-size: 1rem;
+  }
+
   .admin-dashboard {
     flex: 1;
     margin-bottom: 200%;
@@ -182,5 +185,35 @@
 
   .Stats {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .chart-card canvas {
+    height: 250px;
+  }
+
+  .admin-overview,
+  .data-reports {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .Stats div {
+    padding: 10px;
+  }
+  .Stats p {
+    padding: 10px;
+    font-size: 18px;
+  }
+
+  .admin-links h2 {
+    font-size: 1.4rem;
+  }
+
+  .admin-button {
+    font-size: 1rem;
+  }
+
+  .chart-card h3 {
+    font-size: 1rem;
   }
 }

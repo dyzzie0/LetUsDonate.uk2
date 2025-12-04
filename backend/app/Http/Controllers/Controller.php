@@ -11,3 +11,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
+
+// --- IGNORE ---
+// /**
+//  * Base controller class --- IGNORE ---
+//  * Provides common functionality for all controllers --- IGNORE ---
+//  */

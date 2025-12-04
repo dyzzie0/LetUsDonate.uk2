@@ -11,3 +11,5 @@ root.render(
     <App />
   </StrictMode>,
 );
+
+// Entry point for the React application, rendering the main App component

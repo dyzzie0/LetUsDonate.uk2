@@ -8,15 +8,17 @@ export function Admin_Donations() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
+  // Build image URL correctly
   const buildImageUrl = (path) => {
     if (!path) return null;
     path = path.replace(/^public\//, "").replace(/^\/+/, "");
-    if (path.startsWith("http")) return path;
     return `http://localhost:8000/storage/${path}`;
-  }; // thiis isnt working atm
+  };
 
-  // Fetch donations
+  // Fetch all donations
   useEffect(() => {
     fetch("http://localhost:8000/api/donations")
       .then((res) => res.json())
@@ -33,14 +35,13 @@ export function Admin_Donations() {
       });
   }, []);
 
-  // Filtering (search by item name / category / donor ID)
+  // Filter donations
   useEffect(() => {
     const filtered = donations.filter((d) => {
       const item = d.items?.[0] ?? {};
-
-      const donorId = String(d?.donor?.user?.user_ID || "");
-      const itemName = item?.item_name?.toLowerCase() || "";
-      const itemCategory = item?.item_category?.toLowerCase() || "";
+      const donorId = String(d?.donor?.user_ID || "");
+      const itemName = (item?.item_name || "").toLowerCase();
+      const itemCategory = (item?.item_category || "").toLowerCase();
 
       const searchMatch =
         !search ||
@@ -58,9 +59,20 @@ export function Admin_Donations() {
     setFilteredDonations(filtered);
   }, [search, statusFilter, donations]);
 
-  const handleFilter = () => {
-    let results = donations;
-    setFilteredDonations(results);
+  const handleReset = () => {
+    setSearch("");
+    setStatusFilter("");
+    setFilteredDonations(donations);
+  };
+
+  const openModal = (imgUrl) => {
+    setModalImage(imgUrl);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalImage(null);
   };
 
   return (
@@ -69,7 +81,6 @@ export function Admin_Donations() {
         <div className="header-left">
           <h2>Total Donations</h2>
         </div>
-
         <div className="return-right">
           <li>
             <Link to="/admin_dashboard">Return</Link>
@@ -81,15 +92,15 @@ export function Admin_Donations() {
         <input
           type="text"
           placeholder="Search by item, category, or donor ID..."
-          className="search-input"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          className="search-input"
         />
 
         <select
-          className="status-filter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
+          className="status-filter"
         >
           <option value="">All Statuses</option>
           <option value="Pending">Pending</option>
@@ -97,7 +108,7 @@ export function Admin_Donations() {
           <option value="Declined">Declined</option>
         </select>
 
-        <button className="filter-button" onClick={handleFilter}>
+        <button className="filter-button" onClick={handleReset}>
           Reset
         </button>
       </div>
@@ -108,10 +119,10 @@ export function Admin_Donations() {
             <tr>
               <th>Donation ID</th>
               <th>Donor ID</th>
-              <th>Category</th>
               <th>Item</th>
-              <th>Image</th>
+              <th>Category</th>
               <th>Quantity</th>
+              <th>Image</th>
               <th>Date</th>
               <th>Status</th>
             </tr>
@@ -132,31 +143,31 @@ export function Admin_Donations() {
                   <tr key={d.donation_ID}>
                     <td>{d.donation_ID}</td>
                     <td>{donorId}</td>
-                    <td>{item?.item_category ?? "N/A"}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
+                    <td>{item?.item_category ?? "N/A"}</td>
+                    <td>{item?.item_quantity ?? "N/A"}</td>
                     <td>
                       {imgUrl ? (
-                        <a
-                          href={imgUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <img
-                            src={imgUrl}
-                            alt={item.item_name}
-                            style={{
-                              width: "50px",
-                              height: "auto",
-                              borderRadius: "4px",
-                            }}
-                          />
-                        </a>
+                        <img
+                          src={imgUrl}
+                          alt={item.item_name}
+                          style={{
+                            width: "50px",
+                            height: "auto",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => openModal(imgUrl)}
+                        />
                       ) : (
                         "N/A"
                       )}
                     </td>
-                    <td>{item?.quantity ?? 1}</td>
-                    <td>{new Date(d.donation_date).toLocaleDateString()}</td>
+                    <td>
+                      {d.donation_date
+                        ? new Date(d.donation_date).toLocaleDateString()
+                        : "N/A"}
+                    </td>
                     <td>{d.donation_status}</td>
                   </tr>
                 );
@@ -169,6 +180,18 @@ export function Admin_Donations() {
           </tbody>
         </table>
       </div>
+
+      {/* Image Modal */}
+      {modalOpen && modalImage && (
+        <div className="image-modal" onClick={closeModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <img src={modalImage} alt="Full Preview" className="full-image" />
+            <button className="close-modal-btn" onClick={closeModal}>
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

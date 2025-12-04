@@ -20,6 +20,7 @@ import { Data_Reports } from "./assets/components/Admin/Data_Reports.jsx";
 import { View_Users } from "./assets/components/Admin/View_Users.jsx";
 import { Admin_Inventory } from "./assets/components/Admin/Admin_Inventory.jsx";
 import { Admin_Donations } from "./assets/components/Admin/Admin_Donations.jsx";
+import { Manage_Charity } from "./assets/components/Admin/Manage_Charity.jsx";
 
 //Charity
 import Charity_Dashboard from "./assets/components/Charity/Charity_Dashboard.jsx";
@@ -67,6 +68,7 @@ export default function Layout() {
     "/add_charity",
     "/admin_inventory",
     "/admin_donations",
+    "/manage_charity",
   ];
 
   const hideHeaderFooter = noHeaderFooterPaths.includes(path);
@@ -97,6 +99,7 @@ export default function Layout() {
         <Route path="/view_users" element={<View_Users />} />
         <Route path="/admin_inventory" element={<Admin_Inventory />} />
         <Route path="/admin_donations" element={<Admin_Donations />} />
+        <Route path="/manage_charity" element={<Manage_Charity />} />
 
         {/* Charity */}
         <Route path="/charity_dashboard" element={<Charity_Dashboard />} />

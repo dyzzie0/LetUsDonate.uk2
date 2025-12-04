@@ -6,7 +6,8 @@ use App\Models\Donation;
 use App\Models\DonationItem;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
-
+ 
+// Controller for managing donations
 class DonationController extends Controller
 {
     //get donations for a specific donor
@@ -23,7 +24,7 @@ class DonationController extends Controller
         ]);
     }
 
-    //create donation and item (NO inventory update here)
+    //create donation and item (inventory isnt updated here)
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -64,7 +65,7 @@ class DonationController extends Controller
             'item_image'       => $imagePath,
         ]);
 
-
+        //return response
         return response()->json([
             'status'   => 'success',
             'message'  => 'Donation submitted successfully!',
@@ -89,7 +90,7 @@ class DonationController extends Controller
 
     
      //Update donation status (Approved / Declined / Pending)
-     //inventory ONLY updates when approved
+     //inventory only, updates when approved
     public function updateStatus(Request $request, $donationId)
     {
         $validated = $request->validate([
@@ -101,7 +102,7 @@ class DonationController extends Controller
         $donation->donation_status = $validated['status'];
         $donation->save();
 
-        //add to inventory ONLY when approved
+        //add to inventory, only when approved
         if ($validated['status'] === 'Approved') {
 
             foreach ($donation->items as $item) {
@@ -112,7 +113,7 @@ class DonationController extends Controller
                         'category'   => $item->item_category,
                         'size'       => $item->item_size,
                     ],
-                    [ 'quantity' => 0 ]
+                    [ 'quantity' => 1 ]
                 )->increment('quantity');
             }
         }
@@ -124,7 +125,7 @@ class DonationController extends Controller
     }
 
     
-     //Admin- get all donations
+     //Admin gets all donations to view
     public function getAllDonations()
     {
         $donations = Donation::with(['items', 'charity', 'donor'])

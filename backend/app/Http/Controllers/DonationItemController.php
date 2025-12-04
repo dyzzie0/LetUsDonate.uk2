@@ -7,6 +7,8 @@ use App\Models\Donation;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 
+
+// Controller for managing donation items and updating inventory
 class DonationItemController extends Controller
 {
     public function index()
