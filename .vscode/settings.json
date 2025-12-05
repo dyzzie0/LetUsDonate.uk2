@@ -1,3 +1,6 @@
 {
-  "dbcode.connections": []
+  "dbcode.connections": [],
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ]
 }

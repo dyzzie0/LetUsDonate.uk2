@@ -46,6 +46,9 @@ function DonorSignUp() {
       } else {
         setMessage(data.message || "Something went wrong");
       }
+      if (data.message === "Email already exists") {
+        setMessage("Email already exists");
+      }
     } catch (err) {
       setMessage("Could not connect to the server");
       console.error(err);
@@ -110,7 +113,7 @@ function DonorSignUp() {
           <i className="fa-solid fa-lock"></i>
         </div>
 
-        {message && <p style={{ color: "red" }}>{message}</p>}
+        {message && <p style={{ color: "white" }}>{message}</p>}
 
         <div className="signup_link">
           <Link className="print" to="/login">
