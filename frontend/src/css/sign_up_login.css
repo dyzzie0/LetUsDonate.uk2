@@ -139,6 +139,7 @@
   margin-bottom: 20px;
 }
 
+/* Responsiveness */
 @media screen and (max-width: 768px) {
   .middle {
     margin: 20px;

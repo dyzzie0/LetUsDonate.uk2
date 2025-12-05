@@ -12,12 +12,18 @@
 
 /* Sidebar In Main Container*/
 .links {
-  background-color: #8a9b8e;
+  background-color: #53835e;
   width: 200px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 20px 0;
 }
+.dashboard-left {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 
 .links ul {
   list-style: none;
@@ -29,7 +35,7 @@
   color: #ffffff;
   font-weight: 600;
   font-size: 1.1rem;
-  padding: 3.5rem 2rem;
+  padding: 2.5rem 2rem;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -39,8 +45,12 @@
   flex-direction: column;
 }
 
+
+
+
+
 .links li:hover {
-  background-color: #738678;
+  background-color: #619a6f;
 }
 
 .links i {
@@ -50,6 +60,7 @@
 
 .logout-btn {
   border: none;
+  background-color: #53835e;
   color: #fff;
   padding: 10px 20px;
   border-radius: 4px;
@@ -57,12 +68,13 @@
   font-family: "Iansui", cursive;
   font-size: 1.1rem;
 }
-
+.logout-btn:hover {
+  background-color: #619a6f;
+}
 /* User Dashboard */
 .dashboard-main {
   flex: 1;
-  padding: 2rem 3rem;
-  background: light-dark(#fffefc, #2c2c2c);
+  background: light-dark(#f9f9f9, #2c2c2c);
 }
 
 .dashboard-main h2 {
@@ -80,9 +92,9 @@
 }
 
 .stat-card {
-  background-color: #8a9b8e;
+  background-color: #53835e;
   color: #fff;
-  padding: 3.5rem 2rem;
+  padding: 2.5rem 2rem;
   border-radius: 8px;
   text-align: center;
   width: 180px;
@@ -134,7 +146,7 @@
 }
 
 .donation-history th {
-  background-color: #8a9b8e;
+  background-color: #53835e;
   color: #fff;
   font-weight: 600;
   padding: 1rem;
@@ -158,7 +170,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
+
   width: 100%;
   max-width: 1500px;
   margin: 0 auto;
@@ -169,6 +181,7 @@
   flex-direction: column;
   gap: 2rem;
   flex: 2;
+  height: auto;
 }
 
 .dashboard-right {
@@ -370,6 +383,8 @@
   border-radius: 10px;
   object-fit: contain;
 }
+
+/* Responsive — Mobile & Tablets */
 @media screen and (max-width: 768px) {
   /* Stack dashboard vertically */
   .dashboard {
@@ -379,14 +394,17 @@
     border-radius: 0;
   }
 
-  /* Sidebar as a horizontal scroll bar */
+  .logout-btn {
+    font-size: 15px;
+  }
+
+  /* Sidebar becomes horizontal */
   .links {
     width: 100%;
     flex-direction: row;
     justify-content: space-around;
     overflow-x: auto;
     padding: 0.5rem;
-    background-color: #8a9b8e;
   }
 
   .links ul {
@@ -407,12 +425,12 @@
     font-size: 1.2rem;
   }
 
-  /* Main dashboard area */
+  /* Main section */
   .dashboard-main {
     padding: 1rem;
   }
 
-  /* Stats cards stack vertically */
+  /* Stats stack vertically */
   .stats-container {
     flex-direction: column;
     align-items: stretch;
@@ -424,7 +442,7 @@
     padding: 2rem 1rem;
   }
 
-  /* Donation history */
+  /* Donation history table scrollable */
   .donation-history {
     width: 100%;
     margin: 1rem 0;
@@ -436,10 +454,11 @@
     min-width: 600px;
   }
 
-  /* Dashboard layout columns stack */
-  .user-dashboard-container {
+  /* Dashboard columns stack */
+  .user-dashboard-container,
+  .charity-dashboard-container {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .dashboard-left,
@@ -448,7 +467,7 @@
     flex: none;
   }
 
-  /* New donation form */
+  /* Donation form */
   .new-donation {
     width: 100%;
     padding: 1.2rem;
@@ -471,6 +490,7 @@
     max-height: 200px;
   }
 
+  /* Full image mode */
   .full-image {
     max-width: 90%;
     max-height: 70%;

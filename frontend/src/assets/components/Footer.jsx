@@ -11,8 +11,7 @@ export function Footer() {
           <Link to="/privacy_policy"> Privacy Policy </Link>/
           <Link to="accessibility"> Accessibility </Link>/
           <Link to="/cookie_policy"> Cookie Policy </Link>/ &copy;{" "}
-          {new Date().getFullYear()}Let Us Donate UK <br></br>All rights
-          reserved.
+          {new Date().getFullYear()}LetUsDonateUK <br></br>All rights reserved.
         </p>
         <div className="footer-logo">
           <i className="fa-solid fa-leaf"></i>

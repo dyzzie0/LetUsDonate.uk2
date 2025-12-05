@@ -41,6 +41,7 @@
   background-color: #8b5cf6;
   color: #fff;
   border: none;
+  margin: 2px;
   border-radius: 6px;
   padding: 8px 14px;
   font-size: 14px;
@@ -62,4 +63,22 @@
 
 .table tbody tr:hover {
   background-color: light-dark(#eef2ff, #333333);
+}
+
+/* Responsivness */
+@media screen and (max-width: 768px) {
+  .header-left h2 {
+    font-size: 20px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+
+  .table td button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 }

@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 import { Chart } from "chart.js/auto";
 import "../../../css/charity.css";
 
+function getChartTextColor() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "#ffffff"
+    : "#000000";
+}
+
 export default function Charity_Dashboard() {
   const [donations, setDonations] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -14,7 +20,7 @@ export default function Charity_Dashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const role = localStorage.getItem("role");
 
-  // Only allow charity role (role 11)
+  // Only allow charity role
   useEffect(() => {
     if (!user.user_ID || role !== "11") {
       window.location.href = "/login";
@@ -38,88 +44,86 @@ export default function Charity_Dashboard() {
         );
         const inventoryJson = await inventoryRes.json();
 
-        const inventoryList = inventoryJson.inventory || []
-          
+        const inventoryList = inventoryJson.inventory || [];
 
         setDonations(donationList);
         setInventory(inventoryList);
 
-///       // ========== CALCULATE STATS (ONLY THIS CHARITY) ==========
-const totalItems = donationList.reduce((sum, d) => {
-  if (!d.items) return sum;
+        //calculate stats for just this charity
+        const totalItems = donationList.reduce((sum, d) => {
+          if (!d.items) return sum;
 
-  const count = d.items.reduce((acc, item) => {
-    const qty = Number(item.quantity) || 1;
-    return acc + qty;
-  }, 0);
+          const count = d.items.reduce((acc, item) => {
+            const qty = Number(item.quantity) || 1;
+            return acc + qty;
+          }, 0);
 
-  return sum + count;
-}, 0);
+          return sum + count;
+        }, 0);
 
-setStats({
-  items: totalItems,
-  co2: (totalItems * 1.5).toFixed(1),
-  people: totalItems * 2,
-});
+        setStats({
+          items: totalItems,
+          co2: (totalItems * 1.5).toFixed(1),
+          people: totalItems * 1,
+        });
 
-setLoading(false);
-} catch (err) {
-console.error("Failed to fetch:", err);
-setLoading(false);
-}
-};
+        setLoading(false);
+      } catch (err) {
+        console.error("Failed to fetch:", err);
+        setLoading(false);
+      }
+    };
 
-fetchData();
-}, [user.charity_ID]);
+    fetchData();
+  }, [user.charity_ID]);
 
-// PIE CHART (Only this charity)
-useEffect(() => {
-if (!inventory.length) return;
+  // pie chart for inventory categories
+  useEffect(() => {
+    if (!inventory.length) return;
 
-//group inventory by category
-const categoryMap={};
+    //group inventory by category
+    const categoryMap = {};
 
-inventory.forEach((item) =>{
-const category = item.category || "Unknown";
-const qty = Number(item.quantity) || 0;
+    inventory.forEach((item) => {
+      const category = item.category || "Unknown";
+      const qty = Number(item.quantity) || 0;
 
-if (!categoryMap[category]){
-categoryMap[category] = 0;
-}
-categoryMap[category] += qty;
-});
+      if (!categoryMap[category]) {
+        categoryMap[category] = 0;
+      }
+      categoryMap[category] += qty;
+    });
 
-const labels = Object.keys(categoryMap); //mens/womens/girls/boys
-const quantities = Object.values(categoryMap); 
+    const labels = Object.keys(categoryMap); //mens/womens/girls/boys
+    const quantities = Object.values(categoryMap);
 
-if (chartRef.current) chartRef.current.destroy();
+    if (chartRef.current) chartRef.current.destroy();
 
-const ctx = document.getElementById("myChart");
-chartRef.current = new Chart(ctx, {
-type: "pie",
-data: {
-labels,
-datasets: [
-  {
-    data: quantities,
-    backgroundColor: [
-      "#5b7d62",
-      "#76a79b",
-      "#9fc3ab",
-      "#2d484c",
-      "#7e8568",
-    ],
-  },
-],
-},
-options: {
-responsive: true,
-plugins: { legend: { position: "right" } },
-},
-});
-}, [inventory]);
-
-
+    const ctx = document.getElementById("myChart");
+    chartRef.current = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels,
+        datasets: [
+          {
+            data: quantities,
+            backgroundColor: [
+              "#5b7d62",
+              "#76a79b",
+              "#9fc3ab",
+              "#2d484c",
+              "#7e8568",
+            ],
+          },
+        ],
+      },
+      options: {
+        color: getChartTextColor(),
+        responsive: true,
+        plugins: { legend: { position: "right" } },
+      },
+    });
+  }, [inventory]);
 
   // Image URL formatter
   const buildImageUrl = (path) => {
@@ -130,7 +134,6 @@ plugins: { legend: { position: "right" } },
   return (
     <div className="charity-dashboard-container">
       <div className="dashboard">
-        {/* SIDE NAV */}
         <aside className="links">
           <ul>
             <li>
@@ -147,7 +150,7 @@ plugins: { legend: { position: "right" } },
             </li>
             <li>
               <i className="fa-solid fa-truck"></i>
-              <Link to="/charity_distribution_records">
+              <Link to="/distribution_records">
                 Distribution Records
               </Link>
             </li>
@@ -167,7 +170,6 @@ plugins: { legend: { position: "right" } },
           </ul>
         </aside>
 
-        {/* MAIN PANEL */}
         <main className="dashboard-main">
           <h2>Welcome, {user.user_name} Staff!</h2>
 
@@ -175,7 +177,6 @@ plugins: { legend: { position: "right" } },
             <p>Loading dashboard...</p>
           ) : (
             <>
-              {/* Stats */}
               <div className="stats-container">
                 <div className="stat-card">
                   <i className="fa-solid fa-leaf"></i>
@@ -196,7 +197,6 @@ plugins: { legend: { position: "right" } },
                 </div>
               </div>
 
-              {/* Inventory Chart */}
               <div className="inventory-chart">
                 <h3>Inventory Overview</h3>
                 <canvas
@@ -209,7 +209,6 @@ plugins: { legend: { position: "right" } },
         </main>
       </div>
 
-      {/* RECENT DONATIONS */}
       <div className="donation-history">
         <h3>Recent Donations</h3>
         <table>
@@ -232,6 +231,7 @@ plugins: { legend: { position: "right" } },
                 const item = d.items?.[0] || {};
                 const imgUrl = buildImageUrl(item.item_image);
 
+                //display recent 5 donations
                 return (
                   <tr key={d.donation_ID}>
                     <td>{d.donor?.user?.user_name || "Unknown"}</td>

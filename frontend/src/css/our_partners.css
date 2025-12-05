@@ -64,3 +64,21 @@
   margin: 6px 0;
   color: light-dark(#333, #dcdcdc);
 }
+
+/* Responsiveness */
+
+@media (min-width: 1200px) {
+  .charity_grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (min-width: 800px) and (max-width: 1199px) {
+  .charity_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 799px) {
+  .charity_grid {
+    grid-template-columns: 1fr;
+  }
+}

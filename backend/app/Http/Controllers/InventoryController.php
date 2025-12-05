@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 
+// Controller for managing inventory
 class InventoryController extends Controller
 {
     public function index(Request $request)
@@ -22,6 +23,7 @@ class InventoryController extends Controller
         ]);
     }
 
+    //get a specific inventory item
     public function show($id)
     {
         $item = Inventory::with('charity')->findOrFail($id);
@@ -31,4 +33,16 @@ class InventoryController extends Controller
             'item'   => $item
         ]);
     }
+    public function distribute($id)
+    {
+        $item = Inventory::findOrFail($id);
+
+        $item->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Item distributed successfully'
+        ]);
+    }
+
 }

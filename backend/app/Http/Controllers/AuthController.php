@@ -12,7 +12,7 @@ use App\Models\Role;
 use App\Models\CharityStaff;
 
 
-
+// Controller for authentication: login and signup
 class AuthController extends Controller
 {
     //login
@@ -23,7 +23,7 @@ class AuthController extends Controller
         'password' => 'required|string',
     ]);
 
-    //find user by email
+    //find user by their email
     $user = DomainUser::where('user_email', $request->email)->first();
 
     if ($user && Hash::check($request->password, $user->user_password)) {
@@ -57,10 +57,10 @@ class AuthController extends Controller
 }
 
 
-    //Sign up
+    // Sign up
     public function signup(Request $request)
     {
-        //validates input
+        // validate if input matches criteria
         $request->validate([
             'fullName' => 'required|string|max:255',
             'email' => 'required|email|unique:User,user_email',
@@ -86,7 +86,8 @@ class AuthController extends Controller
             'user_ID' => $user->user_ID,
             'donor_address' => null,
         ]);
-    
+
+        // return success response
         return response()->json([
             'status' => 'success',
             'user' => $user

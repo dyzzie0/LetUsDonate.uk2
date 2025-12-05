@@ -5,7 +5,7 @@ import DonateImg2 from "../../images/Donate2.png";
 import DonateImg3 from "../../images/Donate3.png";
 import DonateImg4 from "../../images/Donate4.png";
 import "../../css/home.css";
-
+// This is the home page component for the LetUsDonate.uk website
 function Home() {
   const comment = [
     "I had so many clothes I never wore — this made it easy to donate them!",

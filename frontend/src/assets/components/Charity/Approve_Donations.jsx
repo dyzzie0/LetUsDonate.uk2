@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
+import "../../../css/modal.css";
 
+// allows charity staff to approve or decline pending donations
 export default function Approve_Donations() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,7 @@ export default function Approve_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
-  //APPROVE / DECLINE donation
+  //approve or decline donation
   const handleUpdateStatus = async (donationId, newStatus) => {
     try {
       const res = await fetch(
@@ -72,9 +74,9 @@ export default function Approve_Donations() {
       const data = await res.json();
 
       if (data.status === "success") {
-        // If approved then remove it from list AND added to inventory
+        // If approved then remove it from list and add to inventory
         if (newStatus === "Approved" || newStatus === "Declined") {
-          //remove approved OR declined from Approve_Donations page
+          //remove approved or declined from Approve_Donations page
           setDonations((prev) =>
             prev.filter((d) => d.donation_ID !== donationId),
           );
@@ -92,7 +94,7 @@ export default function Approve_Donations() {
     setTimeout(() => setActionMessage(null), 4000);
   };
 
-  // FILTERING LOGIC
+  // filtering logic
   const filteredDonations = donations.filter((d) => {
     const item = d.items?.[0];
 
@@ -158,7 +160,6 @@ export default function Approve_Donations() {
           </div>
         )}
 
-        {/* TABLE */}
         <div className="table-container">
           <table className="table">
             <thead>
@@ -168,7 +169,6 @@ export default function Approve_Donations() {
                 <th>Category</th>
                 <th>Description</th>
                 <th>Condition</th>
-                <th>Quantity</th>
                 <th>Image</th>
                 <th>Date Donated</th>
                 <th>Status</th>

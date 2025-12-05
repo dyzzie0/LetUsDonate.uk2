@@ -34,12 +34,11 @@ export default function My_Profile() {
       })
       .catch((err) => console.error("Profile fetch error:", err));
   }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+  //submit profile updates
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
@@ -52,7 +51,7 @@ export default function My_Profile() {
     if (formData.password.trim() !== "") {
       bodyData.password = formData.password;
     }
-
+    //send update request to backend
     try {
       const res = await fetch(`http://localhost:8000/api/user/${user.id}`, {
         method: "PUT",

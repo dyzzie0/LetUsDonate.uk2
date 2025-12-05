@@ -1,13 +1,11 @@
-main {
+.main {
   min-height: 100vh;
   padding: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: light-dark(#000000, #ffffff);
 }
-
-/* Header */
+/* Header Area */
 .records-container {
   display: flex;
   justify-content: space-between;
@@ -18,7 +16,6 @@ main {
 
 .records-container h2 {
   font-size: 1.7rem;
-  color: light-dark(#000000, #ffffff);
   font-weight: 500;
 }
 
@@ -34,7 +31,6 @@ main {
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
-  color: light-dark(#000000, #ffffff);
   border-bottom: 1px solid transparent;
   transition: 0.3s;
 }
@@ -145,7 +141,7 @@ main {
 
 /* Filter Button */
 .filter-button {
-  background-color: light-dark(#9faca2, #5a5a5a);
+  background-color: light-dark(#6ba578, #087435);
   color: #ffffff;
   border: none;
   padding: 8px 16px;
@@ -156,7 +152,7 @@ main {
 }
 
 .filter-button:hover {
-  background-color: light-dark(#969ca2, #6b6b6b);
+  background-color: light-dark(#969ca2, #566c5c);
 }
 
 /* Status Filter Input */
@@ -179,7 +175,7 @@ main {
   max-width: 600px;
   padding: 20px 30px;
   border-radius: 8px;
-  background-color: light-dark(#fffefc, #1e1e1e);
+  background-color: light-dark(#f3f3f3, #1e1e1e);
   box-shadow: 0 6px 18px rgba(48, 45, 45, 0.15);
 }
 
@@ -193,7 +189,7 @@ main {
 .profile-form input {
   padding: 10px 12px;
   margin-top: 5px;
-  border: 1px solid light-dark(#cccccc, #555555);
+  border: 1px solid light-dark(#cecbcb, #555555);
   border-radius: 6px;
   font-size: 1rem;
   background-color: light-dark(#ffffff, #1a1a1a);
@@ -210,19 +206,23 @@ main {
 }
 
 .profile-form button {
-  margin-top: 15px;
-  background-color: light-dark(#9faca2, #5a5a5a);
-  padding: 10px 18px;
-  border-radius: 6px;
+  background-color: #8b5cf6;
+  color: #fff;
   border: none;
-  font-size: 1rem;
+  margin: 2px;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition:
+    background-color 0.3s,
+    transform 0.2s;
 }
 
 .profile-form button:hover {
-  background-color: light-dark(#8c998f, #6b6b6b);
+  background-color: #7c3aed;
+  transform: translateY(-2px);
 }
 
 .form-message {
@@ -240,4 +240,191 @@ main {
 .form-message.error {
   background-color: light-dark(#fdecea, #4a1a1a);
   color: light-dark(#a72828, #ff9999);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form Inputs */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group select,
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+
+.success-message {
+  background: #d4edda;
+  border: 1px solid #8bc28a;
+  padding: 10px 15px;
+  margin: 15px auto;
+  width: 90%;
+  border-radius: 6px;
+  text-align: center;
+  color: #276738;
+  font-weight: 600;
+}
+
+.distributed-btn {
+  background: #777;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: default;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: white;
+  z-index: 2000;
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+.toast.success {
+  background-color: #2e7d32;
+}
+
+.toast.error {
+  background-color: #c62828;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(0);
+  }
+}
+
+/* Distributed Button */
+.distributed-button {
+  background-color: #8bc34a;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: default;
+}
+
+/* Fade out row */
+.fade-out {
+  animation: fadeRow 0.6s forwards ease-in-out;
+}
+
+@keyframes fadeRow {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    height: 0;
+    transform: scaleY(0);
+  }
+}
+
+
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+  .main {
+    padding: 20px;
+  }
+  .records-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .records-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .return-right ul {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .filter-bar select,
+  .search-input,
+  .status-filter {
+    width: 100%;
+  }
+
+  .filter-button {
+    width: 100%;
+    padding: 10px;
+  }
+  .table-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .donation-button {
+    font-size: 0.85rem;
+    padding: 5px 8px;
+  }
+  .dashboard-main {
+    margin: 40px 0;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .profile-form-container {
+    width: 100%;
+    padding: 15px 20px;
+  }
+
+  .profile-form input {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  .profile-form button {
+    width: 100%;
+    margin-top: 10px;
+  }
 }

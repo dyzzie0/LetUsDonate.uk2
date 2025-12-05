@@ -7,6 +7,7 @@ use App\Models\Charity;
 use App\Models\User;
 use Illuminate\Http\Request;
 
+// Admin controller for managing donations, charities, users, and dashboard stats
 class AdminController extends Controller
 {
     // Getting all donations (with their items + charity + donor)

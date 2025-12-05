@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../css/sign_up_login.css";
-
+// This is the signup component for new donors to create an account
 function DonorSignUp() {
   const [formData, setFormData] = useState({
     fullName: "",

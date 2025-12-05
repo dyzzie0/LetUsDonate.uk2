@@ -7,29 +7,77 @@ use Illuminate\Support\Facades\DB;
 
 class ViewUserController extends Controller
 {
+    // Get all users
     public function getViewUsers()
     {
-        try {
-            $users = DB::table('User')
-                ->leftJoin('Role', 'User.role_id', '=', 'Role.role_id')
-                ->select(
-                    'User.user_ID',
-                    'User.user_name',
-                    'User.user_email',
-                    'Role.role_name'
-                )
-                ->get();
+        $users = DB::table('User')
+            ->leftJoin('Role','User.role_id','=','Role.role_id')
+            ->leftJoin('Charity_Staff','User.user_ID','=','Charity_Staff.user_ID')
+            ->leftJoin('Charity','Charity_Staff.charity_ID','=','Charity.charity_ID')
+            ->select('User.user_ID','User.user_name','User.user_email','Role.role_name',
+                     'Charity_Staff.charity_ID','Charity.charity_name')
+            ->get();
 
-            return response()->json([
-                'status' => 'success',
-                'users' => $users
-            ]);
+        return response()->json(['status'=>'success','users'=>$users]);
+    }
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ]);
+    // Get all roles
+    public function getRoles()
+    {
+        $roles = DB::table('Role')->select('role_id','role_name')->get();
+        return response()->json(['status'=>'success','roles'=>$roles]);
+    }
+
+    // Get list of charities
+    public function getCharitiesList()
+    {
+        $charities = DB::table('Charity')
+            ->select('charity_ID','charity_name')
+            ->orderBy('charity_name','asc')
+            ->get();
+        return response()->json(['status'=>'success','charities'=>$charities]);
+    }
+
+    // Update user
+    public function updateUser(Request $request, $id)
+    {
+        $user = DB::table('User')->where('user_ID',$id)->first();
+        if (!$user) return response()->json(['status'=>'error','message'=>'User not found'],404);
+
+        $roleName = DB::table('Role')->where('role_id',$user->role_id)->value('role_name');
+
+        // Only charity_staff can change charity assignment
+        if ($roleName === 'charity_staff' && $request->has('charity_id')) {
+            DB::table('Charity_Staff')->updateOrInsert(
+                ['user_ID'=>$id],
+                ['charity_ID'=>$request->charity_id]
+            );
         }
+
+        // Only charity_staff can be promoted to admin
+        if ($roleName === 'charity_staff' && $request->role_name === 'admin') {
+            $adminRole = DB::table('Role')->where('role_name','admin')->first();
+            DB::table('User')->where('user_ID',$id)->update(['role_id'=>$adminRole->role_id]);
+            DB::table('Charity_Staff')->where('user_ID',$id)->delete();
+        }
+
+        $updatedUser = DB::table('User')
+            ->leftJoin('Role','User.role_id','=','Role.role_id')
+            ->leftJoin('Charity_Staff','User.user_ID','=','Charity_Staff.user_ID')
+            ->leftJoin('Charity','Charity_Staff.charity_ID','=','Charity.charity_ID')
+            ->select('User.user_ID','User.user_name','User.user_email','Role.role_name',
+                     'Charity_Staff.charity_ID','Charity.charity_name')
+            ->where('User.user_ID',$id)
+            ->first();
+
+        return response()->json(['status'=>'success','user'=>$updatedUser]);
+    }
+
+    // Delete user
+    public function deleteUser($id)
+    {
+        DB::table('Charity_Staff')->where('user_ID',$id)->delete();
+        DB::table('User')->where('user_ID',$id)->delete();
+        return response()->json(['status'=>'success','message'=>'User deleted successfully']);
     }
 }

@@ -29,6 +29,7 @@
   text-decoration: underline;
 }
 
+/* Responsivness */
 @media screen and (max-width: 768px) {
   .footer {
     padding: 80px 20px;

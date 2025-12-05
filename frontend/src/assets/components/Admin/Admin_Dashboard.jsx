@@ -3,17 +3,30 @@ import { Link } from "react-router-dom";
 import { Chart } from "chart.js/auto";
 import "../../../css/admin.css";
 
+// This is js to get text color based on theme
+function getChartTextColor() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "#ffffff"
+    : "#000000";
+}
+
 export function Admin_Dashboard() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Refs for charts
+  // References to charts which means we can destroy them before re-creating in case of data updates so we don't get overlapping charts
   const donationChartRef = useRef(null);
   const userChartRef = useRef(null);
   const sustainabilityChartRef = useRef(null);
   const charityChartRef = useRef(null);
 
-  // Fetch donations from API
+  // Destroy previous chart js incase it exists similar to references above
+  if (sustainabilityChartRef.current) sustainabilityChartRef.current.destroy();
+  if (donationChartRef.current) donationChartRef.current.destroy();
+  if (userChartRef.current) userChartRef.current.destroy();
+  if (charityChartRef.current) charityChartRef.current.destroy();
+
+  // Fetch donations from the API aka backend
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/donations")
       .then((res) => res.json())
@@ -29,7 +42,7 @@ export function Admin_Dashboard() {
       });
   }, []);
 
-  // Helper: filter donations by time
+  // This function filters donations by time period, returning only those within the specified number of days
   const filterByTime = (days) => {
     const now = new Date();
     return donations.filter((d) => {
@@ -38,6 +51,7 @@ export function Admin_Dashboard() {
     });
   };
 
+  // Update charts when donations data changes
   useEffect(() => {
     if (loading || donations.length === 0) return;
 
@@ -57,7 +71,7 @@ export function Admin_Dashboard() {
       Total: "Total",
     };
 
-    // Prepare datasets
+    // Prepare datasets which counts donations by status over different time frames
     const approvedCounts = labels.map((l) =>
       countByStatus(dayMap[l], "Approved"),
     );
@@ -68,9 +82,7 @@ export function Admin_Dashboard() {
       countByStatus(dayMap[l], "Declined"),
     );
 
-    // Destroy previous chart js incase it exists
-    if (donationChartRef.current) donationChartRef.current.destroy();
-
+    // Donation trends chart
     const donationCtx = document.getElementById("donationTrends");
     donationChartRef.current = new Chart(donationCtx, {
       type: "line",
@@ -98,7 +110,7 @@ export function Admin_Dashboard() {
           {
             label: "Declined",
             data: declinedCounts,
-            borderColor: "#8B5CF6", // purple
+            borderColor: "#8B5CF6", // bluish purple
             backgroundColor: "rgba(139, 92, 246, 0.2)",
             fill: true,
             tension: 0.3,
@@ -107,13 +119,14 @@ export function Admin_Dashboard() {
         ],
       },
       options: {
+        color: getChartTextColor(), // Adjust text color based on theme
         responsive: true,
         plugins: { legend: { position: "top" }, title: { display: false } },
         scales: { y: { beginAtZero: true } },
       },
     });
 
-    // User trends
+    // User trends timeframes
     const userCounts = labels.map((label) => {
       let filtered = [];
       switch (label) {
@@ -140,7 +153,7 @@ export function Admin_Dashboard() {
       return uniqueUsers.size;
     });
 
-    if (userChartRef.current) userChartRef.current.destroy();
+    // User trends chart
     const userCtx = document.getElementById("userTrends");
     userChartRef.current = new Chart(userCtx, {
       type: "line",
@@ -159,18 +172,17 @@ export function Admin_Dashboard() {
         ],
       },
       options: {
+        color: getChartTextColor(),
         responsive: true,
         plugins: { legend: { display: true }, title: { display: false } },
         scales: { y: { beginAtZero: true } },
       },
     });
 
+    // Sustainability Impact Chart
     const sustainabilityCtx = document.getElementById(
       "sustainabilityImpactChart",
     );
-
-    if (sustainabilityChartRef.current)
-      sustainabilityChartRef.current.destroy();
 
     sustainabilityChartRef.current = new Chart(sustainabilityCtx, {
       type: "bar",
@@ -190,11 +202,11 @@ export function Admin_Dashboard() {
         ],
       },
       options: {
+        color: getChartTextColor(),
         responsive: true,
         plugins: {
           legend: { display: true, position: "top" },
           title: { display: false },
-
         },
         scales: { y: { beginAtZero: true } },
       },
@@ -207,7 +219,6 @@ export function Admin_Dashboard() {
       charities[name] = (charities[name] || 0) + 1;
     });
 
-    if (charityChartRef.current) charityChartRef.current.destroy();
     const charityCtx = document.getElementById("charityPerformance");
     charityChartRef.current = new Chart(charityCtx, {
       type: "pie",
@@ -228,6 +239,7 @@ export function Admin_Dashboard() {
         ],
       },
       options: {
+        color: getChartTextColor(),
         responsive: true,
         plugins: { legend: { position: "right" } },
       },

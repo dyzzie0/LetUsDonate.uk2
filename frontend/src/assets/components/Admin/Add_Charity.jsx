@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
 
+// This component allows admin to add a new charity along with its staff account
 export function Add_Charity() {
   const [formData, setFormData] = useState({
     charity_name: "",
@@ -24,10 +25,10 @@ export function Add_Charity() {
     e.preventDefault();
     setStatus(null);
 
-    //validate length of password
-    if (formData.staff_password.length< 6){
+    // validating length of password
+    if (formData.staff_password.length < 6) {
       setStatus({
-        type:"error",
+        type: "error",
         message: "Password must be at least 6 characters long.",
       });
       return;
@@ -59,7 +60,6 @@ export function Add_Charity() {
     } catch (err) {
       setStatus({ type: "error", message: "Network error. Please try again." });
     }
-
     setTimeout(() => setStatus(null), 4000);
   };
 
@@ -73,7 +73,10 @@ export function Add_Charity() {
         <div className="return-right">
           <ul>
             <li>
-              <Link to="/view_users">Return</Link>
+              <Link to="/admin_dashboard">Return</Link>
+            </li>
+            <li>
+              <Link to="/manage_charity">Manage Charities</Link>
             </li>
           </ul>
         </div>
@@ -108,7 +111,7 @@ export function Add_Charity() {
           </label>
 
           <label>
-            Charity  Email:
+            Charity Email:
             <input
               type="email"
               name="charity_email"
@@ -136,7 +139,7 @@ export function Add_Charity() {
               name="staff_username"
               value={formData.staff_username}
               onChange={handleChange}
-              required       
+              required
             />
           </label>
 
@@ -169,8 +172,6 @@ export function Add_Charity() {
         </form>
       </div>
     </main>
-
-    
   );
 }
 

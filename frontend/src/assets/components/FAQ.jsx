@@ -32,7 +32,7 @@ function FAQ() {
           <h4>What can I donate?</h4>
 
           <ul>
-            <li>• Good quality clean adults’ and children’s clothing</li>
+            <li>•Good quality clean adults’ and children’s clothing</li>
             <li>•Pairs of shoes.</li>
             <li>•Handbags & belts </li>
             <li>•Unused underwear & swimwear </li>
