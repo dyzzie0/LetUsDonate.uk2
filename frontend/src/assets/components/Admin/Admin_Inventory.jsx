@@ -102,11 +102,7 @@ export function Admin_Inventory() {
             <thead>
               <tr>
                 <th>Item ID</th>
-<<<<<<< HEAD
                 <th>Item Type</th>
-=======
-                <th>Item</th>
->>>>>>> main
                 <th>Category</th>
                 <th>Size</th>
               </tr>
