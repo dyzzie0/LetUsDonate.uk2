@@ -33,7 +33,7 @@ class AuthController extends Controller
         //attach donor data if user is a donor
         $donor = Donor::where('user_ID', $user->user_ID)->first();
         if ($donor) {
-            $userData['donor'] = $donor;  // <-- IMPORTANT
+            $userData['donor'] = $donor; 
         }
 
         //attach charity staff, charity_ID if charity staff

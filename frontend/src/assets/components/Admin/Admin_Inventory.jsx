@@ -100,11 +100,10 @@ export function Admin_Inventory() {
           <table className="table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Item ID</th>
                 <th>Item</th>
                 <th>Category</th>
                 <th>Size</th>
-                <th>Quantity</th>
               </tr>
             </thead>
 
@@ -116,7 +115,6 @@ export function Admin_Inventory() {
                     <td>{item.item}</td>
                     <td>{item.category}</td>
                     <td>{item.size || "N/A"}</td>
-                    <td>{item.quantity}</td>
                   </tr>
                 ))
               ) : (
