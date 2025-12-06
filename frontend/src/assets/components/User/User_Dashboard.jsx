@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { QRCodeCanvas } from "qrcode.react";
 import "../../../css/user.css";
 import "../../../css/modal.css";
 
@@ -13,20 +12,13 @@ export default function User_Dashboard() {
   const [charities, setCharities] = useState([]);
   const [loadingCharities, setLoadingCharities] = useState(true);
 
-  // Image upload states
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
-  // Modals
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState(null);
 
   const [status, setStatus] = useState(null);
-
-  // Remote upload (phone camera)
-  const [remoteSessionId, setRemoteSessionId] = useState(null);
-  const [remoteModalOpen, setRemoteModalOpen] = useState(false);
-  const [polling, setPolling] = useState(false);
 
   // ---------------------------------------
   // LOAD USER + PROTECT URL
@@ -42,7 +34,7 @@ export default function User_Dashboard() {
 
     const parsedUser = JSON.parse(storedUser);
 
-    // Protect by ID unless role is admin (99)
+    // Protect by ID unless admin (role 99)
     if (id && parseInt(id) !== parsedUser.user_ID && role !== "99") {
       navigate("/login");
       return;
@@ -84,7 +76,7 @@ export default function User_Dashboard() {
   };
 
   // ---------------------------------------
-  // FILE UPLOAD (Laptop)
+  // FILE UPLOAD (Laptop/Phone)
   // ---------------------------------------
   const handleChange = (e) => {
     const selected = e.target.files?.[0];
@@ -162,66 +154,7 @@ export default function User_Dashboard() {
   };
 
   // ---------------------------------------
-  // PHONE CAMERA SESSION
-  // ---------------------------------------
-  const startRemoteSession = async () => {
-    try {
-      const res = await fetch("http://localhost:8000/api/remote-sessions", {
-        method: "POST",
-        headers: { Accept: "application/json" },
-      });
-
-      const data = await res.json();
-
-      if (data.status === "success") {
-        setRemoteSessionId(data.session_id);
-        setRemoteModalOpen(true);
-        setPolling(true);
-      }
-    } catch (err) {
-      console.error("Remote session error:", err);
-    }
-  };
-
-  // POLLING FOR REMOTE UPLOAD
-  useEffect(() => {
-    if (!remoteSessionId || !polling) return;
-
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(
-          `http://localhost:8000/api/remote-upload/${remoteSessionId}`
-        );
-        const data = await res.json();
-
-        if (data.status === "ready" && data.image_url) {
-          setPolling(false);
-
-          const url = data.image_url.startsWith("http")
-            ? data.image_url
-            : `http://localhost:8000${data.image_url}`;
-
-          const img = await fetch(url);
-          const blob = await img.blob();
-
-          const f = new File([blob], `remote-${remoteSessionId}.jpg`, {
-            type: blob.type,
-          });
-
-          setFile(f);
-          setPreview(URL.createObjectURL(f));
-          setRemoteModalOpen(false);
-        }
-      } catch (err) {
-        console.error("Polling error:", err);
-      }
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [remoteSessionId, polling]);
-
-  // ---------------------------------------
-  // RENDER
+  // RENDER PAGE
   // ---------------------------------------
   return (
     <>
@@ -273,9 +206,7 @@ export default function User_Dashboard() {
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
 
-            {status && (
-              <div className={`form-message ${status.type}`}>{status.message}</div>
-            )}
+            {status && <div className={`form-message ${status.type}`}>{status.message}</div>}
 
             <input type="text" name="item_name" placeholder="Item Name" required />
 
@@ -310,10 +241,6 @@ export default function User_Dashboard() {
             <div className="file-upload">
               <label htmlFor="image">Upload Image:</label>
               <input type="file" id="image" accept="image/*" onChange={handleChange} />
-
-              <button type="button" style={{ marginTop: "0.5rem" }} onClick={startRemoteSession}>
-                Use phone camera
-              </button>
 
               {preview && (
                 <div className="image-preview">
@@ -350,9 +277,7 @@ export default function User_Dashboard() {
         </div>
       </div>
 
-      {/* -----------------------------------------
-          DONATION HISTORY 
-      ------------------------------------------ */}
+      {/* DONATION HISTORY */}
       <div className="donation-history full-width">
         <h3>Recent Donations</h3>
 
@@ -408,42 +333,12 @@ export default function User_Dashboard() {
         </table>
       </div>
 
-      {/* -----------------------------------------
-          IMAGE PREVIEW MODAL
-      ------------------------------------------ */}
+      {/* IMAGE PREVIEW MODAL */}
       {modalOpen && modalImage && (
         <div className="image-modal" onClick={() => setModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <img src={modalImage} className="full-image" />
             <button className="close-modal-btn" onClick={() => setModalOpen(false)}>✕</button>
-          </div>
-        </div>
-      )}
-
-      {/* -----------------------------------------
-          PHONE CAMERA QR MODAL
-      ------------------------------------------ */}
-      {remoteModalOpen && remoteSessionId && (
-        <div className="image-modal" onClick={() => setRemoteModalOpen(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Scan with your phone</h3>
-            <p>Use your phone camera to upload a photo.</p>
-
-            <QRCodeCanvas
-              value={`http://localhost:5173/phone-upload/${remoteSessionId}`}
-              size={220}
-              includeMargin={true}
-            />
-
-            <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-              Or open manually:
-              <br />
-              <code>http://localhost:5173/phone-upload/{remoteSessionId}</code>
-            </p>
-
-            <button className="close-modal-btn" onClick={() => setRemoteModalOpen(false)}>
-              ✕
-            </button>
           </div>
         </div>
       )}
