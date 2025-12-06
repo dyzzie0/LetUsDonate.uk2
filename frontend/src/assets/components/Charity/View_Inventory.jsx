@@ -18,16 +18,6 @@ export function View_Inventory() {
   });
 
   //return link
-  const getReturnLink = () => {
-    switch (role) {
-      case "11":
-        return "/charity_dashboard";
-      case "12":
-        return "/admin_dashboard";
-      default:
-        return "/";
-    }
-  };
 
   // load inventory from Laravel
   useEffect(() => {
@@ -73,7 +63,7 @@ export function View_Inventory() {
         <div className="return-right">
           <ul>
             <li>
-              <Link to={getReturnLink()}>Return</Link>
+             <Link to="/charity_dashboard">Return</Link>
             </li>
           </ul>
         </div>
@@ -109,10 +99,11 @@ export function View_Inventory() {
           <table className="table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>Item ID</th>
                 <th>Item</th>
                 <th>Category</th>
                 <th>Size</th>
+                <th>Image</th>
               </tr>
             </thead>
 
@@ -123,12 +114,13 @@ export function View_Inventory() {
                     <td>{item.inventory_ID}</td>
                     <td>{item.item}</td>
                     <td>{item.category}</td>
-                    <td>{item.size || "N/A"}</td>
+                    <td>{item.size}</td>
+                    <td>{item.image}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5">No items found.</td>
+                  <td colSpan="5">No items found for your charity </td>
                 </tr>
               )}
             </tbody>

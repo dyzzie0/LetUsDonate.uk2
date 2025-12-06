@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
-export function Admin_Donations() {
+export function Charity_Donations() {
   const [donations, setDonations] = useState([]);
   const [filteredDonations, setFilteredDonations] = useState([]);
   const [search, setSearch] = useState("");
@@ -11,6 +11,10 @@ export function Admin_Donations() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState(null);
+  const [charity, setCharity] = useState({ charity_name: "Unknown Charity" });
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const charityId = user?.charity_ID;
 
   const buildImageUrl = (path) => {
     if (!path) return null;
@@ -19,22 +23,47 @@ export function Admin_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
-  // Fetch donations
+  // Fetch assigned charity details (like Charity_Dashboard logic)
   useEffect(() => {
-    fetch("http://localhost:8000/api/donations")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === "success") {
-          setDonations(data.donations);
-          setFilteredDonations(data.donations);
-        }
+    if (!charityId) return;
+
+    const fetchCharity = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/charities");
+        const data = await res.json();
+        const allCharities = data.charities || data || [];
+        const assigned = allCharities.find((c) => c.charity_ID === charityId);
+        if (assigned) setCharity(assigned);
+      } catch (err) {
+        console.error("Failed to fetch charity:", err);
+      }
+    };
+
+    fetchCharity();
+  }, [charityId]);
+
+  // Fetch donations for this charity
+  useEffect(() => {
+    if (!charityId) return;
+
+    const fetchDonations = async () => {
+      try {
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/charity/${charityId}/donations`
+        );
+        const data = await res.json();
+        const donationList = data.status === "success" ? data.donations || [] : [];
+        setDonations(donationList);
+        setFilteredDonations(donationList);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Network error:", err);
+      } catch (err) {
+        console.error("Failed to fetch donations:", err);
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    fetchDonations();
+  }, [charityId]);
 
   // Filter donations
   useEffect(() => {
@@ -80,11 +109,11 @@ export function Admin_Donations() {
     <main>
       <div className="records-container">
         <div className="header-left">
-          <h2>Total Donations</h2>
+          <h2>{charity.charity_name} Donations</h2>
         </div>
         <div className="return-right">
           <li>
-            <Link to="/admin_dashboard">Return</Link>
+            <Link to="/charity_dashboard">Return</Link>
           </li>
         </div>
       </div>
@@ -122,6 +151,7 @@ export function Admin_Donations() {
               <th>Donor ID</th>
               <th>Item</th>
               <th>Category</th>
+              <th>Quantity</th>
               <th>Image</th>
               <th>Date</th>
               <th>Status</th>
@@ -145,7 +175,7 @@ export function Admin_Donations() {
                     <td>{donorId}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
                     <td>{item?.item_category ?? "N/A"}</td>
-                    <td>{item?.item_quantity ?? "N/A"}</td>
+                    <td>{item?.quantity ?? "N/A"}</td>
                     <td>
                       {imgUrl ? (
                         <img
@@ -181,7 +211,6 @@ export function Admin_Donations() {
         </table>
       </div>
 
-      {/* Image Modal */}
       {modalOpen && modalImage && (
         <div className="image-modal" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -196,4 +225,4 @@ export function Admin_Donations() {
   );
 }
 
-export default Admin_Donations;
+export default Charity_Donations;

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../css/sign_up_login.css";
-// This is the signup component for new donors to create an account
+
 function DonorSignUp() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -19,6 +19,12 @@ function DonorSignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+
+    // Password validation
+    if (formData.password.length < 6) {
+      setMessage("Password must be at least 6 characters long");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setMessage("Passwords do not match");
@@ -40,17 +46,20 @@ function DonorSignUp() {
 
       if (data.status === "success") {
         setMessage("Signup successful! Redirecting to login...");
-        setTimeout(() => {
-          navigate("/login");
-        }, 1000); //redirects after 1 second
+        setTimeout(() => navigate("/login"), 1000);
+      } else if (data.message) {
+        // Display server-provided error
+        setMessage(data.message);
       } else {
-        setMessage(data.message || "Something went wrong");
-      }
-      if (data.message === "Email already exists") {
-        setMessage("Email already exists");
+        setMessage("Something went wrong during signup");
       }
     } catch (err) {
-      setMessage("Could not connect to the server");
+      // More descriptive network error
+      if (err.name === "TypeError") {
+        setMessage("Could not connect to server. Please check your network.");
+      } else {
+        setMessage(`Unexpected error: ${err.message}`);
+      }
       console.error(err);
     }
   };

@@ -125,9 +125,6 @@ export default function Approve_Donations() {
                 <Link to="/charity_dashboard">Return</Link>
               </li>
               <li>
-                <Link to="/charity_distribution_records">
-                  Distribution Records
-                </Link>
               </li>
             </ul>
           </div>

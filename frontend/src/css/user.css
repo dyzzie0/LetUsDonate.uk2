@@ -384,9 +384,20 @@
   object-fit: contain;
 }
 
-/* Responsive — Mobile & Tablets */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  border: 0;
+}
+
+
+/* responsive mobile */
 @media screen and (max-width: 768px) {
-  /* Stack dashboard vertically */
   .dashboard {
     flex-direction: column;
     width: 100%;
@@ -397,8 +408,6 @@
   .logout-btn {
     font-size: 15px;
   }
-
-  /* Sidebar becomes horizontal */
   .links {
     width: 100%;
     flex-direction: row;
@@ -425,12 +434,10 @@
     font-size: 1.2rem;
   }
 
-  /* Main section */
   .dashboard-main {
     padding: 1rem;
   }
 
-  /* Stats stack vertically */
   .stats-container {
     flex-direction: column;
     align-items: stretch;
@@ -442,7 +449,6 @@
     padding: 2rem 1rem;
   }
 
-  /* Donation history table scrollable */
   .donation-history {
     width: 100%;
     margin: 1rem 0;
@@ -454,7 +460,6 @@
     min-width: 600px;
   }
 
-  /* Dashboard columns stack */
   .user-dashboard-container,
   .charity-dashboard-container {
     flex-direction: column;
@@ -467,7 +472,6 @@
     flex: none;
   }
 
-  /* Donation form */
   .new-donation {
     width: 100%;
     padding: 1.2rem;
@@ -485,12 +489,10 @@
     padding: 0.6rem;
   }
 
-  /* Image preview */
   .image-preview img.thumbnail {
     max-height: 200px;
   }
 
-  /* Full image mode */
   .full-image {
     max-width: 90%;
     max-height: 70%;
