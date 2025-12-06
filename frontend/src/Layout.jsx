@@ -1,57 +1,57 @@
 import { Routes, Route, useLocation } from "react-router-dom";
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense, lazy } from "react";
 
-//Headers & Footer
+// Headers & Footer
 import Header from "./assets/components/Header.jsx";
 import Header_alt from "./assets/components/Header_alt.jsx";
 import Footer from "./assets/components/Footer.jsx";
 
-//Initial pages
-import Home from "./assets/components/Home.jsx";
-import Sign_up from "./assets/components/Sign_up.jsx";
-import Login from "./assets/components/Login.jsx";
-import FAQ from "./assets/components/FAQ.jsx";
-import Our_Partners from "./assets/components/Our_Partners.jsx";
+// Lazy-load all page components
+const Home = lazy(() => import("./assets/components/Home.jsx"));
+const Sign_up = lazy(() => import("./assets/components/Sign_up.jsx"));
+const Login = lazy(() => import("./assets/components/Login.jsx"));
+const FAQ = lazy(() => import("./assets/components/FAQ.jsx"));
+const Our_Partners = lazy(() => import("./assets/components/Our_Partners.jsx"));
 
-//Admin
-import { Admin_Dashboard } from "./assets/components/Admin/Admin_Dashboard.jsx";
-import { Add_Charity } from "./assets/components/Admin/Add_Charity.jsx";
-import { Data_Reports } from "./assets/components/Admin/Data_Reports.jsx";
-import { View_Users } from "./assets/components/Admin/View_Users.jsx";
-import { Admin_Inventory } from "./assets/components/Admin/Admin_Inventory.jsx";
-import { Admin_Donations } from "./assets/components/Admin/Admin_Donations.jsx";
-import { Manage_Charity } from "./assets/components/Admin/Manage_Charity.jsx";
+// Admin
+const Admin_Dashboard = lazy(() => import("./assets/components/Admin/Admin_Dashboard.jsx"));
+const Add_Charity = lazy(() => import("./assets/components/Admin/Add_Charity.jsx"));
+const Data_Reports = lazy(() => import("./assets/components/Admin/Data_Reports.jsx"));
+const View_Users = lazy(() => import("./assets/components/Admin/View_Users.jsx"));
+const Admin_Inventory = lazy(() => import("./assets/components/Admin/Admin_Inventory.jsx"));
+const Admin_Donations = lazy(() => import("./assets/components/Admin/Admin_Donations.jsx"));
+const Manage_Charity = lazy(() => import("./assets/components/Admin/Manage_Charity.jsx"));
 
-//Charity
-import Charity_Dashboard from "./assets/components/Charity/Charity_Dashboard.jsx";
-import Approve_Donations from "./assets/components/Charity/Approve_Donations.jsx";
-import Distribution_Records from "./assets/components/Charity/Distribution_Records.jsx";
-import View_Donations from "./assets/components/Charity/View_Donations.jsx";
-import View_Inventory from "./assets/components/Charity/View_Inventory.jsx";
+// Charity
+const Charity_Dashboard = lazy(() => import("./assets/components/Charity/Charity_Dashboard.jsx"));
+const Approve_Donations = lazy(() => import("./assets/components/Charity/Approve_Donations.jsx"));
+const Distribution_Records = lazy(() => import("./assets/components/Charity/Distribution_Records.jsx"));
+const View_Donations = lazy(() => import("./assets/components/Charity/View_Donations.jsx"));
+const View_Inventory = lazy(() => import("./assets/components/Charity/View_Inventory.jsx"));
 
 // User
-import User_Dashboard from "./assets/components/User/User_Dashboard.jsx";
-import My_Donations from "./assets/components/User/My_Donations.jsx";
-import My_Impact from "./assets/components/User/My_Impact.jsx";
-import My_Profile from "./assets/components/User/My_Profile.jsx";
+const User_Dashboard = lazy(() => import("./assets/components/User/User_Dashboard.jsx"));
+const My_Donations = lazy(() => import("./assets/components/User/My_Donations.jsx"));
+const My_Impact = lazy(() => import("./assets/components/User/My_Impact.jsx"));
+const My_Profile = lazy(() => import("./assets/components/User/My_Profile.jsx"));
 
-//Footer content pages
-import Terms_Conditions from "./assets/components/Footer_Content/Terms_Conditions.jsx";
-import Privacy_Policy from "./assets/components/Footer_Content/Privacy_Policy.jsx";
-import Cookie_Policy from "./assets/components/Footer_Content/Cookie_Policy.jsx";
-import Accessibility from "./assets/components/Footer_Content/Accessibility.jsx";
+// Footer content pages
+const Terms_Conditions = lazy(() => import("./assets/components/Footer_Content/Terms_Conditions.jsx"));
+const Privacy_Policy = lazy(() => import("./assets/components/Footer_Content/Privacy_Policy.jsx"));
+const Cookie_Policy = lazy(() => import("./assets/components/Footer_Content/Cookie_Policy.jsx"));
+const Accessibility = lazy(() => import("./assets/components/Footer_Content/Accessibility.jsx"));
 
-//Not found page
-import NotFound from "./404.jsx";
+// Not found page
+const NotFound = lazy(() => import("./404.jsx"));
 
 export default function Layout() {
   const location = useLocation();
   const path = location.pathname.toLowerCase();
 
-  //Paths without a header/footer
+  // Paths without a header/footer
   const noHeaderFooterPaths = ["/login", "/sign_up"];
 
-  //Paths that use the alternative header
+  // Paths that use the alternative header
   const altHeaderPaths = [
     "/user_dashboard",
     "/my_donations",
@@ -84,48 +84,48 @@ export default function Layout() {
       {!hideHeaderFooter &&
         (useAltHeader ? <Header_alt size="small" /> : <Header />)}
 
-      <Routes>
-        {/* Initial pages */}
-        <Route path="/" element={<Home />} />
-        <Route path="/sign_up" element={<Sign_up />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/our_partners" element={<Our_Partners />} />
+      {/* Suspense wrapper for lazy-loaded routes */}
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+          {/* Initial pages */}
+          <Route path="/" element={<Home />} />
+          <Route path="/sign_up" element={<Sign_up />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/our_partners" element={<Our_Partners />} />
 
-        {/* Admin */}
-        <Route path="/admin_dashboard" element={<Admin_Dashboard />} />
-        <Route path="/add_charity" element={<Add_Charity />} />
-        <Route path="/data_reports" element={<Data_Reports />} />
-        <Route path="/view_users" element={<View_Users />} />
-        <Route path="/admin_inventory" element={<Admin_Inventory />} />
-        <Route path="/admin_donations" element={<Admin_Donations />} />
-        <Route path="/manage_charity" element={<Manage_Charity />} />
+          {/* Admin */}
+          <Route path="/admin_dashboard" element={<Admin_Dashboard />} />
+          <Route path="/add_charity" element={<Add_Charity />} />
+          <Route path="/data_reports" element={<Data_Reports />} />
+          <Route path="/view_users" element={<View_Users />} />
+          <Route path="/admin_inventory" element={<Admin_Inventory />} />
+          <Route path="/admin_donations" element={<Admin_Donations />} />
+          <Route path="/manage_charity" element={<Manage_Charity />} />
 
-        {/* Charity */}
-        <Route path="/charity_dashboard" element={<Charity_Dashboard />} />
-        <Route path="/view_inventory" element={<View_Inventory />} />
-        <Route path="/view_donations" element={<View_Donations />} />
-        <Route
-          path="/distribution_records"
-          element={<Distribution_Records />}
-        />
-        <Route path="/approve_donations" element={<Approve_Donations />} />
+          {/* Charity */}
+          <Route path="/charity_dashboard" element={<Charity_Dashboard />} />
+          <Route path="/view_inventory" element={<View_Inventory />} />
+          <Route path="/view_donations" element={<View_Donations />} />
+          <Route path="/distribution_records" element={<Distribution_Records />} />
+          <Route path="/approve_donations" element={<Approve_Donations />} />
 
-        {/* User */}
-        <Route path="/user_dashboard" element={<User_Dashboard />} />
-        <Route path="/my_donations" element={<My_Donations />} />
-        <Route path="/my_impact" element={<My_Impact />} />
-        <Route path="/my_profile" element={<My_Profile />} />
+          {/* User */}
+          <Route path="/user_dashboard" element={<User_Dashboard />} />
+          <Route path="/my_donations" element={<My_Donations />} />
+          <Route path="/my_impact" element={<My_Impact />} />
+          <Route path="/my_profile" element={<My_Profile />} />
 
-        {/* Footer items */}
-        <Route path="/terms_conditions" element={<Terms_Conditions />} />
-        <Route path="/privacy_policy" element={<Privacy_Policy />} />
-        <Route path="/cookie_policy" element={<Cookie_Policy />} />
-        <Route path="/accessibility" element={<Accessibility />} />
+          {/* Footer items */}
+          <Route path="/terms_conditions" element={<Terms_Conditions />} />
+          <Route path="/privacy_policy" element={<Privacy_Policy />} />
+          <Route path="/cookie_policy" element={<Cookie_Policy />} />
+          <Route path="/accessibility" element={<Accessibility />} />
 
-        {/* Catch if not found */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Catch all */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
 
       {/* Footer */}
       {!hideHeaderFooter && <Footer />}

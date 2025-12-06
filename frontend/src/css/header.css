@@ -1,6 +1,6 @@
 .header {
   padding: 150px 100px;
-  background-color: light-dark(#668670, #1e2c29);
+  background-color: light-dark(#44614e, #1e2c29);
   position: relative;
   text-align: left;
   overflow: hidden;
@@ -58,7 +58,7 @@ h1 {
 
 .h1,
 i {
-  color: #23452c;
+  color: #458d23d1;
   font-size: 60px;
 }
 

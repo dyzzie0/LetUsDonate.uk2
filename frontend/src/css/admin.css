@@ -181,6 +181,22 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+    width: 100%;
+  }
+
+  /* Make the ul vertical on mobile */
+  .admin-links ul {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .admin-links li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
   }
 
   .Stats {

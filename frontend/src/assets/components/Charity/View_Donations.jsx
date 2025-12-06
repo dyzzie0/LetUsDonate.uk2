@@ -151,7 +151,6 @@ export function Charity_Donations() {
               <th>Donor ID</th>
               <th>Item</th>
               <th>Category</th>
-              <th>Quantity</th>
               <th>Image</th>
               <th>Date</th>
               <th>Status</th>
@@ -175,7 +174,6 @@ export function Charity_Donations() {
                     <td>{donorId}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
                     <td>{item?.item_category ?? "N/A"}</td>
-                    <td>{item?.quantity ?? "N/A"}</td>
                     <td>
                       {imgUrl ? (
                         <img
