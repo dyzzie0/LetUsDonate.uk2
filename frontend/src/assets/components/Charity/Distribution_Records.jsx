@@ -94,10 +94,9 @@ export default function Charity_Distribution_Records() {
         <table className="table">
           <thead>
             <tr>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Size / Type</th>
-              <th>Quantity</th>
+              <th>Donation ID</th>
+              <th>Item ID</th>
+              <th>Category</th> 
               <th>Action</th>
             </tr>
           </thead>

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Chart } from "chart.js/auto";
 import "../../../css/admin.css";
 
-// This is js to get text color based on theme
+// this is js to get text color based on theme
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "#ffffff"
@@ -14,19 +14,19 @@ export function Admin_Dashboard() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // References to charts which means we can destroy them before re-creating in case of data updates so we don't get overlapping charts
+  // references to charts which means we can destroy them before recreating in case of data updates so we dont get overlapping charts
   const donationChartRef = useRef(null);
   const userChartRef = useRef(null);
   const sustainabilityChartRef = useRef(null);
   const charityChartRef = useRef(null);
 
-  // Destroy previous chart js incase it exists similar to references above
+  // destroy previous chart js incase it exists similar to references above
   if (sustainabilityChartRef.current) sustainabilityChartRef.current.destroy();
   if (donationChartRef.current) donationChartRef.current.destroy();
   if (userChartRef.current) userChartRef.current.destroy();
   if (charityChartRef.current) charityChartRef.current.destroy();
 
-  // Fetch donations from the API aka backend
+  // fetch donations from the API aka backend
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/donations")
       .then((res) => res.json())
@@ -42,7 +42,7 @@ export function Admin_Dashboard() {
       });
   }, []);
 
-  // This function filters donations by time period, returning only those within the specified number of days
+  // filters donations by time period, returning only those within the specified number of days
   const filterByTime = (days) => {
     const now = new Date();
     return donations.filter((d) => {
@@ -51,7 +51,7 @@ export function Admin_Dashboard() {
     });
   };
 
-  // Update charts when donations data changes
+  // update charts when donations data changes
   useEffect(() => {
     if (loading || donations.length === 0) return;
 
@@ -71,7 +71,7 @@ export function Admin_Dashboard() {
       Total: "Total",
     };
 
-    // Prepare datasets which counts donations by status over different time frames
+    // prep datasets which counts donations by status over different time frames
     const approvedCounts = labels.map((l) =>
       countByStatus(dayMap[l], "Approved"),
     );
@@ -179,7 +179,7 @@ export function Admin_Dashboard() {
       },
     });
 
-    // Sustainability Impact Chart
+    // Sustainability chart
     const sustainabilityCtx = document.getElementById(
       "sustainabilityImpactChart",
     );
@@ -212,7 +212,7 @@ export function Admin_Dashboard() {
       },
     });
 
-    //Charity Performance
+    //charity
     const charities = {};
     donations.forEach((d) => {
       const name = d.charity?.charity_name || "Unknown";
@@ -246,13 +246,10 @@ export function Admin_Dashboard() {
     });
   }, [donations, loading]);
 
-  // Statistics
+  // stats
   const totalDonations = donations.length;
-  const totalItems = donations.reduce(
-    (sum, d) => sum + (d.items?.length || 0),
-    0,
-  );
-  const totalCO2Saved = (totalItems * 1.5).toFixed(1);
+  const totalItemsAccepted = donations.filter(d => d.donation_status === "Approved").reduce((sum, d) => sum + (d.items?.length || 0), 0);
+  const totalCO2Saved = (totalItemsAccepted * 1.5).toFixed(1);
   const activeCharities = new Set(donations.map((d) => d.charity?.charity_name))
     .size;
 
@@ -302,7 +299,7 @@ export function Admin_Dashboard() {
           </div>
           <div>
             <h4>Total Items Accepted</h4>
-            <p>{totalItems}</p>
+            <p>{totalItemsAccepted}</p>
           </div>
           <div>
             <h4>Total CO₂ Saved</h4>

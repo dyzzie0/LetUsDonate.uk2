@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../../../css/records.css";
+import "../../../css/modal.css";
 
 export function Admin_Donations() {
   const [donations, setDonations] = useState([]);
@@ -15,6 +16,7 @@ export function Admin_Donations() {
   const buildImageUrl = (path) => {
     if (!path) return null;
     path = path.replace(/^public\//, "").replace(/^\/+/, "");
+    if (path.startsWith("http://") || path.startsWith("https://")) return path;
     return `http://localhost:8000/storage/${path}`;
   };
 
@@ -35,7 +37,7 @@ export function Admin_Donations() {
       });
   }, []);
 
-  // Filter donations
+  // Filter donations based on search and status
   useEffect(() => {
     const filtered = donations.filter((d) => {
       const item = d.items?.[0] ?? {};
@@ -121,10 +123,10 @@ export function Admin_Donations() {
               <th>Donor ID</th>
               <th>Item</th>
               <th>Category</th>
-              <th>Quantity</th>
               <th>Image</th>
               <th>Date</th>
               <th>Status</th>
+              <th>Distributed</th> {/* New column */}
             </tr>
           </thead>
 
@@ -145,7 +147,6 @@ export function Admin_Donations() {
                     <td>{donorId}</td>
                     <td>{item?.item_name ?? "N/A"}</td>
                     <td>{item?.item_category ?? "N/A"}</td>
-                    <td>{item?.item_quantity ?? "N/A"}</td>
                     <td>
                       {imgUrl ? (
                         <img
@@ -169,6 +170,7 @@ export function Admin_Donations() {
                         : "N/A"}
                     </td>
                     <td>{d.donation_status}</td>
+                    <td>{d.distributed ? "Yes" : "No"}</td> {/* Display distributed */}
                   </tr>
                 );
               })

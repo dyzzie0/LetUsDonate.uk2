@@ -51,9 +51,7 @@ class DonationItemController extends Controller
                 'category'   => $validated['item_category'],
                 'size'       => $validated['item_size'] ?? null,
             ],
-            [
-                'quantity' => \DB::raw('quantity + 1')
-            ]
+         
         );
 
         return response()->json([

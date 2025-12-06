@@ -9,67 +9,80 @@ function getChartTextColor() {
     : "#000000";
 }
 
-export default function Charity_Dashboard() {
+export function Charity_Dashboard() {
   const [donations, setDonations] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [stats, setStats] = useState({ items: 0, co2: 0, people: 0 });
   const [loading, setLoading] = useState(true);
+  const [charity, setCharity] = useState({ charity_name: "Unknown Charity" });
 
   const chartRef = useRef(null);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const role = localStorage.getItem("role");
 
-  // Only allow charity role
+  // Redirect if not charity staff
   useEffect(() => {
     if (!user.user_ID || role !== "11") {
       window.location.href = "/login";
     }
   }, [user.user_ID, role]);
 
-  // Fetch donations + inventory
+  // Fetch all charities and find assigned one
   useEffect(() => {
+    const fetchCharities = async () => {
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/charities");
+        const data = await res.json();
+        const allCharities = data.charities || data || [];
+        const assigned = allCharities.find(
+          (c) => c.charity_ID === user.charity_ID
+        );
+        if (assigned) setCharity(assigned);
+      } catch (err) {
+        console.error("Failed to fetch charities:", err);
+      }
+    };
+    if (user.charity_ID) fetchCharities();
+  }, [user.charity_ID]);
+
+  // Fetch donations and inventory
+  useEffect(() => {
+    if (!user.charity_ID) return;
+
     const fetchData = async () => {
       try {
         const donationRes = await fetch(
-          `http://localhost:8000/api/charity/${user.charity_ID}/donations`,
+          `http://127.0.0.1:8000/api/charity/${user.charity_ID}/donations`
         );
         const donationJson = await donationRes.json();
-
         const donationList =
-          donationJson.status === "success" ? donationJson.donations : [];
+          donationJson.status === "success" ? donationJson.donations || [] : [];
 
         const inventoryRes = await fetch(
-          `http://localhost:8000/api/inventory?charity_ID=${user.charity_ID}`,
+          `http://127.0.0.1:8000/api/inventory?charity_ID=${user.charity_ID}`
         );
         const inventoryJson = await inventoryRes.json();
-
         const inventoryList = inventoryJson.inventory || [];
 
         setDonations(donationList);
         setInventory(inventoryList);
 
-        //calculate stats for just this charity
+        // Calculate stats
         const totalItems = donationList.reduce((sum, d) => {
           if (!d.items) return sum;
-
-          const count = d.items.reduce((acc, item) => {
-            const qty = Number(item.quantity) || 1;
-            return acc + qty;
-          }, 0);
-
-          return sum + count;
+          return sum + d.items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0);
         }, 0);
 
         setStats({
           items: totalItems,
           co2: (totalItems * 1.5).toFixed(1),
-          people: totalItems * 1,
+          people: totalItems,
         });
 
         setLoading(false);
       } catch (err) {
-        console.error("Failed to fetch:", err);
+        console.error("Failed to fetch charity data:", err);
         setLoading(false);
       }
     };
@@ -77,24 +90,18 @@ export default function Charity_Dashboard() {
     fetchData();
   }, [user.charity_ID]);
 
-  // pie chart for inventory categories
+  // Inventory chart
   useEffect(() => {
     if (!inventory.length) return;
 
-    //group inventory by category
     const categoryMap = {};
-
     inventory.forEach((item) => {
       const category = item.category || "Unknown";
       const qty = Number(item.quantity) || 0;
-
-      if (!categoryMap[category]) {
-        categoryMap[category] = 0;
-      }
-      categoryMap[category] += qty;
+      categoryMap[category] = (categoryMap[category] || 0) + qty;
     });
 
-    const labels = Object.keys(categoryMap); //mens/womens/girls/boys
+    const labels = Object.keys(categoryMap);
     const quantities = Object.values(categoryMap);
 
     if (chartRef.current) chartRef.current.destroy();
@@ -107,13 +114,7 @@ export default function Charity_Dashboard() {
         datasets: [
           {
             data: quantities,
-            backgroundColor: [
-              "#5b7d62",
-              "#76a79b",
-              "#9fc3ab",
-              "#2d484c",
-              "#7e8568",
-            ],
+            backgroundColor: ["#5b7d62", "#76a79b", "#9fc3ab", "#2d484c", "#7e8568"],
           },
         ],
       },
@@ -124,12 +125,6 @@ export default function Charity_Dashboard() {
       },
     });
   }, [inventory]);
-
-  // Image URL formatter
-  const buildImageUrl = (path) => {
-    if (!path) return null;
-    return `http://localhost:8000/storage/${path.replace("public/", "")}`;
-  };
 
   return (
     <div className="charity-dashboard-container">
@@ -150,9 +145,7 @@ export default function Charity_Dashboard() {
             </li>
             <li>
               <i className="fa-solid fa-truck"></i>
-              <Link to="/distribution_records">
-                Distribution Records
-              </Link>
+              <Link to="/distribution_records">Distribution Records</Link>
             </li>
             <li>
               <i className="fa-solid fa-arrow-right-from-bracket"></i>
@@ -172,6 +165,9 @@ export default function Charity_Dashboard() {
 
         <main className="dashboard-main">
           <h2>Welcome, {user.user_name} Staff!</h2>
+          <p className="charity-info">
+            Assigned Charity: <strong>{charity.charity_name}</strong>
+          </p>
 
           {loading ? (
             <p>Loading dashboard...</p>
@@ -199,78 +195,14 @@ export default function Charity_Dashboard() {
 
               <div className="inventory-chart">
                 <h3>Inventory Overview</h3>
-                <canvas
-                  id="myChart"
-                  style={{ width: "100%", maxWidth: "700px" }}
-                ></canvas>
+                <canvas id="myChart" style={{ width: "100%", maxWidth: "700px" }}></canvas>
               </div>
             </>
           )}
         </main>
       </div>
-
-      <div className="donation-history">
-        <h3>Recent Donations</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Donor</th>
-              <th>Email</th>
-              <th>Category</th>
-              <th>Item</th>
-              <th>Image</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Pickup</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {donations.length ? (
-              donations.slice(0, 5).map((d) => {
-                const item = d.items?.[0] || {};
-                const imgUrl = buildImageUrl(item.item_image);
-
-                //display recent 5 donations
-                return (
-                  <tr key={d.donation_ID}>
-                    <td>{d.donor?.user?.user_name || "Unknown"}</td>
-                    <td>{d.donor?.user?.user_email || "N/A"}</td>
-                    <td>{item.item_category || "N/A"}</td>
-                    <td>{item.item_name || "N/A"}</td>
-                    <td>
-                      {imgUrl ? (
-                        <img
-                          src={imgUrl}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            borderRadius: "4px",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        "N/A"
-                      )}
-                    </td>
-                    <td>
-                      {d.donation_date
-                        ? new Date(d.donation_date).toLocaleDateString()
-                        : "N/A"}
-                    </td>
-                    <td>{d.donation_status}</td>
-                    <td>{d.pickup_address || "N/A"}</td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan="8">No donations found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
+
+export default Charity_Dashboard;

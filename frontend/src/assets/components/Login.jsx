@@ -12,10 +12,9 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     try {
       const response = await fetch("http://localhost:8000/api/login", {
-        // send login request to backend
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -23,19 +22,33 @@ export default function Login() {
         },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const data = await response.json();
       console.log("Login response:", response.status, data);
-
+  
       if (response.ok && data.status === "success") {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("role", String(data.user.role_id));
-
-        const role = String(data.user.role_id);
-
+        const user = data.user;
+  
+        // Debug: log user object to verify charity_ID
+        console.log("Logged in user object:", user);
+  
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("role", String(user.role_id));
+  
+        const role = String(user.role_id);
+  
         if (role === "12") {
           navigate("/admin_dashboard");
         } else if (role === "11") {
+          if (!user.charity_ID) {
+            console.warn(
+              "No charity_ID found for this user. Charity dashboard will not load."
+            );
+            setError(
+              "Login failed: Your account does not have an associated charity."
+            );
+            return;
+          }
           navigate("/charity_dashboard");
         } else if (role === "10") {
           navigate("/user_dashboard");
@@ -44,7 +57,7 @@ export default function Login() {
           setError("Login failed: Unknown role assigned to account");
         }
       } else {
-        //show the actual error message from the server
+        // show server error message
         setError(data.message || "Invalid email or password");
       }
     } catch (err) {
@@ -52,7 +65,7 @@ export default function Login() {
       setError("Error connecting to server");
     }
   };
-
+  
   return (
     <div className="middle">
       <div className="return_home">

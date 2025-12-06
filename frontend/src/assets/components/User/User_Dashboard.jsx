@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import "../../../css/user.css";
 import "../../../css/modal.css";
 
-export default function User_Dashboard() {
+export function User_Dashboard() {
   const navigate = useNavigate();
+  const { id } = useParams(); // this is so we can check user ID in URL
   const [user, setUser] = useState(null);
   const [donations, setDonations] = useState([]);
   const [charities, setCharities] = useState([]);
@@ -19,15 +21,26 @@ export default function User_Dashboard() {
   const [remoteModalOpen, setRemoteModalOpen] = useState(false);
   const [polling, setPolling] = useState(false);
 
-  // Load logged in user
+  // Load logged-in user and protect URL
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    if (!storedUser) {
+    const role = localStorage.getItem("role");
+
+    if (!storedUser || !role) {
       navigate("/login");
       return;
     }
-    setUser(JSON.parse(storedUser));
-  }, [navigate]);
+
+    const parsedUser = JSON.parse(storedUser);
+
+    // Protect URL: Only allow if the user ID in URL matches logged-in user
+    if (id && parseInt(id, 10) !== parsedUser.user_ID && role !== "99") {//admin is only exception
+      navigate("/login");
+      return;
+    }
+
+    setUser(parsedUser);
+  }, [id, navigate]);
 
   // Load donations
   useEffect(() => {
@@ -345,6 +358,128 @@ export default function User_Dashboard() {
             </form>
             </div>
             </div>
+        <form className="new-donation" onSubmit={handleSubmit}>
+  <h3>Make a New Donation</h3>
+
+  {status && (
+    <div className={`form-message ${status.type}`}>{status.message}</div>
+  )}
+
+  {/* Item Name */}
+  <label htmlFor="item_name" className="sr-only">Item Name</label>
+  <input
+    type="text"
+    id="item_name"
+    name="item_name"
+    placeholder="Item Name"
+    required
+  />
+
+  {/* Category */}
+  <label htmlFor="category" className="sr-only">Category</label>
+  <select id="category" name="category" required>
+    <option value="">Category</option>
+    <option value="womens">Women's</option>
+    <option value="mens">Men's</option>
+    <option value="girls">Girl's</option>
+    <option value="boys">Boy's</option>
+  </select>
+
+  {/* Size */}
+  <label htmlFor="size" className="sr-only">Size</label>
+  <select id="size" name="size" required>
+    <option value="">Size</option>
+    <option value="XS">XS</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+    <option value="XXL">XXL</option>
+  </select>
+
+  {/* Condition */}
+  <label htmlFor="condition" className="sr-only">Condition</label>
+  <select id="condition" name="condition" required>
+    <option value="">Condition</option>
+    <option value="new">New</option>
+    <option value="like-new">Like New</option>
+    <option value="used-good">Used - Good</option>
+    <option value="used-fair">Used - Fair</option>
+  </select>
+
+  {/* Description */}
+  <label htmlFor="description" className="sr-only">Description</label>
+  <textarea
+    id="description"
+    name="description"
+    className="description"
+    placeholder="Description"
+  ></textarea>
+
+  {/* File Upload */}
+  <div className="file-upload">
+    <label htmlFor="image">Upload Image:</label>
+    <input
+      type="file"
+      name="image"
+      id="image"
+      accept="image/*"
+      onChange={handleChange}
+    />
+
+    {file && preview && (
+      <div className="image-preview">
+        <img
+          src={preview}
+          alt="Preview"
+          className="thumbnail"
+          onClick={() => {
+            setModalImage(preview);
+            setModalOpen(true);
+          }}
+        />
+        <button
+          type="button"
+          className="remove-btn"
+          onClick={handleDeleteFile}
+        >
+          Remove
+        </button>
+      </div>
+    )}
+  </div>
+
+  {/* Pickup Address */}
+  <label htmlFor="pickup_address" className="sr-only">Pickup Address</label>
+  <input
+    type="text"
+    id="pickup_address"
+    name="pickup_address"
+    placeholder="Pickup Address"
+    required
+  />
+
+  {/* Charity Selection */}
+  {loadingCharities ? (
+    <p>Loading charities...</p>
+  ) : (
+    <>
+      <label htmlFor="charity_ID" className="sr-only">Select Charity</label>
+      <select id="charity_ID" name="charity_ID" required>
+        <option value="">Select Charity</option>
+        {charities.map((c) => (
+          <option key={c.charity_ID} value={c.charity_ID}>
+            {c.charity_name}
+          </option>
+        ))}
+      </select>
+    </>
+  )}
+  <button type="submit">Submit Donation</button>
+</form>
+
+        </div>
+      </div>
 
             {/* Donation history */}
             <div className="donation-history full-width">
@@ -464,3 +599,11 @@ export default function User_Dashboard() {
             </>
             );
             }
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+export default User_Dashboard;
