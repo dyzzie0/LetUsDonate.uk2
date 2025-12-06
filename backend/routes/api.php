@@ -9,6 +9,8 @@ use App\Http\Controllers\DonationItemController;
 use App\Http\Controllers\CharityController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ViewUserController;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,4 +99,11 @@ Route::prefix('user-management')->group(function () {
     Route::get('/roles', [ViewUserController::class, 'getRoles']);
     Route::put('/users/{id}', [ViewUserController::class, 'updateUser']);
     Route::delete('/users/{id}', [ViewUserController::class, 'deleteUser']);
+});
+
+Route::post('/remote-sessions', function (Request $request) {
+    return response()->json([
+        'status' => 'success',
+        'session_id' => (string) Str::uuid(), 
+    ]);
 });
