@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { QRCodeCanvas } from "qrcode.react";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
 import "../../../css/user.css";
 import "../../../css/modal.css";
 
-export function User_Dashboard() {
+export default function User_Dashboard() {
   const navigate = useNavigate();
-  const { id } = useParams(); // this is so we can check user ID in URL
+  const { id } = useParams();
+
   const [user, setUser] = useState(null);
   const [donations, setDonations] = useState([]);
   const [charities, setCharities] = useState([]);
   const [loadingCharities, setLoadingCharities] = useState(true);
+
+  // Image upload states
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
+
+  // Modals
   const [modalOpen, setModalOpen] = useState(false);
-  const [status, setStatus] = useState(null);
   const [modalImage, setModalImage] = useState(null);
+
+  const [status, setStatus] = useState(null);
+
+  // Remote upload (phone camera)
   const [remoteSessionId, setRemoteSessionId] = useState(null);
   const [remoteModalOpen, setRemoteModalOpen] = useState(false);
   const [polling, setPolling] = useState(false);
 
-  // Load logged-in user and protect URL
+  // ---------------------------------------
+  // LOAD USER + PROTECT URL
+  // ---------------------------------------
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const role = localStorage.getItem("role");
@@ -33,8 +42,8 @@ export function User_Dashboard() {
 
     const parsedUser = JSON.parse(storedUser);
 
-    // Protect URL: Only allow if the user ID in URL matches logged-in user
-    if (id && parseInt(id, 10) !== parsedUser.user_ID && role !== "99") {//admin is only exception
+    // Protect by ID unless role is admin (99)
+    if (id && parseInt(id) !== parsedUser.user_ID && role !== "99") {
       navigate("/login");
       return;
     }
@@ -42,7 +51,9 @@ export function User_Dashboard() {
     setUser(parsedUser);
   }, [id, navigate]);
 
-  // Load donations
+  // ---------------------------------------
+  // LOAD DONATIONS
+  // ---------------------------------------
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
 
@@ -54,7 +65,9 @@ export function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-  // Load charities
+  // ---------------------------------------
+  // LOAD CHARITIES
+  // ---------------------------------------
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -70,11 +83,14 @@ export function User_Dashboard() {
     return c ? c.charity_name : "Unknown";
   };
 
+  // ---------------------------------------
+  // FILE UPLOAD (Laptop)
+  // ---------------------------------------
   const handleChange = (e) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setFile(selected);
+      setPreview(URL.createObjectURL(selected));
     }
   };
 
@@ -83,6 +99,9 @@ export function User_Dashboard() {
     setPreview(null);
   };
 
+  // ---------------------------------------
+  // SUBMIT DONATION
+  // ---------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
@@ -92,8 +111,8 @@ export function User_Dashboard() {
 
     formData.append("item_name", fields.get("item_name"));
     formData.append("category", fields.get("category"));
-    formData.append("quantity", fields.get("quantity"));
     formData.append("size", fields.get("size"));
+    formData.append("quantity", fields.get("quantity"));
     formData.append("condition", fields.get("condition"));
     formData.append("description", fields.get("description"));
     formData.append("pickup_address", fields.get("pickup_address"));
@@ -115,7 +134,9 @@ export function User_Dashboard() {
         setStatus({ type: "success", message: data.message });
         e.target.reset();
         setFile(null);
+        setPreview(null);
 
+        // Reload donations
         fetch(`http://localhost:8000/api/donations/user/${user.donor.donor_ID}`)
           .then((res) => res.json())
           .then((data) => {
@@ -125,25 +146,31 @@ export function User_Dashboard() {
         setStatus({ type: "error", message: data.message });
       }
     } catch (err) {
-      setStatus({ type: "error", message: "Network error. Try again." });
+      setStatus({ type: "error", message: "Network error." });
     }
 
     setTimeout(() => setStatus(null), 6000);
   };
 
+  // ---------------------------------------
+  // LOGOUT
+  // ---------------------------------------
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     navigate("/login");
   };
 
-  // Create phone-session
+  // ---------------------------------------
+  // PHONE CAMERA SESSION
+  // ---------------------------------------
   const startRemoteSession = async () => {
     try {
       const res = await fetch("http://localhost:8000/api/remote-sessions", {
         method: "POST",
         headers: { Accept: "application/json" },
       });
+
       const data = await res.json();
 
       if (data.status === "success") {
@@ -156,7 +183,7 @@ export function User_Dashboard() {
     }
   };
 
-  // Poll for phone-uploaded image
+  // POLLING FOR REMOTE UPLOAD
   useEffect(() => {
     if (!remoteSessionId || !polling) return;
 
@@ -170,20 +197,19 @@ export function User_Dashboard() {
         if (data.status === "ready" && data.image_url) {
           setPolling(false);
 
-          const fullUrl = data.image_url.startsWith("http")
+          const url = data.image_url.startsWith("http")
             ? data.image_url
             : `http://localhost:8000${data.image_url}`;
 
-          const resp = await fetch(fullUrl);
-          const blob = await resp.blob();
-          const filename = `remote-${remoteSessionId}.jpg`;
+          const img = await fetch(url);
+          const blob = await img.blob();
 
-          const fileFromRemote = new File([blob], filename, {
+          const f = new File([blob], `remote-${remoteSessionId}.jpg`, {
             type: blob.type,
           });
 
-          setFile(fileFromRemote);
-          setPreview(URL.createObjectURL(fileFromRemote));
+          setFile(f);
+          setPreview(URL.createObjectURL(f));
           setRemoteModalOpen(false);
         }
       } catch (err) {
@@ -194,30 +220,24 @@ export function User_Dashboard() {
     return () => clearInterval(interval);
   }, [remoteSessionId, polling]);
 
+  // ---------------------------------------
+  // RENDER
+  // ---------------------------------------
   return (
     <>
       <div className="user-dashboard-container">
+
+        {/* LEFT SIDEBAR */}
         <div className="dashboard-left">
           <div className="dashboard">
             <aside className="links">
               <ul>
-                <li>
-                  <i className="fa-solid fa-gauge"></i>
-                  <Link to="/my_impact">My Impact</Link>
-                </li>
-                <li>
-                  <i className="fa-solid fa-inbox"></i>
-                  <Link to="/my_donations">My Donations</Link>
-                </li>
-                <li>
-                  <i className="fa-solid fa-user"></i>
-                  <Link to="/my_profile">Profile Settings</Link>
-                </li>
+                <li><i className="fa-solid fa-gauge"></i><Link to="/my_impact">My Impact</Link></li>
+                <li><i className="fa-solid fa-inbox"></i><Link to="/my_donations">My Donations</Link></li>
+                <li><i className="fa-solid fa-user"></i><Link to="/my_profile">Profile Settings</Link></li>
                 <li>
                   <i className="fa-solid fa-arrow-right-from-bracket"></i>
-                  <button className="logout-btn" onClick={handleLogout}>
-                    Logout
-                  </button>
+                  <button className="logout-btn" onClick={handleLogout}>Logout</button>
                 </li>
               </ul>
             </aside>
@@ -228,9 +248,7 @@ export function User_Dashboard() {
               <div className="stats-container">
                 <div className="stat-card">
                   <i className="fa-solid fa-earth-africa"></i>
-                  <p className="stat-number">
-                    {(donations.length * 1.5).toFixed(1)}kg
-                  </p>
+                  <p className="stat-number">{(donations.length * 1.5).toFixed(1)}kg</p>
                   <p className="stat-text">CO₂ Saved</p>
                 </div>
 
@@ -242,7 +260,7 @@ export function User_Dashboard() {
 
                 <div className="stat-card">
                   <i className="fa-solid fa-heart"></i>
-                  <p className="stat-number">{donations.length * 1}</p>
+                  <p className="stat-number">{donations.length}</p>
                   <p className="stat-text">People Helped</p>
                 </div>
               </div>
@@ -250,14 +268,13 @@ export function User_Dashboard() {
           </div>
         </div>
 
+        {/* RIGHT — DONATION FORM */}
         <div className="dashboard-right">
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
 
             {status && (
-              <div className={`form-message ${status.type}`}>
-                {status.message}
-              </div>
+              <div className={`form-message ${status.type}`}>{status.message}</div>
             )}
 
             <input type="text" name="item_name" placeholder="Item Name" required />
@@ -278,7 +295,7 @@ export function User_Dashboard() {
               <option value="L">L</option>
               <option value="XL">XL</option>
               <option value="XXL">XXL</option>
-              </select>
+            </select>
 
             <select name="condition" required>
               <option value="">Condition</option>
@@ -288,58 +305,34 @@ export function User_Dashboard() {
               <option value="used-fair">Used - Fair</option>
             </select>
 
-            <textarea
-              name="description"
-              className="description"
-              placeholder="Description"
-            ></textarea>
+            <textarea name="description" className="description" placeholder="Description"></textarea>
 
             <div className="file-upload">
               <label htmlFor="image">Upload Image:</label>
-              <input
-                type="file"
-                name="image"
-                id="image"
-                accept="image/*"
-                onChange={handleChange}
-              />
+              <input type="file" id="image" accept="image/*" onChange={handleChange} />
 
-              <button
-                type="button"
-                style={{ marginTop: "0.5rem" }}
-                onClick={startRemoteSession}
-              >
+              <button type="button" style={{ marginTop: "0.5rem" }} onClick={startRemoteSession}>
                 Use phone camera
               </button>
 
-              {file && preview && (
+              {preview && (
                 <div className="image-preview">
                   <img
                     src={preview}
-                    alt="Preview"
                     className="thumbnail"
                     onClick={() => {
                       setModalImage(preview);
                       setModalOpen(true);
                     }}
                   />
-                  <button
-                    type="button"
-                    className="remove-btn"
-                    onClick={handleDeleteFile}
-                  >
+                  <button type="button" className="remove-btn" onClick={handleDeleteFile}>
                     Remove
                   </button>
                 </div>
               )}
             </div>
 
-            <input
-              type="text"
-              name="pickup_address"
-              placeholder="Pickup Address"
-              required
-            />
+            <input type="text" name="pickup_address" placeholder="Pickup Address" required />
 
             {loadingCharities ? (
               <p>Loading charities...</p>
@@ -347,146 +340,24 @@ export function User_Dashboard() {
               <select name="charity_ID" required>
                 <option value="">Select Charity</option>
                 {charities.map((c) => (
-                  <option key={c.charity_ID} value={c.charity_ID}>
-                    {c.charity_name}
-                  </option>
+                  <option key={c.charity_ID} value={c.charity_ID}>{c.charity_name}</option>
                 ))}
               </select>
             )}
 
             <button type="submit">Submit Donation</button>
-            </form>
-            </div>
-            </div>
-        <form className="new-donation" onSubmit={handleSubmit}>
-  <h3>Make a New Donation</h3>
-
-  {status && (
-    <div className={`form-message ${status.type}`}>{status.message}</div>
-  )}
-
-  {/* Item Name */}
-  <label htmlFor="item_name" className="sr-only">Item Name</label>
-  <input
-    type="text"
-    id="item_name"
-    name="item_name"
-    placeholder="Item Name"
-    required
-  />
-
-  {/* Category */}
-  <label htmlFor="category" className="sr-only">Category</label>
-  <select id="category" name="category" required>
-    <option value="">Category</option>
-    <option value="womens">Women's</option>
-    <option value="mens">Men's</option>
-    <option value="girls">Girl's</option>
-    <option value="boys">Boy's</option>
-  </select>
-
-  {/* Size */}
-  <label htmlFor="size" className="sr-only">Size</label>
-  <select id="size" name="size" required>
-    <option value="">Size</option>
-    <option value="XS">XS</option>
-    <option value="S">S</option>
-    <option value="M">M</option>
-    <option value="L">L</option>
-    <option value="XL">XL</option>
-    <option value="XXL">XXL</option>
-  </select>
-
-  {/* Condition */}
-  <label htmlFor="condition" className="sr-only">Condition</label>
-  <select id="condition" name="condition" required>
-    <option value="">Condition</option>
-    <option value="new">New</option>
-    <option value="like-new">Like New</option>
-    <option value="used-good">Used - Good</option>
-    <option value="used-fair">Used - Fair</option>
-  </select>
-
-  {/* Description */}
-  <label htmlFor="description" className="sr-only">Description</label>
-  <textarea
-    id="description"
-    name="description"
-    className="description"
-    placeholder="Description"
-  ></textarea>
-
-  {/* File Upload */}
-  <div className="file-upload">
-    <label htmlFor="image">Upload Image:</label>
-    <input
-      type="file"
-      name="image"
-      id="image"
-      accept="image/*"
-      onChange={handleChange}
-    />
-
-    {file && preview && (
-      <div className="image-preview">
-        <img
-          src={preview}
-          alt="Preview"
-          className="thumbnail"
-          onClick={() => {
-            setModalImage(preview);
-            setModalOpen(true);
-          }}
-        />
-        <button
-          type="button"
-          className="remove-btn"
-          onClick={handleDeleteFile}
-        >
-          Remove
-        </button>
-      </div>
-    )}
-  </div>
-
-  {/* Pickup Address */}
-  <label htmlFor="pickup_address" className="sr-only">Pickup Address</label>
-  <input
-    type="text"
-    id="pickup_address"
-    name="pickup_address"
-    placeholder="Pickup Address"
-    required
-  />
-
-  {/* Charity Selection */}
-  {loadingCharities ? (
-    <p>Loading charities...</p>
-  ) : (
-    <>
-      <label htmlFor="charity_ID" className="sr-only">Select Charity</label>
-      <select id="charity_ID" name="charity_ID" required>
-        <option value="">Select Charity</option>
-        {charities.map((c) => (
-          <option key={c.charity_ID} value={c.charity_ID}>
-            {c.charity_name}
-          </option>
-        ))}
-      </select>
-    </>
-  )}
-  <button type="submit">Submit Donation</button>
-</form>
-
+          </form>
         </div>
       </div>
 
-            {/* Donation history */}
-            <div className="donation-history full-width">
-            <h3>Recent Donations</h3>
+      {/* -----------------------------------------
+          DONATION HISTORY 
+      ------------------------------------------ */}
+      <div className="donation-history full-width">
+        <h3>Recent Donations</h3>
 
-            <table>
-            <thead>
+        <table>
+          <thead>
             <tr>
               <th>Item</th>
               <th>Size</th>
@@ -496,21 +367,14 @@ export function User_Dashboard() {
               <th>Status</th>
               <th>Pickup Address</th>
             </tr>
-            </thead>
+          </thead>
 
-            <tbody>
+          <tbody>
             {donations.length > 0 ? (
               donations.slice(0, 4).map((d) => {
                 const item = d.items?.[0];
-                const imgUrl = item?.item_image
-                  ? (() => {
-                      let path = item.item_image
-                        .replace(/^public\//, "")
-                        .replace(/^\/+/, "");
-                      return path.startsWith("http")
-                        ? path
-                        : `http://localhost:8000/storage/${path}`;
-                    })()
+                const url = item?.item_image
+                  ? `http://localhost:8000/storage/${item.item_image.replace("public/", "")}`
                   : null;
 
                 return (
@@ -518,92 +382,71 @@ export function User_Dashboard() {
                     <td>{item?.item_name ?? "N/A"}</td>
                     <td>{item?.item_size ?? "N/A"}</td>
                     <td>
-                      {imgUrl ? (
+                      {url ? (
                         <img
-                          src={imgUrl}
-                          alt={item?.item_name}
-                          style={{
-                            width: "50px",
-                            height: "auto",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
+                          src={url}
+                          style={{ width: "50px", borderRadius: "4px", cursor: "pointer" }}
                           onClick={() => {
-                            setModalImage(imgUrl);
+                            setModalImage(url);
                             setModalOpen(true);
                           }}
                         />
-                      ) : (
-                        "N/A"
-                      )}
+                      ) : "N/A"}
                     </td>
+
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>
                     <td>{getCharityName(d.charity_ID)}</td>
                     <td>{d.donation_status}</td>
-                    <td>{d.pickup_address || "N/A"}</td>
+                    <td>{d.pickup_address}</td>
                   </tr>
                 );
               })
             ) : (
-              <tr>
-                <td colSpan="7">No donations yet.</td>
-              </tr>
+              <tr><td colSpan="7">No donations yet.</td></tr>
             )}
-            </tbody>
-            </table>
-
-            {/* IMAGE PREVIEW MODAL */}
-            {modalOpen && modalImage && (
-            <div className="image-modal" onClick={() => setModalOpen(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <img src={modalImage} alt="Full Preview" className="full-image" />
-              <button
-                className="close-modal-btn"
-                onClick={() => setModalOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            </div>
-            )}
-
-            {/* 🔥 PHONE QR UPLOAD MODAL (ADDED HERE) */}
-            {remoteModalOpen && remoteSessionId && (
-            <div className="image-modal" onClick={() => setRemoteModalOpen(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h3>Scan with your phone</h3>
-              <p>Use your phone camera to take a photo remotely.</p>
-
-              <QRCodeCanvas
-                value={`http://localhost:5173/phone-upload/${remoteSessionId}`}
-                size={220}
-                includeMargin={true}
-              />
-
-              <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
-                Or enter manually:  
-                <br />
-                <code>http://localhost:5173/phone-upload/{remoteSessionId}</code>
-              </p>
-
-              <button
-                className="close-modal-btn"
-                onClick={() => setRemoteModalOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            </div>
-            )}
-            </div>
-            </>
-            );
-            }
-          </div>
-        )}
+          </tbody>
+        </table>
       </div>
+
+      {/* -----------------------------------------
+          IMAGE PREVIEW MODAL
+      ------------------------------------------ */}
+      {modalOpen && modalImage && (
+        <div className="image-modal" onClick={() => setModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <img src={modalImage} className="full-image" />
+            <button className="close-modal-btn" onClick={() => setModalOpen(false)}>✕</button>
+          </div>
+        </div>
+      )}
+
+      {/* -----------------------------------------
+          PHONE CAMERA QR MODAL
+      ------------------------------------------ */}
+      {remoteModalOpen && remoteSessionId && (
+        <div className="image-modal" onClick={() => setRemoteModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Scan with your phone</h3>
+            <p>Use your phone camera to upload a photo.</p>
+
+            <QRCodeCanvas
+              value={`http://localhost:5173/phone-upload/${remoteSessionId}`}
+              size={220}
+              includeMargin={true}
+            />
+
+            <p style={{ marginTop: "1rem", fontSize: "0.85rem" }}>
+              Or open manually:
+              <br />
+              <code>http://localhost:5173/phone-upload/{remoteSessionId}</code>
+            </p>
+
+            <button className="close-modal-btn" onClick={() => setRemoteModalOpen(false)}>
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
-
-export default User_Dashboard;
