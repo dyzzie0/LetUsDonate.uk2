@@ -12,6 +12,7 @@ const Sign_up = lazy(() => import("./assets/components/Sign_up.jsx"));
 const Login = lazy(() => import("./assets/components/Login.jsx"));
 const FAQ = lazy(() => import("./assets/components/FAQ.jsx"));
 const Our_Partners = lazy(() => import("./assets/components/Our_Partners.jsx"));
+const FAQChatBot = lazy(() => import("./assets/components/FAQChatBot.jsx"));
 
 // Admin
 const Admin_Dashboard = lazy(() => import("./assets/components/Admin/Admin_Dashboard.jsx"));
@@ -87,11 +88,12 @@ export default function Layout() {
       {/* Suspense wrapper for lazy-loaded routes */}
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          {/* Initial pages */}
+          {/* Main pages */}
           <Route path="/" element={<Home />} />
           <Route path="/sign_up" element={<Sign_up />} />
           <Route path="/login" element={<Login />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/faq_chatbot" element={<FAQChatBot />} />
           <Route path="/our_partners" element={<Our_Partners />} />
 
           {/* Admin */}

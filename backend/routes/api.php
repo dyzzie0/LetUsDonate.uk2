@@ -9,6 +9,7 @@ use App\Http\Controllers\DonationItemController;
 use App\Http\Controllers\CharityController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ViewUserController;
+use App\Http\Controllers\OpenAIController;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
@@ -107,3 +108,6 @@ Route::post('/remote-sessions', function (Request $request) {
         'session_id' => (string) Str::uuid(), 
     ]);
 });
+
+// OpenAI Integration Route
+Route::post('/ask-faq', [OpenAIController::class, 'ask']);

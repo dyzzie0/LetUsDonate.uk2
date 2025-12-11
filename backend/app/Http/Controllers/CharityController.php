@@ -16,7 +16,7 @@ class CharityController extends Controller
         return response()->json(Charity::all());
     }
 
-    // Get single charity with staff & donations
+    // Get a single charity with staff, donations, and inventory
     public function show($id)
     {
         return response()->json(
@@ -24,9 +24,10 @@ class CharityController extends Controller
         );
     }
 
-    // Create new charity with staff
+    // Create a new charity and its staff
     public function store(Request $request)
     {
+        // Validate the input
         $request->validate([
             'charity_name'     => 'required|string',
             'charity_address'  => 'required|string',
@@ -38,14 +39,12 @@ class CharityController extends Controller
         ]);
 
         try {
-            // Prevent duplicate emails
-            if (DomainUser::where('user_email', $request->staff_email)->exists()) {
-                return response()->json(['status' => 'error', 'message' => 'Staff email already exists.'], 409);
-            }
+            // Check if the charity email already exists
             if (Charity::where('charity_email', $request->charity_email)->exists()) {
                 return response()->json(['status' => 'error', 'message' => 'Charity email already exists.'], 409);
             }
 
+            // Create the charity
             $charity = Charity::create([
                 'charity_name'    => $request->charity_name,
                 'charity_address' => $request->charity_address,
@@ -53,28 +52,48 @@ class CharityController extends Controller
                 'contact_person'  => $request->contact_person,
             ]);
 
-            $user = DomainUser::create([
-                'user_name'     => $request->staff_username,
-                'user_email'    => $request->staff_email,
-                'user_password' => password_hash($request->staff_password, PASSWORD_DEFAULT),
-                'role_id'       => 11, // charity staff role
-            ]);
+            // Try to find an existing user by email
+            $user = DomainUser::where('user_email', $request->staff_email)->first();
 
-            CharityStaff::create([
-                'charity_ID' => $charity->charity_ID,
-                'user_ID'    => $user->user_ID,
-            ]);
+            // If the user doesn't exist, create a new one
+            if (!$user) {
+                $user = DomainUser::create([
+                    'user_name'     => $request->staff_username,
+                    'user_email'    => $request->staff_email,
+                    'user_password' => password_hash($request->staff_password, PASSWORD_DEFAULT),
+                    'role_id'       => 11, // Charity staff role
+                ]);
+            }
 
+            // Check if this user is already linked to the charity
+            $linkExists = CharityStaff::where('charity_ID', $charity->charity_ID)
+                ->where('user_ID', $user->user_ID)
+                ->exists();
+
+            // If the link does not exist, create it
+            if (!$linkExists) {
+                CharityStaff::create([
+                    'charity_ID' => $charity->charity_ID,
+                    'user_ID'    => $user->user_ID,
+                ]);
+            }
+
+            // Return success response
             return response()->json([
                 'status' => 'success',
-                'message' => 'Charity and staff created successfully',
+                'message' => 'Charity created successfully. Staff linked successfully.',
+                'charity' => $charity,
+                'staff'   => $user,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to create charity: ' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to create charity: ' . $e->getMessage()
+            ], 500);
         }
     }
 
-    // Update existing charity
+    // Update an existing charity
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -89,7 +108,9 @@ class CharityController extends Controller
 
             // Prevent duplicate charity email
             if (Charity::where('charity_email', $request->charity_email)
-                ->where('charity_ID', '<>', $id)->exists()) {
+                ->where('charity_ID', '<>', $id)
+                ->exists()
+            ) {
                 return response()->json(['status' => 'error', 'message' => 'Charity email already exists.'], 409);
             }
 
@@ -100,28 +121,43 @@ class CharityController extends Controller
                 'contact_person'  => $request->contact_person,
             ]);
 
-            return response()->json(['status' => 'success', 'message' => 'Charity updated successfully', 'charity' => $charity]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Charity updated successfully',
+                'charity' => $charity,
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to update charity: ' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update charity: ' . $e->getMessage()
+            ], 500);
         }
     }
 
-    // Delete charity and related staff link
+    // Delete a charity and its staff links
     public function destroy($id)
     {
         try {
             $charity = Charity::findOrFail($id);
 
-            // Remove charity staff links
+            // Remove any links with staff
             CharityStaff::where('charity_ID', $id)->delete();
 
+            // Delete the charity
             $charity->delete();
 
-            return response()->json(['status' => 'success', 'message' => 'Charity deleted successfully']);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Charity deleted successfully',
+            ]);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to delete charity: ' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete charity: ' . $e->getMessage()
+            ], 500);
         }
     }
+
     // Get simplified list of charities for dropdowns
     public function getCharitiesList()
     {
@@ -133,7 +169,10 @@ class CharityController extends Controller
 
             return response()->json(['status' => 'success', 'charities' => $charities]);
         } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to fetch charities: ' . $e->getMessage()], 500);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch charities: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

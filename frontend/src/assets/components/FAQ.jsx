@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from "react";
+
 import "../../css/faq.css";
+import React, { useState, Suspense } from "react";
+
+
 
 function FAQ() {
+
+  const FAQChatBot = React.lazy(() => import("./FAQChatBot.jsx"));
+
   return (
     <div>
       <div className="faq">
@@ -71,6 +77,9 @@ function FAQ() {
           <p> 100% of all profits go to the chosen charity. </p>
         </div>
       </div>
+      <Suspense fallback={<div>Loading ChatBot...</div>}>
+      <FAQChatBot />
+      </Suspense>
     </div>
   );
 }
