@@ -2,7 +2,7 @@
 
 A smart clothes donation platform that helps donors, charity staff, and administrators manage clothing collection, approval, categorisation, and sustainability insights.
 
-This project was developed for university and demonstrates modern full-stack development using React + Vite, Laravel, and MySQL.
+This project was developed for a university project and demonstrates modern full-stack development using React + Vite, Laravel, and SQLite.
 
 ===============================================================================
 
