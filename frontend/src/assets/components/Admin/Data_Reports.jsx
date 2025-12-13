@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Papa from "papaparse";
 import { saveAs } from "file-saver";
 import "../../../css/data_reports.css";
-import Papa from "papaparse";
 
-// This allows admin to generate and download data reports
 export function Data_Reports() {
   const [donations, setDonations] = useState([]);
   const [users, setUsers] = useState([]);
   const [charities, setCharities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetching all necessary data
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const fetchJSON = async (url) => {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error("Failed to fetch");
+          return res.json();
+        };
+
         const [donRes, userRes, charityRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/donations").then((res) =>
-            res.json(),
-          ),
-          fetch("http://127.0.0.1:8000/api/users").then((res) => res.json()),
-          fetch("http://127.0.0.1:8000/api/charities").then((res) =>
-            res.json(),
-          ),
+          fetchJSON("http://127.0.0.1:8000/api/donations"),
+          fetchJSON("http://127.0.0.1:8000/api/users"),
+          fetchJSON("http://127.0.0.1:8000/api/charities"),
         ]);
 
         if (donRes.status === "success") setDonations(donRes.donations);
@@ -31,7 +31,7 @@ export function Data_Reports() {
 
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error loading reports:", err);
         setLoading(false);
       }
     };
@@ -39,94 +39,76 @@ export function Data_Reports() {
     fetchData();
   }, []);
 
-  // Controlling report generation
-  const generateReportDonations = () => {
-    const donationData = donations.map((d) => ({
-      Date: d.donation_date,
-      Status: d.donation_status,
-      DonorID: d.donor_ID,
-      Items: d.items?.length || 0,
-    }));
-
-    const csv = Papa.unparse(donationData);
+  const downloadCSV = (data, filename) => {
+    const csv = Papa.unparse(data);
     saveAs(
       new Blob([csv], { type: "text/csv;charset=utf-8;" }),
-      "donation_report.csv",
+      filename
     );
   };
-  //report for users
-  const generateReportUsers = () => {
-    const userData = users.map((u) => ({
-      UserID: u.user_ID,
-      Name: u.name,
-      Email: u.email,
-      Registered: u.registered_date,
-    }));
 
-    const csv = Papa.unparse(userData);
-    saveAs(
-      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
-      "users_report.csv",
+  const donationReport = () =>
+    downloadCSV(
+      donations.map((d) => ({
+        Date: d.donation_date,
+        Status: d.donation_status,
+        DonorID: d.donor_ID,
+        Items: d.total_items ?? d.items?.length ?? 0,
+      })),
+      "donations_report.csv"
     );
-  };
-  //report for sustainability
-  const generateReportSustainability = () => {
-    const totalCO2 = donations.reduce(
-      (sum, d) => sum + (d.items?.length || 0) * 1.5,
-      0,
-    );
-    const sustainabilityData = [{ TotalCO2Reduced_kg: totalCO2 }];
 
-    const csv = Papa.unparse(sustainabilityData);
-    saveAs(
-      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
-      "sustainability_report.csv",
+  const userReport = () =>
+    downloadCSV(
+      users.map((u) => ({
+        ID: u.id,
+        Name: u.name,
+        Email: u.email,
+        Registered: u.created_at,
+      })),
+      "users_report.csv"
     );
-  };
-  //report for charities
-  const generateReportCharities = () => {
-    const charityData = charities.map((c) => {
-      const donationsReceived = donations.filter(
-        (d) => d.charity?.charity_ID === c.charity_ID,
-      ).length;
-      return {
+
+  const sustainabilityReport = () =>
+    downloadCSV(
+      [
+        {
+          Total_CO2_Reduced_kg: donations.reduce(
+            (sum, d) =>
+              sum + (d.total_items ?? d.items?.length ?? 0) * 1.5,
+            0
+          ),
+        },
+      ],
+      "sustainability_report.csv"
+    );
+
+  const charityReport = () =>
+    downloadCSV(
+      charities.map((c) => ({
         Charity: c.charity_name,
-        DonationsReceived: donationsReceived,
+        DonationsReceived: donations.filter(
+          (d) => d.charity?.id === c.id
+        ).length,
         Contact: c.contact_person,
         Email: c.charity_email,
         Address: c.charity_address,
-      };
-    });
+      })),
+      "charity_report.csv"
+    );
 
-    const csv = Papa.unparse(charityData);
-    saveAs(
-      new Blob([csv], { type: "text/csv;charset=utf-8;" }),
-      "charity_report.csv",
-    ); // we uses papaparse to convert json to csv and file-saver to download the file
-  };
-
-  // Generate all reports at once
-  const generateAllReports = () => {
-    generateReportDonations();
-    generateReportUsers();
-    generateReportSustainability();
-    generateReportCharities();
+  const downloadAll = () => {
+    donationReport();
+    userReport();
+    sustainabilityReport();
+    charityReport();
   };
 
   return (
     <main>
       <div className="records-container">
-        <div className="header-left">
-          <h2>Generate Reports</h2>
-        </div>
-
-        <div className="return-right">
-          <ul>
-            <li>
-              <Link to="/admin_dashboard">Return</Link>
-            </li>
-          </ul>
-        </div>
+        <h2>Generate Reports</h2>
+        <Link to="/admin_dashboard">Return</Link>
       </div>
 
       {loading ? (
@@ -136,46 +118,41 @@ export function Data_Reports() {
           <table className="table">
             <thead>
               <tr>
-                <th>Report Type</th>
+                <th>Report</th>
                 <th>Description</th>
                 <th>Download</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>Donations Report</td>
-                <td>Shows number of donations per day.</td>
+                <td>Donations</td>
+                <td>Donation history and status</td>
                 <td>
-                  <button onClick={generateReportDonations}>Download</button>
+                  <button onClick={donationReport}>Download</button>
                 </td>
               </tr>
 
               <tr>
-                <td>User Report</td>
-                <td>Lists new registered users for the period.</td>
+                <td>Users</td>
+                <td>Registered users</td>
                 <td>
-                  <button onClick={generateReportUsers}>Download</button>
+                  <button onClick={userReport}>Download</button>
                 </td>
               </tr>
 
               <tr>
-                <td>Sustainability Report</td>
-                <td>Displays total CO₂ reduced through donations.</td>
+                <td>Sustainability</td>
+                <td>Total CO₂ reduction</td>
                 <td>
-                  <button onClick={generateReportSustainability}>
-                    Download
-                  </button>
+                  <button onClick={sustainabilityReport}>Download</button>
                 </td>
               </tr>
 
               <tr>
-                <td>Charity Report</td>
+                <td>Charities</td>
+                <td>Charity donation totals</td>
                 <td>
-                  Shows each charity’s total donations received with contact
-                  info.
-                </td>
-                <td>
-                  <button onClick={generateReportCharities}>Download</button>
+                  <button onClick={charityReport}>Download</button>
                 </td>
               </tr>
 
@@ -183,9 +160,9 @@ export function Data_Reports() {
                 <td>
                   <strong>All Reports</strong>
                 </td>
-                <td>Generate and download all reports at once.</td>
+                <td>Download every report</td>
                 <td>
-                  <button onClick={generateAllReports}>Download All</button>
+                  <button onClick={downloadAll}>Download All</button>
                 </td>
               </tr>
             </tbody>

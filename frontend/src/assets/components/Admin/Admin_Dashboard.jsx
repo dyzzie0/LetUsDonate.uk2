@@ -6,8 +6,7 @@ import "../../../css/admin.css";
 // this is js to get text color based on theme
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "#ffffff"
-    : "#000000";
+    ? "#ffffff" : "#000000";
 }
 
 export function Admin_Dashboard() {

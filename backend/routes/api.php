@@ -12,6 +12,7 @@ use App\Http\Controllers\ViewUserController;
 use App\Http\Controllers\OpenAIController;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,3 +115,6 @@ Route::post('/ask-faq', [OpenAIController::class, 'ask']);
 Route::post('/ask-faq', [OpenAIController::class, 'ask'])
     ->middleware('throttle:3,1');
 // The above line limits to 3 requests per minute per IP address to prevent spam
+
+// Reports routes
+Route::get('/reports/users', [ReportController::class, 'usersReport']);

@@ -20,9 +20,6 @@ export default function User_Dashboard() {
 
   const [status, setStatus] = useState(null);
 
-  // ---------------------------------------
-  // LOAD USER + PROTECT URL
-  // ---------------------------------------
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const role = localStorage.getItem("role");
@@ -43,9 +40,6 @@ export default function User_Dashboard() {
     setUser(parsedUser);
   }, [id, navigate]);
 
-  // ---------------------------------------
-  // LOAD DONATIONS
-  // ---------------------------------------
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
 
@@ -57,9 +51,7 @@ export default function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-  // ---------------------------------------
-  // LOAD CHARITIES
-  // ---------------------------------------
+
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -74,10 +66,6 @@ export default function User_Dashboard() {
     const c = charities.find((x) => x.charity_ID === id);
     return c ? c.charity_name : "Unknown";
   };
-
-  // ---------------------------------------
-  // FILE UPLOAD (Laptop/Phone)
-  // ---------------------------------------
   const handleChange = (e) => {
     const selected = e.target.files?.[0];
     if (selected) {
@@ -91,9 +79,6 @@ export default function User_Dashboard() {
     setPreview(null);
   };
 
-  // ---------------------------------------
-  // SUBMIT DONATION
-  // ---------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
@@ -143,19 +128,16 @@ export default function User_Dashboard() {
 
     setTimeout(() => setStatus(null), 6000);
   };
-
-  // ---------------------------------------
-  // LOGOUT
-  // ---------------------------------------
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     navigate("/login");
   };
 
-  // ---------------------------------------
-  // RENDER PAGE
-  // ---------------------------------------
+  if (!user) {
+    return <p>Loading dashboard...</p>;
+  }  
+
   return (
     <>
       <div className="user-dashboard-container">
@@ -186,7 +168,7 @@ export default function User_Dashboard() {
             </aside>
 
             <main className="dashboard-main">
-              <h2>Welcome, {user?.name}</h2>
+              <h2>Welcome, {user.user_name}</h2> 
 
               <div className="stats-container">
                 <div className="stat-card">
