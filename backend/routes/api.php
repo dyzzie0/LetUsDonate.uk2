@@ -117,4 +117,7 @@ Route::post('/ask-faq', [OpenAIController::class, 'ask'])
 // The above line limits to 3 requests per minute per IP address to prevent spam
 
 // Reports routes
-Route::get('/reports/users', [ReportController::class, 'usersReport']);
+Route::get('/reports/donations', [ReportController::class, 'donations']);
+Route::get('/reports/users', [ReportController::class, 'users']);
+Route::get('/reports/sustainability', [ReportController::class, 'sustainability']);
+Route::get('/reports/charities', [ReportController::class, 'charities']);

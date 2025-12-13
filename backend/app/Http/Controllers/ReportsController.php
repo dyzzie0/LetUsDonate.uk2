@@ -7,13 +7,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
+    // USERS REPORT
     public function usersReport()
     {
         return response()->streamDownload(function () {
             $file = fopen('php://output', 'w');
             fputcsv($file, ['ID', 'Name', 'Email']);
-
             $users = DB::table('User')->get();
+
             foreach ($users as $u) {
                 fputcsv($file, [
                     $u->user_ID,
@@ -21,11 +22,11 @@ class ReportController extends Controller
                     $u->user_email,
                 ]);
             }
-
             fclose($file);
         }, 'users_report.csv', ['Content-Type' => 'text/csv']);
     }
 
+    // DONATIONS REPORT
     public function donationsReport()
     {
         return response()->streamDownload(function () {
@@ -35,15 +36,10 @@ class ReportController extends Controller
             $donations = DB::table('Donation')->get();
 
             foreach ($donations as $d) {
-                // Count items from Donation_Item
+                // Count items from Donation_Item table
                 $itemsCount = DB::table('Donation_Item')
                     ->where('donation_ID', $d->donation_ID)
                     ->count();
-
-                // Fallback to total_items in Donation if no items exist
-                if ($itemsCount === 0 && isset($d->total_items)) {
-                    $itemsCount = $d->total_items;
-                }
 
                 fputcsv($file, [
                     $d->donation_ID,
@@ -53,10 +49,11 @@ class ReportController extends Controller
                     $itemsCount,
                 ]);
             }
-
             fclose($file);
         }, 'donations_report.csv', ['Content-Type' => 'text/csv']);
     }
+
+    // CHARITIES REPORT
     public function charitiesReport()
     {
         return response()->streamDownload(function () {
@@ -72,17 +69,10 @@ class ReportController extends Controller
 
                 $totalDonations = $donationsReceived->count();
 
-                // Count all items per charity (fallback to total_items if Donation_Item empty)
-                $totalItems = 0;
-                foreach ($donationsReceived as $d) {
-                    $count = DB::table('Donation_Item')
-                        ->where('donation_ID', $d->donation_ID)
-                        ->count();
-                    if ($count === 0 && isset($d->total_items)) {
-                        $count = $d->total_items;
-                    }
-                    $totalItems += $count;
-                }
+                // Count all items for this charity
+                $totalItems = DB::table('Donation_Item')
+                    ->whereIn('donation_ID', $donationsReceived->pluck('donation_ID'))
+                    ->count();
 
                 fputcsv($file, [
                     $c->charity_ID,
@@ -99,28 +89,18 @@ class ReportController extends Controller
         }, 'charity_report.csv', ['Content-Type' => 'text/csv']);
     }
 
+    // SUSTAINABILITY REPORT
     public function sustainabilityReport()
     {
         return response()->streamDownload(function () {
             $file = fopen('php://output', 'w');
             fputcsv($file, ['Total CO₂ Reduced (kg)']);
 
-            $donations = DB::table('Donation')->get();
-            $totalItems = 0;
-
-            foreach ($donations as $d) {
-                $count = DB::table('Donation_Item')
-                    ->where('donation_ID', $d->donation_ID)
-                    ->count();
-                if ($count === 0 && isset($d->total_items)) {
-                    $count = $d->total_items;
-                }
-                $totalItems += $count;
-            }
-
+            // Count all donation items
+            $totalItems = DB::table('Donation_Item')->count();
             $totalCO2 = $totalItems * 1.5;
-            fputcsv($file, [$totalCO2]);
 
+            fputcsv($file, [$totalCO2]);
             fclose($file);
         }, 'sustainability_report.csv', ['Content-Type' => 'text/csv']);
     }

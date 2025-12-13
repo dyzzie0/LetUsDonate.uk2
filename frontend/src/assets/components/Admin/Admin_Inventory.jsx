@@ -3,42 +3,38 @@ import { Link } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
-// Admin Inventory now pulls from donations to show all approved items
 export function Admin_Inventory() {
   const [inventory, setInventory] = useState([]);
   const [filteredInventory, setFilteredInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ category: "", type: "" });
 
-  // Modal state for viewing images
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState(null);
 
-  // Build image URL
   const buildImageUrl = (path) => {
     if (!path) return null;
-    path = path.replace(/^public\//, "").replace(/^\/+/, "");
-    return `http://localhost:8000/storage/${path}`;
+    return `http://localhost:8000/storage/${path.replace("public/", "")}`;
   };
 
-  // Fetch donations and use approved ones as inventory
+  // Fetch approved donations → inventory
   useEffect(() => {
     fetch("http://localhost:8000/api/donations")
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
-          // Flatten donations to inventory items
           const approvedItems = [];
+
           data.donations.forEach((donation) => {
             if ((donation.donation_status || "").toLowerCase() === "approved") {
               donation.items?.forEach((item) => {
                 approvedItems.push({
                   inventory_ID: donation.donation_ID,
+                  donor_ID: donation.donor?.user_ID,
                   item: item.item_name,
-                  category: item.item_category,
+                  category: item.item_category?.toLowerCase(),
                   size: item.item_size || "N/A",
                   image: item.item_image,
-                  donor_ID: donation.donor?.user_ID,
                   donation_date: donation.donation_date,
                 });
               });
@@ -50,22 +46,24 @@ export function Admin_Inventory() {
         }
         setLoading(false);
       })
-      .catch((err) => {
-        console.error("Network error:", err);
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   }, []);
 
-  // Handle filter changes
   const handleFilterChange = (e) => {
     const updated = { ...filters, [e.target.name]: e.target.value };
     setFilters(updated);
 
-    const filtered = inventory.filter(
-      (item) =>
-        (updated.category === "" || item.category === updated.category) &&
-        (updated.type === "" || item.size === updated.type),
-    );
+    const filtered = inventory.filter((item) => {
+      const matchCategory =
+        updated.category === "" ||
+        item.category === updated.category;
+
+      const matchItem =
+        updated.type === "" ||
+        item.item?.toLowerCase().includes(updated.type);
+
+      return matchCategory && matchItem;
+    });
 
     setFilteredInventory(filtered);
   };
@@ -75,16 +73,6 @@ export function Admin_Inventory() {
     setFilteredInventory(inventory);
   };
 
-  const openModal = (imgUrl) => {
-    setModalImage(imgUrl);
-    setModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
-    setModalImage(null);
-  };
-
   return (
     <main>
       <div className="records-container">
@@ -92,14 +80,11 @@ export function Admin_Inventory() {
           <h2>Inventory</h2>
         </div>
         <div className="return-right">
-          <ul>
-            <li>
-              <Link to="/admin_dashboard">Return</Link>
-            </li>
-          </ul>
+          <Link to="/admin_dashboard">Return</Link>
         </div>
       </div>
 
+      {/* FILTER BAR */}
       <div className="filter-bar">
         <select
           name="category"
@@ -113,8 +98,12 @@ export function Admin_Inventory() {
           <option value="boys">Boys</option>
         </select>
 
-        <select name="type" value={filters.type} onChange={handleFilterChange}>
-          <option value="">All Types</option>
+        <select
+          name="type"
+          value={filters.type}
+          onChange={handleFilterChange}
+        >
+          <option value="">All Items</option>
           <option value="shirt">Shirt</option>
           <option value="trouser">Trouser</option>
           <option value="jacket">Jacket</option>
@@ -127,6 +116,7 @@ export function Admin_Inventory() {
         </button>
       </div>
 
+      {/* TABLE */}
       <div className="table-container">
         {loading ? (
           <p>Loading inventory...</p>
@@ -146,10 +136,10 @@ export function Admin_Inventory() {
 
             <tbody>
               {filteredInventory.length > 0 ? (
-                filteredInventory.map((item) => {
+                filteredInventory.map((item, index) => {
                   const imgUrl = buildImageUrl(item.image);
                   return (
-                    <tr key={`${item.inventory_ID}-${item.item}`}>
+                    <tr key={index}>
                       <td>{item.inventory_ID}</td>
                       <td>{item.donor_ID || "Unknown"}</td>
                       <td>{item.item}</td>
@@ -162,11 +152,13 @@ export function Admin_Inventory() {
                             alt={item.item}
                             style={{
                               width: "50px",
-                              height: "auto",
-                              borderRadius: "4px",
                               cursor: "pointer",
+                              borderRadius: "4px",
                             }}
-                            onClick={() => openModal(imgUrl)}
+                            onClick={() => {
+                              setModalImage(imgUrl);
+                              setModalOpen(true);
+                            }}
                           />
                         ) : (
                           "N/A"
@@ -182,7 +174,7 @@ export function Admin_Inventory() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="7">No approved items found.</td>
+                  <td colSpan="7">No items found.</td>
                 </tr>
               )}
             </tbody>
@@ -190,11 +182,15 @@ export function Admin_Inventory() {
         )}
       </div>
 
+      {/* IMAGE MODAL */}
       {modalOpen && modalImage && (
-        <div className="image-modal" onClick={closeModal}>
+        <div className="image-modal" onClick={() => setModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <img src={modalImage} alt="Full Preview" className="full-image" />
-            <button className="close-modal-btn" onClick={closeModal}>
+            <img src={modalImage} className="full-image" />
+            <button
+              className="close-modal-btn"
+              onClick={() => setModalOpen(false)}
+            >
               ✕
             </button>
           </div>

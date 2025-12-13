@@ -41,6 +41,8 @@ export function Admin_Dashboard() {
       });
   }, []);
 
+
+  
   // filters donations by time period, returning only those within the specified number of days
   const filterByTime = (days) => {
     const now = new Date();
@@ -190,12 +192,12 @@ export function Admin_Dashboard() {
         datasets: [
           {
             label: "Items Reused",
-            data: [donations.length],
+            data: [totalItemsAccepted],
             backgroundColor: "#8B5CF6", // purple
           },
           {
             label: "CO₂ Reduced (kg)",
-            data: [donations.length * 1.5],
+            data: [totalCO2Saved],
             backgroundColor: "#22C55E", // green
           },
         ],
@@ -246,6 +248,7 @@ export function Admin_Dashboard() {
   }, [donations, loading]);
 
   // stats
+  
   const totalDonations = donations.length;
   const totalItemsAccepted = donations
     .filter((d) => d.donation_status === "Approved")

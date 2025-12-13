@@ -3,24 +3,20 @@ import { Link } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
-// This allows charity and admin users to view and filter inventory items
 export function View_Inventory() {
-  const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role"); // "11" = charity, "99" = admin
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [inventory, setInventory] = useState([]);
   const [filteredInventory, setFilteredInventory] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [filters, setFilters] = useState({
-    category: "",
-    type: "",
-  });
+  const [filters, setFilters] = useState({ category: "", type: "" });
 
   useEffect(() => {
     let url = "http://localhost:8000/api/inventory";
 
-    // charity sees only their inventory
+    // Charity sees only their inventory
     if (role === "11" && user.charity_ID) {
       url += `?charity_ID=${user.charity_ID}`;
     }
@@ -36,18 +32,28 @@ export function View_Inventory() {
       .catch(() => setLoading(false));
   }, [role, user.charity_ID]);
 
-  // filtering logic
   const handleFilterChange = (e) => {
-    const updated = { ...filters, [e.target.name]: e.target.value };
-    setFilters(updated);
+    const updatedFilters = { ...filters, [e.target.name]: e.target.value };
+    setFilters(updatedFilters);
 
-    const filtered = inventory.filter(
-      (item) =>
-        (updated.category === "" || item.category === updated.category) &&
-        (updated.type === "" || item.size === updated.type),
-    );
+    const filtered = inventory.filter((item) => {
+      const matchCategory =
+        updatedFilters.category === "" ||
+        item.category.toLowerCase() === updatedFilters.category.toLowerCase();
+
+      const matchItem =
+        updatedFilters.type === "" ||
+        item.item.toLowerCase().includes(updatedFilters.type.toLowerCase());
+
+      return matchCategory && matchItem;
+    });
 
     setFilteredInventory(filtered);
+  };
+
+  const handleReset = () => {
+    setFilters({ category: "", type: "" });
+    setFilteredInventory(inventory);
   };
 
   return (
