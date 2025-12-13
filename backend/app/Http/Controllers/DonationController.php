@@ -126,15 +126,32 @@ class DonationController extends Controller
 
     
      //Admin gets all donations to view
-    public function getAllDonations()
-    {
-        $donations = Donation::with(['items', 'charity', 'donor'])
-            ->orderByDesc('donation_date')
-            ->get();
-
-        return response()->json([
-            'status' => 'success',
-            'donations' => $donations,
-        ]);
-    }
+     public function getAllDonations()
+     {
+         $donations = Donation::with(['items', 'charity', 'donor'])->orderByDesc('donation_date')->get();
+     
+         // Add distributed info for each item
+         $donations = $donations->map(function ($donation) {
+             $donation->items = $donation->items->map(function ($item) use ($donation) {
+                 // Find corresponding inventory record
+                 $inventoryItem = Inventory::where('charity_ID', $donation->charity_ID)
+                     ->where('item', $item->item_name)
+                     ->where('category', $item->item_category)
+                     ->where('size', $item->item_size)
+                     ->first();
+     
+                 $item->distributed = $inventoryItem ? (bool)$inventoryItem->distributed : false;
+     
+                 return $item;
+             });
+     
+             return $donation;
+         });
+     
+         return response()->json([
+             'status' => 'success',
+             'donations' => $donations,
+         ]);
+     }
+     
 }

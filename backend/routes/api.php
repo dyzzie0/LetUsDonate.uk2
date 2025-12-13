@@ -111,3 +111,6 @@ Route::post('/remote-sessions', function (Request $request) {
 
 // OpenAI Integration Route
 Route::post('/ask-faq', [OpenAIController::class, 'ask']);
+Route::post('/ask-faq', [OpenAIController::class, 'ask'])
+    ->middleware('throttle:3,1');
+// The above line limits to 3 requests per minute per IP address to prevent spam

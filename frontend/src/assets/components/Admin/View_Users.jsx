@@ -88,19 +88,38 @@ export function View_Users() {
 
   const confirmDelete = () => {
     if (!userToDelete) return;
-    fetch(
-      `http://localhost:8000/api/user-management/users/${userToDelete.user_ID}`,
-      { method: "DELETE", headers: { "Content-Type": "application/json" } },
-    )
-      .then((res) => res.json())
-      .then((data) => {
+  
+    fetch(`http://localhost:8000/api/user-management/users/${userToDelete.user_ID}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then(async (res) => {
+        // Some DELETE endpoints return no JSON body → avoid crash
+        let data = {};
+        try {
+          data = await res.json();
+        } catch (e) {
+          // No JSON returned – treat HTTP 200 as success
+          if (res.ok) {
+            data = { status: "success" };
+          } else {
+            throw new Error("Non-JSON response from server");
+          }
+        }
+  
         if (data.status === "success") {
           showMessage("User deleted successfully", "success");
-          setUsers(users.filter((u) => u.user_ID !== userToDelete.user_ID));
-          setFilteredUsers(
-            filteredUsers.filter((u) => u.user_ID !== userToDelete.user_ID),
+  
+          setUsers((prev) =>
+            prev.filter((u) => u.user_ID !== userToDelete.user_ID)
           );
-        } else showMessage(data.message || "Error deleting user", "error");
+          setFilteredUsers((prev) =>
+            prev.filter((u) => u.user_ID !== userToDelete.user_ID)
+          );
+        } else {
+          showMessage(data.message || "Error deleting user", "error");
+        }
+  
         setShowDeleteModal(false);
         setUserToDelete(null);
       })
@@ -110,6 +129,7 @@ export function View_Users() {
         setShowDeleteModal(false);
       });
   };
+  
 
   const handleUpdateUser = (e) => {
     e.preventDefault();
@@ -199,6 +219,7 @@ export function View_Users() {
       </div>
 
       <div className="table-container">
+        <div className="profile-form button">
         {loading ? (
           <p>Loading users...</p>
         ) : (
@@ -242,6 +263,7 @@ export function View_Users() {
             </tbody>
           </table>
         )}
+        </div>
       </div>
 
       {/* Edit Modal */}

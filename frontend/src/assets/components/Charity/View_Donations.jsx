@@ -121,7 +121,7 @@ export function Charity_Donations() {
       <div className="filter-bar">
         <input
           type="text"
-          placeholder="Search by item, category, or donor ID..."
+          placeholder="Search by item or donor ID..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="search-input"

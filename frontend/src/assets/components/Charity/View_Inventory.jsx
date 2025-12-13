@@ -17,9 +17,6 @@ export function View_Inventory() {
     type: "",
   });
 
-  //return link
-
-  // load inventory from Laravel
   useEffect(() => {
     let url = "http://localhost:8000/api/inventory";
 
@@ -115,7 +112,7 @@ export function View_Inventory() {
                     <td>{item.item}</td>
                     <td>{item.category}</td>
                     <td>{item.size}</td>
-                    <td>{item.image}</td>
+                    <td>{item.image || 'N/A'}</td>
                   </tr>
                 ))
               ) : (

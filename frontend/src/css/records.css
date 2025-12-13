@@ -1,4 +1,4 @@
-.main {
+main {
   min-height: 100vh;
   padding: 40px;
   display: flex;
@@ -220,6 +220,20 @@
     transform 0.2s;
 }
 
+.table td button:disabled,
+.profile-form button:disabled {
+  background-color: #b8b8b8;
+  cursor: not-allowed ;
+  transform: none ;
+  opacity: 0.6;
+}
+
+.table td button:disabled:hover,
+.profile-form button:disabled:hover {
+  background-color: #b8b8b8;
+  cursor: not-allowed;
+  transform: none;
+}
 .profile-form button:hover {
   background-color: #7c3aed;
   transform: translateY(-2px);

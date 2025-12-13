@@ -5,8 +5,7 @@ import "../../../css/charity.css";
 
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "#ffffff"
-    : "#000000";
+    ? "#ffffff" : "#000000";
 }
 
 export function Charity_Dashboard() {

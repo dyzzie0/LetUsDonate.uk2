@@ -195,7 +195,6 @@ export default function Approve_Donations() {
                       <td>{item?.item_category ?? "N/A"}</td>
                       <td>{item?.item_description ?? "N/A"}</td>
                       <td>{item?.item_condition ?? "N/A"}</td>
-                      <td>{item?.quantity ?? "1"}</td>
 
                       <td>
                         {imgUrl ? (

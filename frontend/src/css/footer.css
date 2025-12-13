@@ -1,3 +1,9 @@
+main{
+  margin: 3px auto 60px;
+  padding: 0 20px;
+}
+
+
 .footer {
   padding: 150px 100px;
   background-color: light-dark(#44614e, #1e2c29);

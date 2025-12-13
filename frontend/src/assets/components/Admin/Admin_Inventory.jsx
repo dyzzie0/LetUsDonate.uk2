@@ -56,6 +56,8 @@ export function Admin_Inventory() {
       });
   }, []);
 
+  
+
   // Handle filter changes
   const handleFilterChange = (e) => {
     const updated = { ...filters, [e.target.name]: e.target.value };

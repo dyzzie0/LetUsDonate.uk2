@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import "../../../css/footer.css";
+
 
 export function Cookie_Policy() {
   return (

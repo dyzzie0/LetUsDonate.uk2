@@ -236,28 +236,34 @@ export default function User_Dashboard() {
               <option value="used-fair">Used - Fair</option>
             </select>
 
-            <textarea name="description" className="description" placeholder="Description"></textarea>
+            <textarea name="description" className="description" placeholder="Description" required></textarea>
 
             <div className="file-upload">
-              <label htmlFor="image">Upload Image:</label>
-              <input type="file" id="image" accept="image/*" onChange={handleChange} />
+  <label htmlFor="image">Upload Image (optional):</label>
+  <input
+    type="file"
+    id="image"
+    accept="image/*"
+    onChange={handleChange}
+  />
 
-              {preview && (
-                <div className="image-preview">
-                  <img
-                    src={preview}
-                    className="thumbnail"
-                    onClick={() => {
-                      setModalImage(preview);
-                      setModalOpen(true);
-                    }}
-                  />
-                  <button type="button" className="remove-btn" onClick={handleDeleteFile}>
-                    Remove
-                  </button>
-                </div>
-              )}
-            </div>
+  {preview && (
+    <div className="image-preview">
+      <img
+        src={preview}
+        className="thumbnail"
+        onClick={() => {
+          setModalImage(preview);
+          setModalOpen(true);
+        }}
+      />
+      <button type="button" className="remove-btn" onClick={handleDeleteFile}>
+        Remove
+      </button>
+    </div>
+  )}
+</div>
+
 
             <input type="text" name="pickup_address" placeholder="Pickup Address" required />
 

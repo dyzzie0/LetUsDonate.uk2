@@ -30,38 +30,36 @@ function DonorSignUp() {
       setMessage("Passwords do not match");
       return;
     }
-
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      }),
+    });
+    
+    let data = null;
+    
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: formData.fullName,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.status === "success") {
-        setMessage("Signup successful! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 1000);
-      } else if (data.message) {
-        // Display server-provided error
-        setMessage(data.message);
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
       } else {
-        setMessage("Something went wrong during signup");
+        data = { status: response.ok ? "success" : "error", message: await response.text() };
       }
     } catch (err) {
-      // More descriptive network error
-      if (err.name === "TypeError") {
-        setMessage("Could not connect to server. Please check your network.");
-      } else {
-        setMessage(`Unexpected error: ${err.message}`);
-      }
-      console.error(err);
+      data = { status: "error", message: "Failed to parse server response." };
     }
+    
+    if (data.status === "success") {
+      setMessage("Signup successful! Redirecting to login...");
+      setTimeout(() => navigate("/login"), 1000);
+    } else {
+      setMessage(data.message || "Something went wrong during signup");
+    }
+
   };
 
   return (
@@ -122,7 +120,7 @@ function DonorSignUp() {
           <i className="fa-solid fa-lock"></i>
         </div>
 
-        {message && <p style={{ color: "white" }}>{message}</p>}
+        {message && <p>{message}</p>}
 
         <div className="signup_link">
           <Link className="print" to="/login">
