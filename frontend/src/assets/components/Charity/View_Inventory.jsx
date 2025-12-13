@@ -60,7 +60,7 @@ export function View_Inventory() {
         <div className="return-right">
           <ul>
             <li>
-             <Link to="/charity_dashboard">Return</Link>
+              <Link to="/charity_dashboard">Return</Link>
             </li>
           </ul>
         </div>
@@ -112,7 +112,7 @@ export function View_Inventory() {
                     <td>{item.item}</td>
                     <td>{item.category}</td>
                     <td>{item.size}</td>
-                    <td>{item.image || 'N/A'}</td>
+                    <td>{item.image || "N/A"}</td>
                   </tr>
                 ))
               ) : (

@@ -88,11 +88,14 @@ export function View_Users() {
 
   const confirmDelete = () => {
     if (!userToDelete) return;
-  
-    fetch(`http://localhost:8000/api/user-management/users/${userToDelete.user_ID}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    })
+
+    fetch(
+      `http://localhost:8000/api/user-management/users/${userToDelete.user_ID}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      },
+    )
       .then(async (res) => {
         // Some DELETE endpoints return no JSON body → avoid crash
         let data = {};
@@ -106,20 +109,20 @@ export function View_Users() {
             throw new Error("Non-JSON response from server");
           }
         }
-  
+
         if (data.status === "success") {
           showMessage("User deleted successfully", "success");
-  
+
           setUsers((prev) =>
-            prev.filter((u) => u.user_ID !== userToDelete.user_ID)
+            prev.filter((u) => u.user_ID !== userToDelete.user_ID),
           );
           setFilteredUsers((prev) =>
-            prev.filter((u) => u.user_ID !== userToDelete.user_ID)
+            prev.filter((u) => u.user_ID !== userToDelete.user_ID),
           );
         } else {
           showMessage(data.message || "Error deleting user", "error");
         }
-  
+
         setShowDeleteModal(false);
         setUserToDelete(null);
       })
@@ -129,7 +132,6 @@ export function View_Users() {
         setShowDeleteModal(false);
       });
   };
-  
 
   const handleUpdateUser = (e) => {
     e.preventDefault();
@@ -220,49 +222,49 @@ export function View_Users() {
 
       <div className="table-container">
         <div className="profile-form button">
-        {loading ? (
-          <p>Loading users...</p>
-        ) : (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>User ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Assigned Charity</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <tr key={user.user_ID}>
-                    <td>{user.user_ID}</td>
-                    <td>{user.user_name}</td>
-                    <td>{user.user_email}</td>
-                    <td>{user.role_name}</td>
-                    <td>{user.charity_name || "N/A"}</td>
-                    <td>
-                      {user.role_name === "charity_staff" && (
-                        <button onClick={() => handleEdit(user)}>Edit</button>
-                      )}
-                      {user.role_name !== "admin" && (
-                        <button onClick={() => handleDeleteClick(user)}>
-                          Delete
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
+          {loading ? (
+            <p>Loading users...</p>
+          ) : (
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan="6">No users found.</td>
+                  <th>User ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Assigned Charity</th>
+                  <th>Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user) => (
+                    <tr key={user.user_ID}>
+                      <td>{user.user_ID}</td>
+                      <td>{user.user_name}</td>
+                      <td>{user.user_email}</td>
+                      <td>{user.role_name}</td>
+                      <td>{user.charity_name || "N/A"}</td>
+                      <td>
+                        {user.role_name === "charity_staff" && (
+                          <button onClick={() => handleEdit(user)}>Edit</button>
+                        )}
+                        {user.role_name !== "admin" && (
+                          <button onClick={() => handleDeleteClick(user)}>
+                            Delete
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6">No users found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
 

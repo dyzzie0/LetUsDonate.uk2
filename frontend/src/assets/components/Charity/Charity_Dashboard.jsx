@@ -5,7 +5,8 @@ import "../../../css/charity.css";
 
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "#ffffff" : "#000000";
+    ? "#ffffff"
+    : "#000000";
 }
 
 export function Charity_Dashboard() {
@@ -35,7 +36,7 @@ export function Charity_Dashboard() {
         const data = await res.json();
         const allCharities = data.charities || data || [];
         const assigned = allCharities.find(
-          (c) => c.charity_ID === user.charity_ID
+          (c) => c.charity_ID === user.charity_ID,
         );
         if (assigned) setCharity(assigned);
       } catch (err) {
@@ -52,14 +53,14 @@ export function Charity_Dashboard() {
     const fetchData = async () => {
       try {
         const donationRes = await fetch(
-          `http://127.0.0.1:8000/api/charity/${user.charity_ID}/donations`
+          `http://127.0.0.1:8000/api/charity/${user.charity_ID}/donations`,
         );
         const donationJson = await donationRes.json();
         const donationList =
           donationJson.status === "success" ? donationJson.donations || [] : [];
 
         const inventoryRes = await fetch(
-          `http://127.0.0.1:8000/api/inventory?charity_ID=${user.charity_ID}`
+          `http://127.0.0.1:8000/api/inventory?charity_ID=${user.charity_ID}`,
         );
         const inventoryJson = await inventoryRes.json();
         const inventoryList = inventoryJson.inventory || [];
@@ -70,7 +71,10 @@ export function Charity_Dashboard() {
         // Calculate stats
         const totalItems = donationList.reduce((sum, d) => {
           if (!d.items) return sum;
-          return sum + d.items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0);
+          return (
+            sum +
+            d.items.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0)
+          );
         }, 0);
 
         setStats({
@@ -113,7 +117,13 @@ export function Charity_Dashboard() {
         datasets: [
           {
             data: quantities,
-            backgroundColor: ["#5b7d62", "#76a79b", "#9fc3ab", "#2d484c", "#7e8568"],
+            backgroundColor: [
+              "#5b7d62",
+              "#76a79b",
+              "#9fc3ab",
+              "#2d484c",
+              "#7e8568",
+            ],
           },
         ],
       },
@@ -194,7 +204,10 @@ export function Charity_Dashboard() {
 
               <div className="inventory-chart">
                 <h3>Inventory Overview</h3>
-                <canvas id="myChart" style={{ width: "100%", maxWidth: "700px" }}></canvas>
+                <canvas
+                  id="myChart"
+                  style={{ width: "100%", maxWidth: "700px" }}
+                ></canvas>
               </div>
             </>
           )}

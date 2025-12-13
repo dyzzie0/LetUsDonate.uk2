@@ -42,7 +42,7 @@ export default function Charity_Distribution_Records() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       const data = await res.json();
@@ -61,9 +61,7 @@ export default function Charity_Distribution_Records() {
   return (
     <main>
       {message && (
-        <div className={`form-message ${messageType}`}>
-          {message}
-        </div>
+        <div className={`form-message ${messageType}`}>{message}</div>
       )}
 
       <div className="records-container">
@@ -82,57 +80,58 @@ export default function Charity_Distribution_Records() {
 
       <div className="table-container">
         <table className="table">
-        <div className="profile-form">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Category</th>
-              <th>Size</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+          <div className="profile-form">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5">Loading...</td>
-              </tr>
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan="5">No items found.</td>
-              </tr>
-            ) : (
-              items.map((i) => (
-                <tr key={i.inventory_ID}>
-                <td>{i.item}</td>
-                <td>{i.category}</td>
-                <td>{i.size || "N/A"}</td>
-              
-                <td>
-                  {i.distributed ? (
-                    <span>Distributed</span>
-                  ) : (
-                    <span>Pending</span>
-                  )}
-                </td>
-              
-                <td>
-                  {i.distributed ? (
-                    <button disabled>Sent</button>
-                  ) : (
-                    <button onClick={() => handleDistribute(i.inventory_ID)}>
-                      Send
-                    </button>
-                  )}
-                </td>
-              </tr>              
-              ))
-            )}
-           
-          </tbody>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5">Loading...</td>
+                </tr>
+              ) : items.length === 0 ? (
+                <tr>
+                  <td colSpan="5">No items found.</td>
+                </tr>
+              ) : (
+                items.map((i) => (
+                  <tr key={i.inventory_ID}>
+                    <td>{i.item}</td>
+                    <td>{i.category}</td>
+                    <td>{i.size || "N/A"}</td>
+
+                    <td>
+                      {i.distributed ? (
+                        <span>Distributed</span>
+                      ) : (
+                        <span>Pending</span>
+                      )}
+                    </td>
+
+                    <td>
+                      {i.distributed ? (
+                        <button disabled>Sent</button>
+                      ) : (
+                        <button
+                          onClick={() => handleDistribute(i.inventory_ID)}
+                        >
+                          Send
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
           </div>
-        </table>  
+        </table>
       </div>
     </main>
   );

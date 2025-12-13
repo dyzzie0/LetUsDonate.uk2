@@ -15,32 +15,70 @@ const Our_Partners = lazy(() => import("./assets/components/Our_Partners.jsx"));
 const FAQChatBot = lazy(() => import("./assets/components/FAQChatBot.jsx"));
 
 // Admin
-const Admin_Dashboard = lazy(() => import("./assets/components/Admin/Admin_Dashboard.jsx"));
-const Add_Charity = lazy(() => import("./assets/components/Admin/Add_Charity.jsx"));
-const Data_Reports = lazy(() => import("./assets/components/Admin/Data_Reports.jsx"));
-const View_Users = lazy(() => import("./assets/components/Admin/View_Users.jsx"));
-const Admin_Inventory = lazy(() => import("./assets/components/Admin/Admin_Inventory.jsx"));
-const Admin_Donations = lazy(() => import("./assets/components/Admin/Admin_Donations.jsx"));
-const Manage_Charity = lazy(() => import("./assets/components/Admin/Manage_Charity.jsx"));
+const Admin_Dashboard = lazy(
+  () => import("./assets/components/Admin/Admin_Dashboard.jsx"),
+);
+const Add_Charity = lazy(
+  () => import("./assets/components/Admin/Add_Charity.jsx"),
+);
+const Data_Reports = lazy(
+  () => import("./assets/components/Admin/Data_Reports.jsx"),
+);
+const View_Users = lazy(
+  () => import("./assets/components/Admin/View_Users.jsx"),
+);
+const Admin_Inventory = lazy(
+  () => import("./assets/components/Admin/Admin_Inventory.jsx"),
+);
+const Admin_Donations = lazy(
+  () => import("./assets/components/Admin/Admin_Donations.jsx"),
+);
+const Manage_Charity = lazy(
+  () => import("./assets/components/Admin/Manage_Charity.jsx"),
+);
 
 // Charity
-const Charity_Dashboard = lazy(() => import("./assets/components/Charity/Charity_Dashboard.jsx"));
-const Approve_Donations = lazy(() => import("./assets/components/Charity/Approve_Donations.jsx"));
-const Distribution_Records = lazy(() => import("./assets/components/Charity/Distribution_Records.jsx"));
-const View_Donations = lazy(() => import("./assets/components/Charity/View_Donations.jsx"));
-const View_Inventory = lazy(() => import("./assets/components/Charity/View_Inventory.jsx"));
+const Charity_Dashboard = lazy(
+  () => import("./assets/components/Charity/Charity_Dashboard.jsx"),
+);
+const Approve_Donations = lazy(
+  () => import("./assets/components/Charity/Approve_Donations.jsx"),
+);
+const Distribution_Records = lazy(
+  () => import("./assets/components/Charity/Distribution_Records.jsx"),
+);
+const View_Donations = lazy(
+  () => import("./assets/components/Charity/View_Donations.jsx"),
+);
+const View_Inventory = lazy(
+  () => import("./assets/components/Charity/View_Inventory.jsx"),
+);
 
 // User
-const User_Dashboard = lazy(() => import("./assets/components/User/User_Dashboard.jsx"));
-const My_Donations = lazy(() => import("./assets/components/User/My_Donations.jsx"));
+const User_Dashboard = lazy(
+  () => import("./assets/components/User/User_Dashboard.jsx"),
+);
+const My_Donations = lazy(
+  () => import("./assets/components/User/My_Donations.jsx"),
+);
 const My_Impact = lazy(() => import("./assets/components/User/My_Impact.jsx"));
-const My_Profile = lazy(() => import("./assets/components/User/My_Profile.jsx"));
+const My_Profile = lazy(
+  () => import("./assets/components/User/My_Profile.jsx"),
+);
 
 // Footer content pages
-const Terms_Conditions = lazy(() => import("./assets/components/Footer_Content/Terms_Conditions.jsx"));
-const Privacy_Policy = lazy(() => import("./assets/components/Footer_Content/Privacy_Policy.jsx"));
-const Cookie_Policy = lazy(() => import("./assets/components/Footer_Content/Cookie_Policy.jsx"));
-const Accessibility = lazy(() => import("./assets/components/Footer_Content/Accessibility.jsx"));
+const Terms_Conditions = lazy(
+  () => import("./assets/components/Footer_Content/Terms_Conditions.jsx"),
+);
+const Privacy_Policy = lazy(
+  () => import("./assets/components/Footer_Content/Privacy_Policy.jsx"),
+);
+const Cookie_Policy = lazy(
+  () => import("./assets/components/Footer_Content/Cookie_Policy.jsx"),
+);
+const Accessibility = lazy(
+  () => import("./assets/components/Footer_Content/Accessibility.jsx"),
+);
 
 // Not found page
 const NotFound = lazy(() => import("./404.jsx"));
@@ -109,7 +147,10 @@ export default function Layout() {
           <Route path="/charity_dashboard" element={<Charity_Dashboard />} />
           <Route path="/view_inventory" element={<View_Inventory />} />
           <Route path="/view_donations" element={<View_Donations />} />
-          <Route path="/distribution_records" element={<Distribution_Records />} />
+          <Route
+            path="/distribution_records"
+            element={<Distribution_Records />}
+          />
           <Route path="/approve_donations" element={<Approve_Donations />} />
 
           {/* User */}

@@ -39,27 +39,29 @@ function DonorSignUp() {
         password: formData.password,
       }),
     });
-    
+
     let data = null;
-    
+
     try {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         data = await response.json();
       } else {
-        data = { status: response.ok ? "success" : "error", message: await response.text() };
+        data = {
+          status: response.ok ? "success" : "error",
+          message: await response.text(),
+        };
       }
     } catch (err) {
       data = { status: "error", message: "Failed to parse server response." };
     }
-    
+
     if (data.status === "success") {
       setMessage("Signup successful! Redirecting to login...");
       setTimeout(() => navigate("/login"), 1000);
     } else {
       setMessage(data.message || "Something went wrong during signup");
     }
-
   };
 
   return (

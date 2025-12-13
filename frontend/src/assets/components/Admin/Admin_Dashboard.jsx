@@ -248,7 +248,9 @@ export function Admin_Dashboard() {
 
   // stats
   const totalDonations = donations.length;
-  const totalItemsAccepted = donations.filter(d => d.donation_status === "Approved").reduce((sum, d) => sum + (d.items?.length || 0), 0);
+  const totalItemsAccepted = donations
+    .filter((d) => d.donation_status === "Approved")
+    .reduce((sum, d) => sum + (d.items?.length || 0), 0);
   const totalCO2Saved = (totalItemsAccepted * 1.5).toFixed(1);
   const activeCharities = new Set(donations.map((d) => d.charity?.charity_name))
     .size;
@@ -256,43 +258,42 @@ export function Admin_Dashboard() {
   return (
     <div className="admin-dashboard">
       <div className="admin-links">
-  <h2>Welcome Admin!</h2>
-  <ul>
-    <li>
-      <i className="fa-solid fa-users"></i>
-      <Link to="/view_users">View Users</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-database"></i>
-      <Link to="/admin_inventory">View Inventory</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-hand-holding-heart"></i>
-      <Link to="/admin_donations">Donations</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-chart-line"></i>
-      <Link to="/data_reports">Data Reports</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-users"></i>
-      <Link to="/add_charity">Add Charity</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-arrow-right-from-bracket"></i>
-      <button
-        className="admin-button"
-        onClick={() => {
-          localStorage.removeItem("admin");
-          window.location.href = "/login";
-        }}
-      >
-        Logout
-      </button>
-    </li>
-  </ul>
-</div>
-
+        <h2>Welcome Admin!</h2>
+        <ul>
+          <li>
+            <i className="fa-solid fa-users"></i>
+            <Link to="/view_users">View Users</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-database"></i>
+            <Link to="/admin_inventory">View Inventory</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-hand-holding-heart"></i>
+            <Link to="/admin_donations">Donations</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-chart-line"></i>
+            <Link to="/data_reports">Data Reports</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-users"></i>
+            <Link to="/add_charity">Add Charity</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            <button
+              className="admin-button"
+              onClick={() => {
+                localStorage.removeItem("admin");
+                window.location.href = "/login";
+              }}
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+      </div>
 
       <div className="admin-overview">
         <div className="Stats">

@@ -49,10 +49,11 @@ export function Charity_Donations() {
     const fetchDonations = async () => {
       try {
         const res = await fetch(
-          `http://127.0.0.1:8000/api/charity/${charityId}/donations`
+          `http://127.0.0.1:8000/api/charity/${charityId}/donations`,
         );
         const data = await res.json();
-        const donationList = data.status === "success" ? data.donations || [] : [];
+        const donationList =
+          data.status === "success" ? data.donations || [] : [];
         setDonations(donationList);
         setFilteredDonations(donationList);
         setLoading(false);

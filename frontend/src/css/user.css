@@ -24,7 +24,6 @@
   padding-bottom: 0 !important;
 }
 
-
 .links ul {
   list-style: none;
   width: 100%;
@@ -44,10 +43,6 @@
   text-align: center;
   flex-direction: column;
 }
-
-
-
-
 
 .links li:hover {
   background-color: #619a6f;
@@ -391,10 +386,9 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   border: 0;
 }
-
 
 /* responsive mobile */
 @media screen and (max-width: 768px) {

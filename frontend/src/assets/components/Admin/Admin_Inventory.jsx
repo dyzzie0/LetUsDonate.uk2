@@ -56,8 +56,6 @@ export function Admin_Inventory() {
       });
   }, []);
 
-  
-
   // Handle filter changes
   const handleFilterChange = (e) => {
     const updated = { ...filters, [e.target.name]: e.target.value };
@@ -66,7 +64,7 @@ export function Admin_Inventory() {
     const filtered = inventory.filter(
       (item) =>
         (updated.category === "" || item.category === updated.category) &&
-        (updated.type === "" || item.size === updated.type)
+        (updated.type === "" || item.size === updated.type),
     );
 
     setFilteredInventory(filtered);

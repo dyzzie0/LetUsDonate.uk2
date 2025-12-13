@@ -12,7 +12,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     try {
       const response = await fetch("http://localhost:8000/api/login", {
         method: "POST",
@@ -22,30 +22,30 @@ export default function Login() {
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
       console.log("Login response:", response.status, data);
-  
+
       if (response.ok && data.status === "success") {
         const user = data.user;
-  
+
         // Debug: log user object to verify charity_ID
         console.log("Logged in user object:", user);
-  
+
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("role", String(user.role_id));
-  
+
         const role = String(user.role_id);
-  
+
         if (role === "12") {
           navigate("/admin_dashboard");
         } else if (role === "11") {
           if (!user.charity_ID) {
             console.warn(
-              "No charity_ID found for this user. Charity dashboard will not load."
+              "No charity_ID found for this user. Charity dashboard will not load.",
             );
             setError(
-              "Login failed: Your account does not have an associated charity."
+              "Login failed: Your account does not have an associated charity.",
             );
             return;
           }
@@ -65,7 +65,7 @@ export default function Login() {
       setError("Error connecting to server");
     }
   };
-  
+
   return (
     <div className="middle">
       <div className="return_home">

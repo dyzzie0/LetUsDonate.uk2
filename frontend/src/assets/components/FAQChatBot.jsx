@@ -3,7 +3,10 @@ import "../../css/faq.css";
 
 export default function FAQChatBot() {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello I'm Chati! Ask me anything about LetUsDonate.uk" },
+    {
+      sender: "bot",
+      text: "Hello I'm Chati! Ask me anything about LetUsDonate.uk",
+    },
   ]);
 
   const [input, setInput] = useState("");
@@ -13,7 +16,7 @@ export default function FAQChatBot() {
     if (!input.trim() || loading) return;
 
     const userMsg = input;
-    setMessages(prev => [...prev, { sender: "user", text: userMsg }]);
+    setMessages((prev) => [...prev, { sender: "user", text: userMsg }]);
     setInput("");
     setLoading(true);
 
@@ -25,18 +28,21 @@ export default function FAQChatBot() {
       });
 
       if (res.status === 429) {
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
-          { sender: "bot", text: "Please wait about 1 minute before asking again." },
+          {
+            sender: "bot",
+            text: "Please wait about 1 minute before asking again.",
+          },
         ]);
-      
+
         setLoading(true);
         setTimeout(() => setLoading(false), 60000);
         return;
-      }      
+      }
 
       if (!res.ok) {
-        setMessages(prev => [
+        setMessages((prev) => [
           ...prev,
           {
             sender: "bot",
@@ -48,12 +54,12 @@ export default function FAQChatBot() {
 
       const data = await res.json();
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { sender: "bot", text: data.answer || "Sorry, no response received." },
       ]);
     } catch {
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
@@ -92,15 +98,11 @@ export default function FAQChatBot() {
           type="text"
           placeholder="Ask a question..."
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && sendMessage()}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           disabled={loading}
         />
-        <button
-          className="cb-send"
-          onClick={sendMessage}
-          disabled={loading}
-        >
+        <button className="cb-send" onClick={sendMessage} disabled={loading}>
           {loading ? "..." : "Send"}
         </button>
       </div>

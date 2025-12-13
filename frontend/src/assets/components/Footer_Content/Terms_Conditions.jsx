@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../../../css/footer.css";
 
-
 export function Terms_Conditions() {
   return (
     <div>
