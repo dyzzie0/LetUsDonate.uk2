@@ -67,10 +67,6 @@ Configure SQLite in .env:
 -- DB_USERNAME=root
 -- DB_PASSWORD=
 
-Build the Frontend for Production inside the React folder:
-
--- npm run build
-
 ===============================================================================
 
 ## Project Structure
