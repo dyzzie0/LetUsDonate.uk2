@@ -126,7 +126,6 @@ export function Admin_Donations() {
               <th>Image</th>
               <th>Date</th>
               <th>Status</th>
-              <th>Distributed</th> {/* New column */}
             </tr>
           </thead>
 
@@ -170,7 +169,6 @@ export function Admin_Donations() {
                         : "N/A"}
                     </td>
                     <td>{d.donation_status}</td>
-                    <td>{d.distributed ? "Yes" : "No"}</td> {/* Display distributed */}
                   </tr>
                 );
               })

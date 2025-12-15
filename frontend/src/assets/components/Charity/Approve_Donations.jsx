@@ -124,8 +124,7 @@ export default function Approve_Donations() {
               <li>
                 <Link to="/charity_dashboard">Return</Link>
               </li>
-              <li>
-              </li>
+              <li></li>
             </ul>
           </div>
         </div>
@@ -195,7 +194,6 @@ export default function Approve_Donations() {
                       <td>{item?.item_category ?? "N/A"}</td>
                       <td>{item?.item_description ?? "N/A"}</td>
                       <td>{item?.item_condition ?? "N/A"}</td>
-                      <td>{item?.quantity ?? "1"}</td>
 
                       <td>
                         {imgUrl ? (

@@ -2,7 +2,7 @@
 
 A smart clothes donation platform that helps donors, charity staff, and administrators manage clothing collection, approval, categorisation, and sustainability insights.
 
-This project was developed for university and demonstrates modern full-stack development using React + Vite, Laravel, and MySQL.
+This project was developed for a university project and demonstrates modern full-stack development using React + Vite, Laravel, and SQLite.
 
 ===============================================================================
 
@@ -66,10 +66,6 @@ Configure SQLite in .env:
 -- DB_DATABASE=sqlite/Clothing_Donations.db
 -- DB_USERNAME=root
 -- DB_PASSWORD=
-
-Build the Frontend for Production inside the React folder:
-
--- npm run build
 
 ===============================================================================
 

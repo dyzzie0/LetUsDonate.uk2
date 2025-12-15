@@ -36,13 +36,15 @@ class InventoryController extends Controller
     public function distribute($id)
     {
         $item = Inventory::findOrFail($id);
-
-        $item->delete();
-
+        $item->distributed = true;
+        $item->save();
+    
         return response()->json([
             'status' => 'success',
             'message' => 'Item distributed successfully'
         ]);
     }
+    
 
+    
 }

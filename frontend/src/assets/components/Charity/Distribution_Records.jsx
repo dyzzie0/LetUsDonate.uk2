@@ -9,72 +9,58 @@ export default function Charity_Distribution_Records() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [toast, setToast] = useState(null); // toast message
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState("success");
 
-  // Show toast for 3 seconds
-  const showToast = (msg, type = "success") => {
-    setToast({ msg, type });
-    setTimeout(() => setToast(null), 3000);
+  const showMessage = (msg, type = "success") => {
+    setMessage(msg);
+    setMessageType(type);
+    setTimeout(() => setMessage(null), 3000);
   };
 
-  // Load items
-  useEffect(() => {
-    if (!charityId) return;
-
+  const loadInventory = () => {
     fetch(`http://localhost:8000/api/inventory?charity_ID=${charityId}`)
       .then((res) => res.json())
       .then((data) => {
         setItems(data.inventory || []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        showMessage("Failed to load inventory.", "error");
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    if (charityId) loadInventory();
   }, [charityId]);
 
-  // Distribute item
   const handleDistribute = async (inventoryId) => {
     try {
       const res = await fetch(
         `http://localhost:8000/api/inventory/${inventoryId}/distribute`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" }
+          headers: { "Content-Type": "application/json" },
         }
       );
 
       const data = await res.json();
 
       if (res.ok && data.status === "success") {
-        showToast("Item has been successfully distributed!");
-
-        // Change button to "Distributed" and fade out row
-        setItems((prev) =>
-          prev.map((i) =>
-            i.inventory_ID === inventoryId
-              ? { ...i, distributed: true }
-              : i
-          )
-        );
-
-        // Remove row after fade animation
-        setTimeout(() => {
-          setItems((prev) =>
-            prev.filter((i) => i.inventory_ID !== inventoryId)
-          );
-        }, 600); // match CSS fade-out duration
+        showMessage("Item has been successfully distributed!", "success");
+        loadInventory();
+      } else {
+        showMessage("Failed to distribute item.", "error");
       }
     } catch (err) {
-      showToast("Network error occurred", "error");
+      showMessage("Network error occurred.", "error");
     }
   };
 
   return (
     <main>
-      {/* Toast Notification */}
-      {toast && (
-        <div className={`toast ${toast.type}`}>
-          {toast.msg}
-        </div>
-      )}
+      {message && <div className={`form-message ${messageType}`}>{message}</div>}
 
       <div className="records-container">
         <div className="header-left">
@@ -91,54 +77,45 @@ export default function Charity_Distribution_Records() {
       </div>
 
       <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Donation ID</th>
-              <th>Item ID</th>
-              <th>Category</th> 
-              <th>Action</th>
-            </tr>
-          </thead>
+        {loading ? (
+          <p>Loading inventory...</p>
+        ) : items.length === 0 ? (
+          <p>No items found.</p>
+        ) : (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="5">Loading...</td>
-              </tr>
-            ) : items.length === 0 ? (
-              <tr>
-                <td colSpan="5">No items ready for distribution.</td>
-              </tr>
-            ) : (
-              items.map((i) => (
-                <tr
-                  key={i.inventory_ID}
-                  className={i.distributed ? "fade-out" : ""}
-                >
+            <tbody>
+              {items.map((i) => (
+                <tr key={i.inventory_ID}>
                   <td>{i.item}</td>
                   <td>{i.category}</td>
                   <td>{i.size || "N/A"}</td>
-                  <td>{i.quantity}</td>
+                  <td>{i.distributed ? "Distributed" : "Pending"}</td>
                   <td>
                     {i.distributed ? (
-                      <button className="distributed-button" disabled>
-                        Distributed ✓
+                      <button disabled className="distributed-btn">
+                        Sent
                       </button>
                     ) : (
-                      <button
-                        className="donation-button"
-                        onClick={() => handleDistribute(i.inventory_ID)}
-                      >
+                      <button className="distribute-btn" onClick={() => handleDistribute(i.inventory_ID)}>
                         Send
                       </button>
                     )}
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </main>
   );

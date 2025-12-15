@@ -57,41 +57,48 @@ class AuthController extends Controller
 }
 
 
-    // Sign up
-    public function signup(Request $request)
-    {
-        // validate if input matches criteria
-        $request->validate([
+// Sign up
+public function signup(Request $request)
+{
+    // validate input
+    $request->validate(
+        [
             'fullName' => 'required|string|max:255',
             'email' => 'required|email|unique:User,user_email',
             'password' => 'required|string|min:6',
-        ]);
+        ],
+        [
+            'email.unique' => 'An account with this email already exists.',
+        ]
+    );
     
-        //Automatically assigns Donor role just becuase we only allow donors to signup due to security measures 
-        $donorRole = \App\Models\Role::firstOrCreate(
-            ['role_name' => 'donor'],
-            ['role_description' => 'A person who donates clothing or items.']
-        );
-    
-        //Creates the user
-        $user = \App\Models\DomainUser::create([
-            'user_name' => $request->fullName,
-            'user_email' => $request->email,
-            'user_password' => Hash::make($request->password),
-            'role_id' => $donorRole->role_id,
-        ]);
-    
-        //creates the donor record
-        \App\Models\Donor::create([
-            'user_ID' => $user->user_ID,
-            'donor_address' => null,
-        ]);
 
-        // return success response
-        return response()->json([
-            'status' => 'success',
-            'user' => $user
-        ]);
-    }
+    // Automatically assign Donor role
+    $donorRole = \App\Models\Role::firstOrCreate(
+        ['role_name' => 'donor'],
+        ['role_description' => 'A person who donates clothing or items.']
+    );
+
+    // Create the user
+    $user = \App\Models\DomainUser::create([
+        'user_name' => $request->fullName,
+        'user_email' => $request->email,
+        'user_password' => Hash::make($request->password),
+        'role_id' => $donorRole->role_id,
+    ]);
+
+    // Create donor record
+    \App\Models\Donor::create([
+        'user_ID' => $user->user_ID,
+        'donor_address' => null,
+    ]);
+
+    // Success response
+    return response()->json([
+        'status' => 'success',
+        'user' => $user
+    ]);
+}
+
 }
     

@@ -20,9 +20,6 @@ export default function User_Dashboard() {
 
   const [status, setStatus] = useState(null);
 
-  // ---------------------------------------
-  // LOAD USER + PROTECT URL
-  // ---------------------------------------
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const role = localStorage.getItem("role");
@@ -43,9 +40,6 @@ export default function User_Dashboard() {
     setUser(parsedUser);
   }, [id, navigate]);
 
-  // ---------------------------------------
-  // LOAD DONATIONS
-  // ---------------------------------------
   useEffect(() => {
     if (!user?.donor?.donor_ID) return;
 
@@ -57,9 +51,7 @@ export default function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-  // ---------------------------------------
-  // LOAD CHARITIES
-  // ---------------------------------------
+
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -74,10 +66,6 @@ export default function User_Dashboard() {
     const c = charities.find((x) => x.charity_ID === id);
     return c ? c.charity_name : "Unknown";
   };
-
-  // ---------------------------------------
-  // FILE UPLOAD (Laptop/Phone)
-  // ---------------------------------------
   const handleChange = (e) => {
     const selected = e.target.files?.[0];
     if (selected) {
@@ -91,9 +79,6 @@ export default function User_Dashboard() {
     setPreview(null);
   };
 
-  // ---------------------------------------
-  // SUBMIT DONATION
-  // ---------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user?.donor?.donor_ID) return;
@@ -143,45 +128,54 @@ export default function User_Dashboard() {
 
     setTimeout(() => setStatus(null), 6000);
   };
-
-  // ---------------------------------------
-  // LOGOUT
-  // ---------------------------------------
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     navigate("/login");
   };
 
-  // ---------------------------------------
-  // RENDER PAGE
-  // ---------------------------------------
+  if (!user) {
+    return <p>Loading dashboard...</p>;
+  }  
+
   return (
     <>
       <div className="user-dashboard-container">
-
         {/* LEFT SIDEBAR */}
         <div className="dashboard-left">
           <div className="dashboard">
             <aside className="links">
               <ul>
-                <li><i className="fa-solid fa-gauge"></i><Link to="/my_impact">My Impact</Link></li>
-                <li><i className="fa-solid fa-inbox"></i><Link to="/my_donations">My Donations</Link></li>
-                <li><i className="fa-solid fa-user"></i><Link to="/my_profile">Profile Settings</Link></li>
+                <li>
+                  <i className="fa-solid fa-gauge"></i>
+                  <Link to="/my_impact">My Impact</Link>
+                </li>
+                <li>
+                  <i className="fa-solid fa-inbox"></i>
+                  <Link to="/my_donations">My Donations</Link>
+                </li>
+                <li>
+                  <i className="fa-solid fa-user"></i>
+                  <Link to="/my_profile">Profile Settings</Link>
+                </li>
                 <li>
                   <i className="fa-solid fa-arrow-right-from-bracket"></i>
-                  <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                  <button className="logout-btn" onClick={handleLogout}>
+                    Logout
+                  </button>
                 </li>
               </ul>
             </aside>
 
             <main className="dashboard-main">
-              <h2>Welcome, {user?.name}</h2>
+              <h2>Welcome, {user.user_name}</h2> 
 
               <div className="stats-container">
                 <div className="stat-card">
                   <i className="fa-solid fa-earth-africa"></i>
-                  <p className="stat-number">{(donations.length * 1.5).toFixed(1)}kg</p>
+                  <p className="stat-number">
+                    {(donations.length * 1.5).toFixed(1)}kg
+                  </p>
                   <p className="stat-text">CO₂ Saved</p>
                 </div>
 
@@ -206,9 +200,18 @@ export default function User_Dashboard() {
           <form className="new-donation" onSubmit={handleSubmit}>
             <h3>Make a New Donation</h3>
 
-            {status && <div className={`form-message ${status.type}`}>{status.message}</div>}
+            {status && (
+              <div className={`form-message ${status.type}`}>
+                {status.message}
+              </div>
+            )}
 
-            <input type="text" name="item_name" placeholder="Item Name" required />
+            <input
+              type="text"
+              name="item_name"
+              placeholder="Item Name"
+              required
+            />
 
             <select name="category" required>
               <option value="">Category</option>
@@ -236,11 +239,21 @@ export default function User_Dashboard() {
               <option value="used-fair">Used - Fair</option>
             </select>
 
-            <textarea name="description" className="description" placeholder="Description"></textarea>
+            <textarea
+              name="description"
+              className="description"
+              placeholder="Description"
+              required
+            ></textarea>
 
             <div className="file-upload">
-              <label htmlFor="image">Upload Image:</label>
-              <input type="file" id="image" accept="image/*" onChange={handleChange} />
+              <label htmlFor="image">Upload Image (optional):</label>
+              <input
+                type="file"
+                id="image"
+                accept="image/*"
+                onChange={handleChange}
+              />
 
               {preview && (
                 <div className="image-preview">
@@ -252,14 +265,23 @@ export default function User_Dashboard() {
                       setModalOpen(true);
                     }}
                   />
-                  <button type="button" className="remove-btn" onClick={handleDeleteFile}>
+                  <button
+                    type="button"
+                    className="remove-btn"
+                    onClick={handleDeleteFile}
+                  >
                     Remove
                   </button>
                 </div>
               )}
             </div>
 
-            <input type="text" name="pickup_address" placeholder="Pickup Address" required />
+            <input
+              type="text"
+              name="pickup_address"
+              placeholder="Pickup Address"
+              required
+            />
 
             {loadingCharities ? (
               <p>Loading charities...</p>
@@ -267,7 +289,9 @@ export default function User_Dashboard() {
               <select name="charity_ID" required>
                 <option value="">Select Charity</option>
                 {charities.map((c) => (
-                  <option key={c.charity_ID} value={c.charity_ID}>{c.charity_name}</option>
+                  <option key={c.charity_ID} value={c.charity_ID}>
+                    {c.charity_name}
+                  </option>
                 ))}
               </select>
             )}
@@ -310,13 +334,19 @@ export default function User_Dashboard() {
                       {url ? (
                         <img
                           src={url}
-                          style={{ width: "50px", borderRadius: "4px", cursor: "pointer" }}
+                          style={{
+                            width: "50px",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
                           onClick={() => {
                             setModalImage(url);
                             setModalOpen(true);
                           }}
                         />
-                      ) : "N/A"}
+                      ) : (
+                        "N/A"
+                      )}
                     </td>
 
                     <td>{new Date(d.donation_date).toLocaleDateString()}</td>
@@ -327,7 +357,9 @@ export default function User_Dashboard() {
                 );
               })
             ) : (
-              <tr><td colSpan="7">No donations yet.</td></tr>
+              <tr>
+                <td colSpan="7">No donations yet.</td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -338,7 +370,12 @@ export default function User_Dashboard() {
         <div className="image-modal" onClick={() => setModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <img src={modalImage} className="full-image" />
-            <button className="close-modal-btn" onClick={() => setModalOpen(false)}>✕</button>
+            <button
+              className="close-modal-btn"
+              onClick={() => setModalOpen(false)}
+            >
+              ✕
+            </button>
           </div>
         </div>
       )}

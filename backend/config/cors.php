@@ -3,6 +3,9 @@
 return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'reports/*', 'ask-ai', 'sanctum/csrf-cookie'],
+
+
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 

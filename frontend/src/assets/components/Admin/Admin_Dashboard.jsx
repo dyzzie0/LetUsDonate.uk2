@@ -6,8 +6,7 @@ import "../../../css/admin.css";
 // this is js to get text color based on theme
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "#ffffff"
-    : "#000000";
+    ? "#ffffff" : "#000000";
 }
 
 export function Admin_Dashboard() {
@@ -42,6 +41,8 @@ export function Admin_Dashboard() {
       });
   }, []);
 
+
+  
   // filters donations by time period, returning only those within the specified number of days
   const filterByTime = (days) => {
     const now = new Date();
@@ -191,12 +192,12 @@ export function Admin_Dashboard() {
         datasets: [
           {
             label: "Items Reused",
-            data: [donations.length],
+            data: [totalItemsAccepted],
             backgroundColor: "#8B5CF6", // purple
           },
           {
             label: "CO₂ Reduced (kg)",
-            data: [donations.length * 1.5],
+            data: [totalCO2Saved],
             backgroundColor: "#22C55E", // green
           },
         ],
@@ -247,8 +248,11 @@ export function Admin_Dashboard() {
   }, [donations, loading]);
 
   // stats
+  
   const totalDonations = donations.length;
-  const totalItemsAccepted = donations.filter(d => d.donation_status === "Approved").reduce((sum, d) => sum + (d.items?.length || 0), 0);
+  const totalItemsAccepted = donations
+    .filter((d) => d.donation_status === "Approved")
+    .reduce((sum, d) => sum + (d.items?.length || 0), 0);
   const totalCO2Saved = (totalItemsAccepted * 1.5).toFixed(1);
   const activeCharities = new Set(donations.map((d) => d.charity?.charity_name))
     .size;
@@ -256,43 +260,42 @@ export function Admin_Dashboard() {
   return (
     <div className="admin-dashboard">
       <div className="admin-links">
-  <h2>Welcome Admin!</h2>
-  <ul>
-    <li>
-      <i className="fa-solid fa-users"></i>
-      <Link to="/view_users">View Users</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-database"></i>
-      <Link to="/admin_inventory">View Inventory</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-hand-holding-heart"></i>
-      <Link to="/admin_donations">Donations</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-chart-line"></i>
-      <Link to="/data_reports">Data Reports</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-users"></i>
-      <Link to="/add_charity">Add Charity</Link>
-    </li>
-    <li>
-      <i className="fa-solid fa-arrow-right-from-bracket"></i>
-      <button
-        className="admin-button"
-        onClick={() => {
-          localStorage.removeItem("admin");
-          window.location.href = "/login";
-        }}
-      >
-        Logout
-      </button>
-    </li>
-  </ul>
-</div>
-
+        <h2>Welcome Admin!</h2>
+        <ul>
+          <li>
+            <i className="fa-solid fa-users"></i>
+            <Link to="/view_users">View Users</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-database"></i>
+            <Link to="/admin_inventory">View Inventory</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-hand-holding-heart"></i>
+            <Link to="/admin_donations">Donations</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-chart-line"></i>
+            <Link to="/data_reports">Data Reports</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-users"></i>
+            <Link to="/add_charity">Add Charity</Link>
+          </li>
+          <li>
+            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+            <button
+              className="admin-button"
+              onClick={() => {
+                localStorage.removeItem("admin");
+                window.location.href = "/login";
+              }}
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+      </div>
 
       <div className="admin-overview">
         <div className="Stats">

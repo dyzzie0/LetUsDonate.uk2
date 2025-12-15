@@ -10,6 +10,16 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  --cb-bg: light-dark(#fffefc, #2c2c2c);
+  --cb-border: light-dark(#ccc, #444);
+  --cb-text: light-dark(#333, #ddd);
+  --cb-accent: #53835e;
+  --cb-accent-hover: #619a6f;
+  --cb-user: light-dark(#e6ede9, #2a4b38);
+  --cb-bot: light-dark(#f1f5f9, #3a3a3a);
+  --cb-muted: light-dark(#6b7280, #b0b0b0);
+  --radius: 12px;
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
 }
 
 body {
