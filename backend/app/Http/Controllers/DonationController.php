@@ -130,10 +130,10 @@ class DonationController extends Controller
      {
          $donations = Donation::with(['items', 'charity', 'donor'])->orderByDesc('donation_date')->get();
      
-         // Add distributed info for each item
+         //add distributed info for each item
          $donations = $donations->map(function ($donation) {
              $donation->items = $donation->items->map(function ($item) use ($donation) {
-                 // Find corresponding inventory record
+                 // find corresponding inventory record
                  $inventoryItem = Inventory::where('charity_ID', $donation->charity_ID)
                      ->where('item', $item->item_name)
                      ->where('category', $item->item_category)

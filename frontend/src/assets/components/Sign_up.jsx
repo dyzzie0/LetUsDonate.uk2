@@ -20,7 +20,7 @@ function DonorSignUp() {
     e.preventDefault();
     setMessage("");
 
-    // Password validation (unchanged)
+    // Password validation- not chnaged
     if (formData.password.length < 6) {
       setMessage("Password must be at least 6 characters long");
       return;
@@ -44,7 +44,7 @@ function DonorSignUp() {
 
       const data = await response.json();
 
-      // ✅ FIX: show backend validation error (duplicate email)
+      // fix- show backend validation error (duplicate email)
       if (!response.ok) {
         setMessage(data.message || data.errors?.email?.[0] || "Signup failed");
         return;

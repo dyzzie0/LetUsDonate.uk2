@@ -7,10 +7,10 @@ use App\Models\Charity;
 use App\Models\DomainUser;
 use Illuminate\Http\Request;
 
-// Admin controller for managing donations, charities, users, and dashboard stats
+//controller for managing donations, charities, users, and dashboard stats
 class AdminController extends Controller
 {
-    // Getting all donations (with their items + charity + donor)
+    // getting all donations (with their items + charity + donor)
 
     public function getAllDonations()
     {
@@ -24,7 +24,7 @@ class AdminController extends Controller
         ]);
     }
 
-    // Getting all charities
+    //getting all charities
     public function getAllCharities()
     {
         $charities = Charity::all();
@@ -34,7 +34,7 @@ class AdminController extends Controller
         ]);
     }
 
-    // Get all users 
+    // get all users 
     public function getAllUsers()
     {
         try{
@@ -53,21 +53,21 @@ class AdminController extends Controller
         }
     }
 
-    // Metrics for all the charts
+    // metrics for all the charts
     public function getDashboardStats()
     {
         $donations = Donation::with(['items', 'charity'])->get();
 
-        // Total donations
+        //total donations
         $total = $donations->count();
 
-        // CO2 saved = donations * 1.5
+        // cO2 saved = donations * 1.5
         $co2 = round($total * 1.5, 1);
 
-        // Active charities count
+        // count of charities that are active
         $activeCharities = $donations->groupBy('charity_ID')->count();
 
-        // Format donation labels
+        //format donation labels
         $donation_labels = $donations->take(10)->pluck('donation_date');
 
         return response()->json([

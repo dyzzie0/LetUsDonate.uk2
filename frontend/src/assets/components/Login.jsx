@@ -29,7 +29,7 @@ export default function Login() {
       if (response.ok && data.status === "success") {
         const user = data.user;
 
-        // Debug: log user object to verify charity_ID
+        // For Debug- log user object to verify charity_ID
         console.log("Logged in user object:", user);
 
         localStorage.setItem("user", JSON.stringify(user));

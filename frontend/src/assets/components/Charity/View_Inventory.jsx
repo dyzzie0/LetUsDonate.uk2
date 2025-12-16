@@ -4,7 +4,7 @@ import "../../../css/records.css";
 import "../../../css/modal.css";
 
 export function View_Inventory() {
-  const role = localStorage.getItem("role"); // "11" = charity, "99" = admin
+  const role = localStorage.getItem("role"); // 11 = charity, 12 = admin
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [inventory, setInventory] = useState([]);

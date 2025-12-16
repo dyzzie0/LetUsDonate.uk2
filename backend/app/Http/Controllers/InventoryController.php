@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 
-// Controller for managing inventory
+// this controller is for managing inventory
 class InventoryController extends Controller
 {
     public function index(Request $request)

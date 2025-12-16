@@ -23,7 +23,7 @@ export function Charity_Donations() {
     return `http://localhost:8000/storage/${path}`;
   };
 
-  // Fetch assigned charity details (like Charity_Dashboard logic)
+  //Fetch assigned charity details (like Charity_Dashboard logic)
   useEffect(() => {
     if (!charityId) return;
 
@@ -42,7 +42,7 @@ export function Charity_Donations() {
     fetchCharity();
   }, [charityId]);
 
-  // Fetch donations for this charity
+  //fetch donations for this charity
   useEffect(() => {
     if (!charityId) return;
 

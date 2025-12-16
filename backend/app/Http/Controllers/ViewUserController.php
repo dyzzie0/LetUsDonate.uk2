@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ViewUserController extends Controller
 {
-    // Get all users
+    // this gets all users
     public function getViewUsers()
     {
         $users = DB::table('User')
@@ -21,14 +21,14 @@ class ViewUserController extends Controller
         return response()->json(['status'=>'success','users'=>$users]);
     }
 
-    // Get all roles
+    // gets all roles
     public function getRoles()
     {
         $roles = DB::table('Role')->select('role_id','role_name')->get();
         return response()->json(['status'=>'success','roles'=>$roles]);
     }
 
-    // Get list of charities
+    // gets list of charities
     public function getCharitiesList()
     {
         $charities = DB::table('Charity')
@@ -38,7 +38,7 @@ class ViewUserController extends Controller
         return response()->json(['status'=>'success','charities'=>$charities]);
     }
 
-    // Update user
+    // updates user
     public function updateUser(Request $request, $id)
     {
         $user = DB::table('User')->where('user_ID',$id)->first();
@@ -46,7 +46,7 @@ class ViewUserController extends Controller
 
         $roleName = DB::table('Role')->where('role_id',$user->role_id)->value('role_name');
 
-        // Only charity_staff can change charity assignment
+        // only charity_staff can change charity assignment
         if ($roleName === 'charity_staff' && $request->has('charity_id')) {
             DB::table('Charity_Staff')->updateOrInsert(
                 ['user_ID'=>$id],
@@ -54,7 +54,7 @@ class ViewUserController extends Controller
             );
         }
 
-        // Only charity_staff can be promoted to admin
+        // only charity_staff can be promoted to admin
         if ($roleName === 'charity_staff' && $request->role_name === 'admin') {
             $adminRole = DB::table('Role')->where('role_name','admin')->first();
             DB::table('User')->where('user_ID',$id)->update(['role_id'=>$adminRole->role_id]);
@@ -73,7 +73,7 @@ class ViewUserController extends Controller
         return response()->json(['status'=>'success','user'=>$updatedUser]);
     }
 
-    // Delete user
+    // deletes user
     public function deleteUser($id)
     {
         DB::table('Charity_Staff')->where('user_ID',$id)->delete();

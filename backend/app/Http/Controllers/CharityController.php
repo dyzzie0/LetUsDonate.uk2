@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class CharityController extends Controller
 {
-    // Get all charities
+    //get all charities
     public function index()
     {
         return response()->json(Charity::all());
     }
 
-    // Get a single charity with staff, donations, and inventory
+    // get single charity with staff, donations, and inventory
     public function show($id)
     {
         return response()->json(
@@ -24,10 +24,10 @@ class CharityController extends Controller
         );
     }
 
-    // Create a new charity and its staff
+    // create a new charity and its staff
     public function store(Request $request)
     {
-        // Validate the input
+        //validate the input
         $request->validate([
             'charity_name'     => 'required|string',
             'charity_address'  => 'required|string',
@@ -39,12 +39,12 @@ class CharityController extends Controller
         ]);
 
         try {
-            // Check if the charity email already exists
+            // check if the charity email already exists
             if (Charity::where('charity_email', $request->charity_email)->exists()) {
                 return response()->json(['status' => 'error', 'message' => 'Charity email already exists.'], 409);
             }
 
-            // Create the charity
+            // create the charity
             $charity = Charity::create([
                 'charity_name'    => $request->charity_name,
                 'charity_address' => $request->charity_address,
@@ -52,25 +52,25 @@ class CharityController extends Controller
                 'contact_person'  => $request->contact_person,
             ]);
 
-            // Try to find an existing user by email
+            // try to find existing user by email
             $user = DomainUser::where('user_email', $request->staff_email)->first();
 
-            // If the user doesn't exist, create a new one
+            // if user doesn't exist then create a new one
             if (!$user) {
                 $user = DomainUser::create([
                     'user_name'     => $request->staff_username,
                     'user_email'    => $request->staff_email,
                     'user_password' => password_hash($request->staff_password, PASSWORD_DEFAULT),
-                    'role_id'       => 11, // Charity staff role
+                    'role_id'       => 11, //charity staff role
                 ]);
             }
 
-            // Check if this user is already linked to the charity
+            // check if this user is already linked to the charity
             $linkExists = CharityStaff::where('charity_ID', $charity->charity_ID)
                 ->where('user_ID', $user->user_ID)
                 ->exists();
 
-            // If the link does not exist, create it
+            // if the link does not exist, create it
             if (!$linkExists) {
                 CharityStaff::create([
                     'charity_ID' => $charity->charity_ID,
@@ -78,7 +78,7 @@ class CharityController extends Controller
                 ]);
             }
 
-            // Return success response
+            // return success response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Charity created successfully. Staff linked successfully.',
@@ -93,7 +93,7 @@ class CharityController extends Controller
         }
     }
 
-    // Update an existing charity
+    // update an existing charity
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -106,7 +106,7 @@ class CharityController extends Controller
         try {
             $charity = Charity::findOrFail($id);
 
-            // Prevent duplicate charity email
+            // prevents duplicate charity email
             if (Charity::where('charity_email', $request->charity_email)
                 ->where('charity_ID', '<>', $id)
                 ->exists()
@@ -134,7 +134,7 @@ class CharityController extends Controller
         }
     }
 
-    // Delete a charity and its staff links
+    // deletes a charity and its staff links
 public function destroy($id)
 {
     try {
@@ -167,7 +167,7 @@ public function destroy($id)
 }
 
 
-    // Get simplified list of charities for dropdowns
+    // get simplified list of charities for dropdowns
     public function getCharitiesList()
     {
         try {

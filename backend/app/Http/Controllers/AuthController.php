@@ -11,9 +11,9 @@ use App\Models\CharityStaff;
 
 class AuthController extends Controller
 {
-    /**
-     * LOGIN
-     */
+    
+     //login
+     
     public function login(Request $request)
     {
         $request->validate([
@@ -21,20 +21,20 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Find user by email
+        //find user by email
         $user = DomainUser::where('user_email', $request->email)->first();
 
         if ($user && Hash::check($request->password, $user->user_password)) {
 
             $userData = $user->toArray();
 
-            // Attach donor data
+            //attach donor data
             $donor = Donor::where('user_ID', $user->user_ID)->first();
             if ($donor) {
                 $userData['donor'] = $donor;
             }
 
-            // Attach charity staff data
+            //attach charity staff data
             if ($user->role_id == 11) {
                 $charityStaff = CharityStaff::where('user_ID', $user->user_ID)->first();
                 if ($charityStaff) {
@@ -54,9 +54,7 @@ class AuthController extends Controller
         ], 401);
     }
 
-    /**
-     * SIGN UP (OLD VERSION)
-     */
+    //signup older versio 
     public function signup(Request $request)
     {
         $request->validate([
@@ -65,7 +63,7 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
-        // 🔴 OLD BEHAVIOUR: manual duplicate check
+        //manual duplicate check
         if (DomainUser::where('user_email', $request->email)->exists()) {
             return response()->json([
                 'status'  => 'error',
@@ -73,7 +71,7 @@ class AuthController extends Controller
             ], 409);
         }
 
-        // Get donor role
+        //get donor role
         $donorRole = Role::where('role_name', 'donor')->first();
 
         // Create user
@@ -84,7 +82,7 @@ class AuthController extends Controller
             'role_id'       => $donorRole->role_id,
         ]);
 
-        // Create donor record
+        // creates donor record
         Donor::create([
             'user_ID' => $user->user_ID,
             'donor_address' => null,
@@ -96,9 +94,7 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * LOGOUT
-     */
+    //logout
     public function logout()
     {
         return response()->json([

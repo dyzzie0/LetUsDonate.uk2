@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserProfileController extends Controller
 {
-    // GET user profile
+    // gets user profile
     public function show($id)
     {
         $user = DomainUser::find($id);
@@ -29,7 +29,7 @@ class UserProfileController extends Controller
         ]);
     }
 
-    // UPDATE user profile
+    // updates user profile
     public function update(Request $request, $id)
     {
         $user = DomainUser::find($id);

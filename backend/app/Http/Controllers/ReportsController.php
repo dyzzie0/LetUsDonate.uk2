@@ -36,7 +36,7 @@ class ReportController extends Controller
             $donations = DB::table('Donation')->get();
 
             foreach ($donations as $d) {
-                // Count items from Donation_Item table
+                // this counts items from Donation_Item table
                 $itemsCount = DB::table('Donation_Item')
                     ->where('donation_ID', $d->donation_ID)
                     ->count();
@@ -69,7 +69,7 @@ class ReportController extends Controller
 
                 $totalDonations = $donationsReceived->count();
 
-                // Count all items for this charity
+                // count all items for this charity
                 $totalItems = DB::table('Donation_Item')
                     ->whereIn('donation_ID', $donationsReceived->pluck('donation_ID'))
                     ->count();
@@ -96,7 +96,7 @@ class ReportController extends Controller
             $file = fopen('php://output', 'w');
             fputcsv($file, ['Total CO₂ Reduced (kg)']);
 
-            // Count all donation items
+            // count all donation items
             $totalItems = DB::table('Donation_Item')->count();
             $totalCO2 = $totalItems * 1.5;
 

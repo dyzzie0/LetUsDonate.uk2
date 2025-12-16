@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Role;
 use Illuminate\Http\Request;
 
-// Controller for managing roles
+// this controller is for managing roles
 class RoleController extends Controller
 {
     //get all roles

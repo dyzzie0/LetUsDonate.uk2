@@ -6,7 +6,7 @@ import Header from "./assets/components/Header.jsx";
 import Header_alt from "./assets/components/Header_alt.jsx";
 import Footer from "./assets/components/Footer.jsx";
 
-// Lazy-load all page components
+// lazy-load all page components
 const Home = lazy(() => import("./assets/components/Home.jsx"));
 const Sign_up = lazy(() => import("./assets/components/Sign_up.jsx"));
 const Login = lazy(() => import("./assets/components/Login.jsx"));

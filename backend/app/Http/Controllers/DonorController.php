@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Donor;
 use Illuminate\Http\Request;
 
-// Controller for managing donors
+// this controller is for managing donors
 class DonorController extends Controller
 {
     //get all donors

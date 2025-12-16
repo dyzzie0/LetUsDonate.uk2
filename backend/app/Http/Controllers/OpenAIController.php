@@ -9,14 +9,14 @@ class OpenAIController extends Controller
 {
     public function ask(Request $request)
     {
-        // Validate input
+        // validate input
         $request->validate([
             'question' => 'required|string',
         ]);
 
         $question = $request->input('question');
 
-        // Check if API key is set
+        // checks if API key is set
         $apiKey = env('OPENAI_API_KEY');
         if (!$apiKey) {
             return response()->json([

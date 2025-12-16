@@ -32,7 +32,7 @@ export function View_Users() {
     const admin = localStorage.getItem("admin");
 
     if (!admin) {
-      navigate("/"); // redirect to home page if ur not admin
+      navigate("/"); //redirect to home page if ur not admin
     }
   }, [navigate]);
 
@@ -108,12 +108,12 @@ export function View_Users() {
       },
     )
       .then(async (res) => {
-        // Some DELETE endpoints return no JSON body → avoid crash
+        // Some delete endpoints return no JSON body- avoid crash
         let data = {};
         try {
           data = await res.json();
         } catch (e) {
-          // No JSON returned – treat HTTP 200 as success
+          // No JSON returned- treat HTTP 200 as success
           if (res.ok) {
             data = { status: "success" };
           } else {
@@ -149,7 +149,7 @@ export function View_Users() {
     if (!selectedUser) return;
 
     const updateData = {};
-    // Promote charity_staff → admin
+    // Promote charity_staff- admin
     if (userRole === "admin") updateData.role_name = "admin";
     // Update assigned charity
     if (selectedUser.role_name === "charity_staff")
