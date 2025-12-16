@@ -20,7 +20,7 @@ function DonorSignUp() {
     e.preventDefault();
     setMessage("");
 
-    // Password validation
+    // Password validation (unchanged)
     if (formData.password.length < 6) {
       setMessage("Password must be at least 6 characters long");
       return;
@@ -30,37 +30,37 @@ function DonorSignUp() {
       setMessage("Passwords do not match");
       return;
     }
-    const response = await fetch("/api/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-      }),
-    });
-
-    let data = null;
 
     try {
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        data = await response.json();
-      } else {
-        data = {
-          status: response.ok ? "success" : "error",
-          message: await response.text(),
-        };
-      }
-    } catch (err) {
-      data = { status: "error", message: "Failed to parse server response." };
-    }
+      const response = await fetch("http://localhost:8000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
 
-    if (data.status === "success") {
-      setMessage("Signup successful! Redirecting to login...");
-      setTimeout(() => navigate("/login"), 1000);
-    } else {
-      setMessage(data.message || "Something went wrong during signup");
+      const data = await response.json();
+
+      // ✅ FIX: show backend validation error (duplicate email)
+      if (!response.ok) {
+        setMessage(
+          data.message ||
+          data.errors?.email?.[0] ||
+          "Signup failed"
+        );
+        return;
+      }
+
+      if (data.status === "success") {
+        setMessage("Signup successful! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 1000);
+      }
+
+    } catch (err) {
+      setMessage("Network error. Please try again.");
     }
   };
 

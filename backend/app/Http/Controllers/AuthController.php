@@ -28,13 +28,13 @@ class AuthController extends Controller
 
             $userData = $user->toArray();
 
-            // Attach donor data if donor
+            // Attach donor data
             $donor = Donor::where('user_ID', $user->user_ID)->first();
             if ($donor) {
                 $userData['donor'] = $donor;
             }
 
-            // Attach charity staff data if role is charity staff
+            // Attach charity staff data
             if ($user->role_id == 11) {
                 $charityStaff = CharityStaff::where('user_ID', $user->user_ID)->first();
                 if ($charityStaff) {
@@ -55,27 +55,26 @@ class AuthController extends Controller
     }
 
     /**
-     * SIGN UP
+     * SIGN UP (OLD VERSION)
      */
     public function signup(Request $request)
     {
-        // Validate input
-        $request->validate(
-            [
-                'fullName' => 'required|string|max:255',
-                'email'    => 'required|email|unique:DomainUser,user_email',
-                'password' => 'required|string|min:6',
-            ],
-            [
-                'email.unique' => 'An account with this email already exists.',
-            ]
-        );
+        $request->validate([
+            'fullName' => 'required|string|max:255',
+            'email'    => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
 
-        // Get donor role (or create if missing)
-        $donorRole = Role::firstOrCreate(
-            ['role_name' => 'donor'],
-            ['role_description' => 'A person who donates clothing or items.']
-        );
+        // 🔴 OLD BEHAVIOUR: manual duplicate check
+        if (DomainUser::where('user_email', $request->email)->exists()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'An account with this email already exists.',
+            ], 409);
+        }
+
+        // Get donor role
+        $donorRole = Role::where('role_name', 'donor')->first();
 
         // Create user
         $user = DomainUser::create([
@@ -87,8 +86,8 @@ class AuthController extends Controller
 
         // Create donor record
         Donor::create([
-            'user_ID'        => $user->user_ID,
-            'donor_address'  => null,
+            'user_ID' => $user->user_ID,
+            'donor_address' => null,
         ]);
 
         return response()->json([
@@ -98,12 +97,12 @@ class AuthController extends Controller
     }
 
     /**
-     * LOGOUT (optional placeholder)
+     * LOGOUT
      */
     public function logout()
     {
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Logged out successfully',
         ]);
     }
