@@ -124,7 +124,7 @@ export function Admin_Donations() {
               <th>Item</th>
               <th>Category</th>
               <th>Image</th>
-              <th>Date</th>
+              <th>Date Donated</th>
               <th>Status</th>
             </tr>
           </thead>
