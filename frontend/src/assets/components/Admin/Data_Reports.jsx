@@ -124,6 +124,7 @@ export function Data_Reports() {
   };
 
   // Generate all reports at once
+  
   const generateAllReports = () => {
     generateReportDonations();
     generateReportUsers();
@@ -131,10 +132,17 @@ export function Data_Reports() {
     generateReportCharities();
   };
   //temporary console logs for insoection why the other 2 (charity, and user report arent genrated)
+<<<<<<< HEAD
   console.log("USERS:", users);
   console.log("CHARITIES:", charities);
   console.log("DONATIONS:", donations);
 
+=======
+  // console.log("USERS:", users);
+  // console.log("CHARITIES:", charities);
+  // console.log("DONATIONS:", donations);
+  
+>>>>>>> 13aaf6de1940bc407521f24516ef684b9f7b373d
   return (
     <main>
       <div className="records-container">
