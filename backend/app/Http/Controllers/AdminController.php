@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Charity;
-use App\Models\User;
+use App\Models\DomainUser;
 use Illuminate\Http\Request;
 
 // Admin controller for managing donations, charities, users, and dashboard stats
@@ -27,18 +27,30 @@ class AdminController extends Controller
     // Getting all charities
     public function getAllCharities()
     {
-        return Charity::all();
+        $charities = Charity::all();
+        return response()->json([
+            'status' => 'success',
+            'charities' => $charities
+        ]);
     }
 
     // Get all users 
     public function getAllUsers()
     {
-        $users = User::with('donor')->get();
-
+        try{
+            //fetch all users  
+        $users = DomainUser::all();
         return response()->json([
-            'status' => 'success',
-            'users' => $users
+        'status' => 'success',
+        'users' => $users
         ]);
+
+        }catch(\Exception $e) {
+            return response()->json([
+                'error'=> $e->getMessage()
+            ], 500);
+            
+        }
     }
 
     // Metrics for all the charts

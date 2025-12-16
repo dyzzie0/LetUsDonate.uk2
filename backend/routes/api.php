@@ -33,8 +33,21 @@ Route::get('/test-db', function () {
     ]);
 });
 Route::get('/users', function () {
-    return DB::table('users')->get();
+    try {
+        $users = DB::table('users')->get();
+
+        return response()->json([
+            'status' => 'success',
+            'users' => $users
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
 });
+
 
 Route::get('/api/test-users', function() {
     try {

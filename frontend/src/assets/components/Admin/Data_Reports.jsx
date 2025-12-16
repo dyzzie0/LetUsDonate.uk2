@@ -14,30 +14,37 @@ export function Data_Reports() {
   // Fetching all necessary data
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [donRes, userRes, charityRes] = await Promise.all([
-          fetch("http://127.0.0.1:8000/api/donations").then((res) =>
-            res.json(),
-          ),
-          fetch("http://127.0.0.1:8000/api/users").then((res) => res.json()),
-          fetch("http://127.0.0.1:8000/api/charities").then((res) =>
-            res.json(),
-          ),
-        ]);
+      setLoading(true);
+  
+      const fetchSafe = async (url) => {
+        try {
+          const res = await fetch(url);
+          const text = await res.text();
+          return JSON.parse(text);
+        } catch {
+          console.error("API failed:", url);
+          return null;
+        }
+      };
+  
+      const donRes = await fetchSafe("http://127.0.0.1:8000/api/donations");
+      const userRes = await fetchSafe("http://127.0.0.1:8000/api/admin/users");
+      const charityRes = await fetchSafe("http://127.0.0.1:8000/api/admin/charities");
 
-        if (donRes.status === "success") setDonations(donRes.donations);
-        if (userRes.status === "success") setUsers(userRes.users);
-        if (charityRes.status === "success") setCharities(charityRes.charities);
+      console.log("RAW USERS RESPONSE:", userRes);
+console.log("RAW CHARITIES RESPONSE:", charityRes);
 
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      }
+
+      if (donRes?.status === "success") setDonations(donRes.donations);
+      if (userRes?.status === "success") setUsers(userRes.users);
+      if (charityRes?.status === "success") setCharities(charityRes.charities);
+  
+      setLoading(false);
     };
-
+  
     fetchData();
   }, []);
+  
 
   // Controlling report generation
   const generateReportDonations = () => {
@@ -58,9 +65,9 @@ export function Data_Reports() {
   const generateReportUsers = () => {
     const userData = users.map((u) => ({
       UserID: u.user_ID,
-      Name: u.name,
-      Email: u.email,
-      Registered: u.registered_date,
+      Name: u.user_name,
+      Email: u.user_email,
+      Registered: u.created_date || "",
     }));
 
     const csv = Papa.unparse(userData);
@@ -112,7 +119,11 @@ export function Data_Reports() {
     generateReportSustainability();
     generateReportCharities();
   };
-
+  //temporary console logs for insoection why the other 2 (charity, and user report arent genrated)
+  console.log("USERS:", users);
+  console.log("CHARITIES:", charities);
+  console.log("DONATIONS:", donations);
+  
   return (
     <main>
       <div className="records-container">
