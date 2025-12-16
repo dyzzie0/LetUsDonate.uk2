@@ -55,6 +55,11 @@ Route::get('/api/test-users', function() {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/logout', [AuthController::class, 'logout']);
+use App\Http\Controllers\UserProfileController;
+
+Route::get('/user/{id}', [UserProfileController::class, 'show']);
+Route::put('/user/{id}', [UserProfileController::class, 'update']);
+
  
 // Inventory routes
 Route::get('/inventory', [InventoryController::class, 'index']);

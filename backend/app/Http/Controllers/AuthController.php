@@ -3,102 +3,108 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\DomainUser;
 use App\Models\Donor;
 use App\Models\Role;
 use App\Models\CharityStaff;
 
-
-// Controller for authentication: login and signup
 class AuthController extends Controller
 {
-    //login
+    /**
+     * LOGIN
+     */
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    //find user by their email
-    $user = DomainUser::where('user_email', $request->email)->first();
+        // Find user by email
+        $user = DomainUser::where('user_email', $request->email)->first();
 
-    if ($user && Hash::check($request->password, $user->user_password)) {
+        if ($user && Hash::check($request->password, $user->user_password)) {
 
-        $userData = $user->toArray();
+            $userData = $user->toArray();
 
-        //attach donor data if user is a donor
-        $donor = Donor::where('user_ID', $user->user_ID)->first();
-        if ($donor) {
-            $userData['donor'] = $donor; 
-        }
-
-        //attach charity staff, charity_ID if charity staff
-        if ($user->role_id == 11) {
-            $charityStaff = CharityStaff::where('user_ID', $user->user_ID)->first();
-            if ($charityStaff) {
-                $userData['charity_ID'] = $charityStaff->charity_ID;
+            // Attach donor data if donor
+            $donor = Donor::where('user_ID', $user->user_ID)->first();
+            if ($donor) {
+                $userData['donor'] = $donor;
             }
+
+            // Attach charity staff data if role is charity staff
+            if ($user->role_id == 11) {
+                $charityStaff = CharityStaff::where('user_ID', $user->user_ID)->first();
+                if ($charityStaff) {
+                    $userData['charity_ID'] = $charityStaff->charity_ID;
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'user'   => $userData,
+            ]);
         }
 
         return response()->json([
+            'status'  => 'error',
+            'message' => 'Invalid credentials',
+        ], 401);
+    }
+
+    /**
+     * SIGN UP
+     */
+    public function signup(Request $request)
+    {
+        // Validate input
+        $request->validate(
+            [
+                'fullName' => 'required|string|max:255',
+                'email'    => 'required|email|unique:DomainUser,user_email',
+                'password' => 'required|string|min:6',
+            ],
+            [
+                'email.unique' => 'An account with this email already exists.',
+            ]
+        );
+
+        // Get donor role (or create if missing)
+        $donorRole = Role::firstOrCreate(
+            ['role_name' => 'donor'],
+            ['role_description' => 'A person who donates clothing or items.']
+        );
+
+        // Create user
+        $user = DomainUser::create([
+            'user_name'     => $request->fullName,
+            'user_email'    => $request->email,
+            'user_password' => Hash::make($request->password),
+            'role_id'       => $donorRole->role_id,
+        ]);
+
+        // Create donor record
+        Donor::create([
+            'user_ID'        => $user->user_ID,
+            'donor_address'  => null,
+        ]);
+
+        return response()->json([
             'status' => 'success',
-            'user' => $userData
+            'user'   => $user,
         ]);
     }
 
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Invalid credentials'
-    ], 401);
+    /**
+     * LOGOUT (optional placeholder)
+     */
+    public function logout()
+    {
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Logged out successfully',
+        ]);
+    }
 }
-
-
-// Sign up
-public function signup(Request $request)
-{
-    // validate input
-    $request->validate(
-        [
-            'fullName' => 'required|string|max:255',
-            'email' => 'required|email|unique:User,user_email',
-            'password' => 'required|string|min:6',
-        ],
-        [
-            'email.unique' => 'An account with this email already exists.',
-        ]
-    );
-    
-
-    // Automatically assign Donor role
-    $donorRole = \App\Models\Role::firstOrCreate(
-        ['role_name' => 'donor'],
-        ['role_description' => 'A person who donates clothing or items.']
-    );
-
-    // Create the user
-    $user = \App\Models\DomainUser::create([
-        'user_name' => $request->fullName,
-        'user_email' => $request->email,
-        'user_password' => Hash::make($request->password),
-        'role_id' => $donorRole->role_id,
-    ]);
-
-    // Create donor record
-    \App\Models\Donor::create([
-        'user_ID' => $user->user_ID,
-        'donor_address' => null,
-    ]);
-
-    // Success response
-    return response()->json([
-        'status' => 'success',
-        'user' => $user
-    ]);
-}
-
-}
-    

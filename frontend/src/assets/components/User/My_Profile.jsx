@@ -12,7 +12,7 @@ export default function My_Profile() {
     password: "",
   });
 
-  //load user from localStorage and backend
+  // Load user
   useEffect(() => {
     const stored = localStorage.getItem("user");
     if (!stored) return;
@@ -20,8 +20,7 @@ export default function My_Profile() {
     const parsed = JSON.parse(stored);
     setUser(parsed);
 
-    //load latest user data from backend
-    fetch(`http://localhost:8000/api/user/${parsed.id}`)
+    fetch(`http://localhost:8000/api/user/${parsed.user_ID}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === "success") {
@@ -34,11 +33,13 @@ export default function My_Profile() {
       })
       .catch((err) => console.error("Profile fetch error:", err));
   }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-  //submit profile updates
+
+  // Submit update
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) return;
@@ -48,38 +49,46 @@ export default function My_Profile() {
       email: formData.email,
     };
 
-    if (formData.password.trim() !== "") {
+    if (formData.password.trim()) {
       bodyData.password = formData.password;
     }
-    //send update request to backend
+
     try {
-      const res = await fetch(`http://localhost:8000/api/user/${user.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(bodyData),
-      });
+      const res = await fetch(
+        `http://localhost:8000/api/user/${user.user_ID}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(bodyData),
+        }
+      );
 
       const data = await res.json();
 
       if (data.status === "success") {
-        //save new user locally
-        const updated = { ...user, ...data.user };
-        localStorage.setItem("user", JSON.stringify(updated));
-        setUser(updated);
+        const updatedUser = {
+          ...user,
+          user_name: formData.name,
+          user_email: formData.email,
+        };
+
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setUser(updatedUser);
 
         setStatus({
           type: "success",
           message: "Profile updated successfully!",
         });
+
         setFormData((prev) => ({ ...prev, password: "" }));
       } else {
         setStatus({ type: "error", message: data.message });
       }
-    } catch (err) {
-      setStatus({ type: "error", message: "Network error. Try again." });
+    } catch {
+      setStatus({ type: "error", message: "Network error." });
     }
 
     setTimeout(() => setStatus(null), 4000);
@@ -127,7 +136,6 @@ export default function My_Profile() {
             <input
               type="email"
               name="email"
-              required
               value={formData.email}
               onChange={handleChange}
             />
