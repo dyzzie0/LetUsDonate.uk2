@@ -18,7 +18,7 @@ This project was developed for a university project and demonstrates modern full
 
 -- Analytics: CO₂ saving, charities supported
 
--- AI sorting
+-- AI chatbot
 
 -- Responsive design (desktop + mobile).
 

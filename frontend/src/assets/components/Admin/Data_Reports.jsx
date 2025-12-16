@@ -113,6 +113,7 @@ console.log("RAW CHARITIES RESPONSE:", charityRes);
   };
 
   // Generate all reports at once
+  
   const generateAllReports = () => {
     generateReportDonations();
     generateReportUsers();
@@ -120,9 +121,9 @@ console.log("RAW CHARITIES RESPONSE:", charityRes);
     generateReportCharities();
   };
   //temporary console logs for insoection why the other 2 (charity, and user report arent genrated)
-  console.log("USERS:", users);
-  console.log("CHARITIES:", charities);
-  console.log("DONATIONS:", donations);
+  // console.log("USERS:", users);
+  // console.log("CHARITIES:", charities);
+  // console.log("DONATIONS:", donations);
   
   return (
     <main>
