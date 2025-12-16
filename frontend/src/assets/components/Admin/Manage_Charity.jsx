@@ -31,6 +31,8 @@ export function Manage_Charity() {
     }
   };
 
+ 
+
   const startEditing = (charity) => {
     setEditingId(charity.charity_ID);
     setEditData({
@@ -66,24 +68,43 @@ export function Manage_Charity() {
   };
 
   const cancelEdit = () => setEditingId(null);
+  const [status, setStatus] = useState(null);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this charity?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this charity?")) return;
+  
+    setStatus(null);
+  
     try {
       const res = await fetch(`http://localhost:8000/api/charities/${id}`, {
         method: "DELETE",
       });
+  
       const data = await res.json();
+  
       if (data.status === "success") {
+        setStatus({
+          type: "success",
+          message: data.message,
+        });
         fetchCharities();
       } else {
-        alert("Error deleting charity: " + data.message);
+        setStatus({
+          type: "error",
+          message: data.message,
+        });
       }
     } catch (err) {
-      alert("Network error. Please try again.");
+      setStatus({
+        type: "error",
+        message: "Network error. Please try again.",
+      });
     }
+  
+    setTimeout(() => setStatus(null), 4000);
   };
+  
+  
 
   return (
     <main className="dashboard-main">
@@ -100,6 +121,9 @@ export function Manage_Charity() {
         </div>
       </div>
 
+      {status && (
+        <div className={`form-message ${status.type}`}>{status.message}</div>
+      )}
       <div className="table-container">
         <div className="profile-form button">
           {loading ? (
@@ -108,14 +132,15 @@ export function Manage_Charity() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Address</th>
-                  <th>Email</th>
-                  <th>Contact</th>
+                  <th>Charity Name</th>
+                  <th>Charity Address</th>
+                  <th>Charity Email</th>
+                  <th>Contact </th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
+                
                 {Array.isArray(charities) && charities.length > 0 ? (
                   charities.map((c) => (
                     <tr key={c.charity_ID}>

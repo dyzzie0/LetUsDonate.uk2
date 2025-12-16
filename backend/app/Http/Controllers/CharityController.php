@@ -135,28 +135,37 @@ class CharityController extends Controller
     }
 
     // Delete a charity and its staff links
-    public function destroy($id)
-    {
-        try {
-            $charity = Charity::findOrFail($id);
+public function destroy($id)
+{
+    try {
+        $charity = Charity::with('donations')->findOrFail($id);
 
-            // Remove any links with staff
-            CharityStaff::where('charity_ID', $id)->delete();
-
-            // Delete the charity
-            $charity->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Charity deleted successfully',
-            ]);
-        } catch (\Exception $e) {
+        // stop deletion if donations exist
+        if ($charity->donations()->count() > 0) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to delete charity: ' . $e->getMessage()
-            ], 500);
+                'message' => 'You cannot delete this charity because it has donations attached to it.'
+            ], 409);
         }
+
+        // remove any staff that are linked
+        CharityStaff::where('charity_ID', $id)->delete();
+
+        // delete the charity
+        $charity->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Charity account deleted successfully.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Failed to delete charity: ' . $e->getMessage()
+        ], 500);
     }
+}
+
 
     // Get simplified list of charities for dropdowns
     public function getCharitiesList()
