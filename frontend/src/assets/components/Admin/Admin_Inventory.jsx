@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
@@ -16,6 +17,16 @@ export function Admin_Inventory() {
     if (!path) return null;
     return `http://localhost:8000/storage/${path.replace("public/", "")}`;
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
 
   // Fetch approved donations → inventory
   useEffect(() => {
@@ -55,12 +66,10 @@ export function Admin_Inventory() {
 
     const filtered = inventory.filter((item) => {
       const matchCategory =
-        updated.category === "" ||
-        item.category === updated.category;
+        updated.category === "" || item.category === updated.category;
 
       const matchItem =
-        updated.type === "" ||
-        item.item?.toLowerCase().includes(updated.type);
+        updated.type === "" || item.item?.toLowerCase().includes(updated.type);
 
       return matchCategory && matchItem;
     });
@@ -98,11 +107,7 @@ export function Admin_Inventory() {
           <option value="boys">Boys</option>
         </select>
 
-        <select
-          name="type"
-          value={filters.type}
-          onChange={handleFilterChange}
-        >
+        <select name="type" value={filters.type} onChange={handleFilterChange}>
           <option value="">All Items</option>
           <option value="shirt">Shirt</option>
           <option value="trouser">Trouser</option>

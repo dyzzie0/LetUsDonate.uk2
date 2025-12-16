@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
@@ -24,6 +25,16 @@ export function View_Users() {
     fetchCharities();
     fetchRoles();
   }, []);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
 
   const fetchUsers = () => {
     fetch("http://localhost:8000/api/user-management/view-users")

@@ -46,11 +46,7 @@ function DonorSignUp() {
 
       // ✅ FIX: show backend validation error (duplicate email)
       if (!response.ok) {
-        setMessage(
-          data.message ||
-          data.errors?.email?.[0] ||
-          "Signup failed"
-        );
+        setMessage(data.message || data.errors?.email?.[0] || "Signup failed");
         return;
       }
 
@@ -58,7 +54,6 @@ function DonorSignUp() {
         setMessage("Signup successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 1000);
       }
-
     } catch (err) {
       setMessage("Network error. Please try again.");
     }

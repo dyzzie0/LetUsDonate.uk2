@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { saveAs } from "file-saver";
+import { useNavigate } from "react-router-dom";
 import "../../../css/data_reports.css";
 import Papa from "papaparse";
 
@@ -11,11 +12,21 @@ export function Data_Reports() {
   const [charities, setCharities] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
+
   // Fetching all necessary data
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-  
+
       const fetchSafe = async (url) => {
         try {
           const res = await fetch(url);
@@ -26,25 +37,25 @@ export function Data_Reports() {
           return null;
         }
       };
-  
+
       const donRes = await fetchSafe("http://127.0.0.1:8000/api/donations");
       const userRes = await fetchSafe("http://127.0.0.1:8000/api/admin/users");
-      const charityRes = await fetchSafe("http://127.0.0.1:8000/api/admin/charities");
+      const charityRes = await fetchSafe(
+        "http://127.0.0.1:8000/api/admin/charities",
+      );
 
       console.log("RAW USERS RESPONSE:", userRes);
-console.log("RAW CHARITIES RESPONSE:", charityRes);
-
+      console.log("RAW CHARITIES RESPONSE:", charityRes);
 
       if (donRes?.status === "success") setDonations(donRes.donations);
       if (userRes?.status === "success") setUsers(userRes.users);
       if (charityRes?.status === "success") setCharities(charityRes.charities);
-  
+
       setLoading(false);
     };
-  
+
     fetchData();
   }, []);
-  
 
   // Controlling report generation
   const generateReportDonations = () => {
@@ -123,7 +134,7 @@ console.log("RAW CHARITIES RESPONSE:", charityRes);
   console.log("USERS:", users);
   console.log("CHARITIES:", charities);
   console.log("DONATIONS:", donations);
-  
+
   return (
     <main>
       <div className="records-container">

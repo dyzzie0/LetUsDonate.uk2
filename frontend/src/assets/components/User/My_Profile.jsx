@@ -63,7 +63,7 @@ export default function My_Profile() {
             Accept: "application/json",
           },
           body: JSON.stringify(bodyData),
-        }
+        },
       );
 
       const data = await res.json();

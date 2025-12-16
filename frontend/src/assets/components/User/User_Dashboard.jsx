@@ -51,7 +51,6 @@ export default function User_Dashboard() {
       .catch((err) => console.error("Donation fetch error:", err));
   }, [user]);
 
-
   useEffect(() => {
     fetch("http://localhost:8000/api/charities")
       .then((res) => res.json())
@@ -136,7 +135,7 @@ export default function User_Dashboard() {
 
   if (!user) {
     return <p>Loading dashboard...</p>;
-  }  
+  }
 
   return (
     <>
@@ -168,7 +167,7 @@ export default function User_Dashboard() {
             </aside>
 
             <main className="dashboard-main">
-              <h2>Welcome, {user.user_name}</h2> 
+              <h2>Welcome, {user.user_name}</h2>
 
               <div className="stats-container">
                 <div className="stat-card">

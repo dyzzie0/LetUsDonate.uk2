@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/records.css";
 
 // This component allows admin to add a new charity along with its staff account
@@ -13,6 +14,16 @@ export function Add_Charity() {
     staff_email: "",
     staff_password: "",
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
 
   const [status, setStatus] = useState(null);
 

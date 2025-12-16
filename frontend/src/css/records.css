@@ -19,8 +19,6 @@ main {
   font-weight: 500;
 }
 
-
-
 .return-right ul {
   list-style: none;
   padding: 0;
@@ -241,7 +239,7 @@ main {
   transform: translateY(-2px);
 }
 
-.distribute-btn{
+.distribute-btn {
   background-color: #7c3aed;
   color: #fff;
   border: none;
@@ -322,10 +320,6 @@ main {
   border-radius: 6px;
   cursor: default;
 }
-
-
-
-
 
 /* Fade out row */
 .fade-out {

@@ -1,17 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Chart } from "chart.js/auto";
 import "../../../css/admin.css";
 
 // this is js to get text color based on theme
 function getChartTextColor() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "#ffffff" : "#000000";
+    ? "#ffffff"
+    : "#000000";
 }
 
 export function Admin_Dashboard() {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
 
   // references to charts which means we can destroy them before recreating in case of data updates so we dont get overlapping charts
   const donationChartRef = useRef(null);
@@ -41,8 +53,6 @@ export function Admin_Dashboard() {
       });
   }, []);
 
-
-  
   // filters donations by time period, returning only those within the specified number of days
   const filterByTime = (days) => {
     const now = new Date();
@@ -248,7 +258,7 @@ export function Admin_Dashboard() {
   }, [donations, loading]);
 
   // stats
-  
+
   const totalDonations = donations.length;
   const totalItemsAccepted = donations
     .filter((d) => d.donation_status === "Approved")

@@ -42,7 +42,7 @@ export default function Charity_Distribution_Records() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-        }
+        },
       );
 
       const data = await res.json();
@@ -60,7 +60,9 @@ export default function Charity_Distribution_Records() {
 
   return (
     <main>
-      {message && <div className={`form-message ${messageType}`}>{message}</div>}
+      {message && (
+        <div className={`form-message ${messageType}`}>{message}</div>
+      )}
 
       <div className="records-container">
         <div className="header-left">
@@ -106,7 +108,10 @@ export default function Charity_Distribution_Records() {
                         Sent
                       </button>
                     ) : (
-                      <button className="distribute-btn" onClick={() => handleDistribute(i.inventory_ID)}>
+                      <button
+                        className="distribute-btn"
+                        onClick={() => handleDistribute(i.inventory_ID)}
+                      >
                         Send
                       </button>
                     )}

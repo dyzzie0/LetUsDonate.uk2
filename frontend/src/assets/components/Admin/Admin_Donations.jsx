@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/records.css";
 import "../../../css/modal.css";
 
@@ -19,6 +20,16 @@ export function Admin_Donations() {
     if (path.startsWith("http://") || path.startsWith("https://")) return path;
     return `http://localhost:8000/storage/${path}`;
   };
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
 
   // Fetch all donations
   useEffect(() => {

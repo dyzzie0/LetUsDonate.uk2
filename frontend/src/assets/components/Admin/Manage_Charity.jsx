@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../../../css/records.css";
 
 export function Manage_Charity() {
@@ -17,6 +18,16 @@ export function Manage_Charity() {
     fetchCharities();
   }, []);
 
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const admin = localStorage.getItem("admin");
+
+    if (!admin) {
+      navigate("/"); // redirect to home page if ur not admin
+    }
+  }, [navigate]);
+
   const fetchCharities = async () => {
     try {
       const res = await fetch("http://localhost:8000/api/charities");
@@ -30,8 +41,6 @@ export function Manage_Charity() {
       setLoading(false);
     }
   };
-
- 
 
   const startEditing = (charity) => {
     setEditingId(charity.charity_ID);
@@ -71,17 +80,18 @@ export function Manage_Charity() {
   const [status, setStatus] = useState(null);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this charity?")) return;
-  
+    if (!window.confirm("Are you sure you want to delete this charity?"))
+      return;
+
     setStatus(null);
-  
+
     try {
       const res = await fetch(`http://localhost:8000/api/charities/${id}`, {
         method: "DELETE",
       });
-  
+
       const data = await res.json();
-  
+
       if (data.status === "success") {
         setStatus({
           type: "success",
@@ -100,11 +110,9 @@ export function Manage_Charity() {
         message: "Network error. Please try again.",
       });
     }
-  
+
     setTimeout(() => setStatus(null), 4000);
   };
-  
-  
 
   return (
     <main className="dashboard-main">
@@ -140,7 +148,6 @@ export function Manage_Charity() {
                 </tr>
               </thead>
               <tbody>
-                
                 {Array.isArray(charities) && charities.length > 0 ? (
                   charities.map((c) => (
                     <tr key={c.charity_ID}>
